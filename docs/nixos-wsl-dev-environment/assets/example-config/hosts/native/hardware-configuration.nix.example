@@ -1,0 +1,11 @@
+# Do not use this file as hardware configuration.
+#
+# On the target native NixOS host, copy the generated file instead:
+#
+#   cp /etc/nixos/hardware-configuration.nix \
+#     ./hosts/native/hardware-configuration.nix
+#   git add hosts/native/hardware-configuration.nix
+#
+# The flake exposes nixosConfigurations.native only after that tracked file
+# exists. Hardware configuration is host-specific and cannot be shared with
+# NixOS-WSL.

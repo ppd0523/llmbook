@@ -1,0 +1,46 @@
+site_name: llmBook
+site_description: 개발 문서를 책 단위로 정리한 지식 저장소
+site_url: https://ppd0523.github.io/llmbook/
+repo_name: ppd0523/llmbook
+repo_url: https://github.com/ppd0523/llmbook
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+strict: true
+
+theme:
+  name: material
+  language: ko
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.footer
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+plugins:
+  - search:
+      lang: ko
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences
+
+exclude_docs: |
+  !nixos-wsl-dev-environment/assets/example-config/.gitignore
+  **/_work/**
+
+not_in_nav: |
+  **/assets/**/*.md

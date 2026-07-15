@@ -1,0 +1,8 @@
+.direnv/
+result
+result-*
+
+# Runtime and project state belongs outside this configuration repository.
+.venv/
+node_modules/
+target/
