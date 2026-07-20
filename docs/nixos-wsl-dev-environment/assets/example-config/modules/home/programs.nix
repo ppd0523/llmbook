@@ -59,5 +59,12 @@
       enable = true;
       enableZshIntegration = true;
     };
+
+    # Load each project's Nix development shell when entering its directory.
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
+    };
   };
 }
