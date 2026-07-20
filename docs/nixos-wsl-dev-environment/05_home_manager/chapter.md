@@ -5,6 +5,7 @@
 1. 사용자 패키지와 설정을 시스템에서 독립적으로 적용한다.
 2. Home Manager 모듈과 dotfiles를 적절히 나눈다.
 3. 고정된 NVM 소스와 쓰기 가능한 Node 설치 영역을 함께 구성한다.
+4. direnv와 nix-direnv를 설치해 프로젝트 개발 셸 자동화를 준비한다.
 
 ## 5.1 사용자 프로필의 진입점
 
@@ -63,6 +64,7 @@
 - Starship
 - fzf
 - Autojump
+- direnv와 nix-direnv
 
 대표적인 형태는 다음과 같다.
 
@@ -98,6 +100,8 @@ programs = {
 ```
 
 Home Manager 모듈은 패키지 설치와 셸 통합을 함께 처리한다. 예를 들어 `enableZshIntegration = true`는 필요한 초기화 코드를 생성하므로 `.zshrc`에 같은 코드를 다시 쓰지 않는다.
+
+direnv도 같은 방식으로 zsh 훅과 nix-direnv 연동을 선언한다. 실제 프로젝트의 `.envrc` 승인과 `devShell` 사용법은 [7장](../07_nix_develop/chapter.md)에서 다룬다.
 
 Nixpkgs의 bat 실행 파일 이름은 Ubuntu의 `batcat`이 아니라 `bat`다. 예제는 익숙한 `cat` 사용을 위해 `cat = "bat"` 별칭을 추가한다.
 
@@ -214,6 +218,7 @@ $ bat --version
 $ rg --version
 $ nvim --version
 $ starship --version
+$ direnv version
 ```
 
 ## 흔한 오류
@@ -231,6 +236,7 @@ $ starship --version
 - 전용 모듈은 설치와 셸 통합을 함께 처리한다.
 - 큰 애플리케이션 설정은 dotfiles 원본을 Home Manager가 배치한다.
 - NVM 스크립트는 고정하되 Node 설치 디렉터리는 쓰기 가능해야 한다.
+- direnv와 nix-direnv는 프로젝트별 Nix 개발 환경을 자동으로 불러온다.
 - 최초 bootstrap 뒤에는 Home Manager가 자신의 CLI도 관리한다.
 
 ## 추가 읽을거리

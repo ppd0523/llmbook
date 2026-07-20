@@ -1,4 +1,4 @@
-# 8. 업데이트, 롤백, 문제 해결
+# 9. 업데이트, 롤백, 문제 해결
 
 ## 학습 목표
 
@@ -6,7 +6,7 @@
 2. 시스템, 사용자, 프로젝트 중 실패한 계층을 식별한다.
 3. NixOS와 Home Manager 세대를 독립적으로 롤백한다.
 
-## 8.1 안전한 업데이트 루틴
+## 9.1 안전한 업데이트 루틴
 
 복원에서는 `flake.lock`을 유지하지만 업데이트에서는 의도적으로 바꾼다.
 
@@ -35,7 +35,7 @@ $ git commit -m "Update Nix inputs"
 
 이 커밋은 Nixpkgs, Home Manager, NixOS-WSL 입력의 변경을 하나의 검토 단위로 만든다. 특정 입력만 갱신하려면 사용 중인 Nix의 `nix flake update --help`에서 입력별 문법을 먼저 확인한다. Nix CLI 버전에 따라 이 문법이 달라질 수 있다.
 
-## 8.2 롤백 단위
+## 9.2 롤백 단위
 
 시스템 전환이 문제라면 NixOS 세대를 되돌린다.
 
@@ -54,7 +54,7 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 
 프로젝트의 `.nvmrc`, `.python-version`, `rust-toolchain.toml` 변경은 NixOS 세대 롤백 대상이 아니다. 프로젝트 Git 이력과 언어별 설치 상태를 확인한다.
 
-## 8.3 계층별 진단 순서
+## 9.3 계층별 진단 순서
 
 ```text
 명령 자체가 없거나 로그인 셸이 다름
@@ -69,7 +69,7 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 
 처음부터 `nixos-rebuild`를 반복하기보다 실패한 소유권 계층에서 시작한다.
 
-## 8.4 오류 표
+## 9.4 오류 표
 
 | 증상 | 원인 | 확인 | 해결 |
 |---|---|---|---|
@@ -84,7 +84,7 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 | 복원 직후 `flake.lock` 변경 | 복원 중 update 실행 | `git diff flake.lock` | 잠긴 커밋으로 되돌리고 다시 build |
 | Windows 명령이 이름으로 실행되지 않음 | Windows PATH 제외 정책 | `wsl.interop.includePath` | 명시 경로 또는 옵션 변경 |
 
-## 8.5 사용자 이름 변경
+## 9.5 사용자 이름 변경
 
 이미 설치된 NixOS-WSL에서 기본 사용자 이름을 바꿀 때는 일반 `switch`를 사용하지 않는다. 공식 절차의 핵심은 다음과 같다.
 
@@ -108,7 +108,7 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 
 공식 문서는 기존 WSL 사용자를 변경할 때 `nixos-rebuild switch`가 새 계정을 잘못 구성할 수 있다고 경고한다. 사용자 이름은 가능하면 저장소를 처음 만들 때 확정한다.
 
-## 8.6 릴리스 업그레이드
+## 9.6 릴리스 업그레이드
 
 26.05에서 다음 NixOS 릴리스로 이동할 때는 다음을 함께 검토한다.
 
@@ -120,7 +120,7 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 
 `system.stateVersion`과 `home.stateVersion`은 자동으로 올리지 않는다. 릴리스 브랜치와 상태 버전은 서로 다른 개념이다.
 
-## 8.7 비밀과 개인 데이터
+## 9.7 비밀과 개인 데이터
 
 다음 값은 평문 구성 저장소에 넣지 않는다.
 
@@ -132,7 +132,7 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 
 이 자료는 비밀 관리 체계를 포함하지 않는다. 초기에는 복원 후 별도로 배치하고, 필요해지면 sops-nix나 agenix 같은 도구를 별도 위협 모델과 함께 설계한다.
 
-## 8.8 운영 체크리스트
+## 9.8 운영 체크리스트
 
 ### 평상시 변경
 
@@ -174,4 +174,4 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 - [NixOS 안정판 매뉴얼](https://nixos.org/manual/nixos/stable/)
 - [Home Manager 매뉴얼](https://nix-community.github.io/home-manager/)
 
-[← 7장](../07_restore_workflow/chapter.md) · [목차](../index.md)
+[← 8장](../07_restore_workflow/chapter.md) · [목차](../index.md)

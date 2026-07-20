@@ -1,4 +1,4 @@
-# 7. Git clone에서 완전한 환경까지
+# 8. Git clone에서 완전한 환경까지
 
 이 장은 2장에서 원본 구성 저장소를 만들고 `flake.lock`까지 push한 뒤, 두 번째 컴퓨터나 재설치한 환경에 복원하는 절차다. 개인 구성 저장소가 아직 없다면 clone을 시도하지 말고 먼저 [2장의 최초 생성 절차](../02_install_nixos_wsl/chapter.md)를 완료한다.
 
@@ -8,7 +8,7 @@
 2. 네이티브 NixOS에서 사용자 프로필만 독립적으로 복원한다.
 3. 실제 하드웨어 시스템 설정을 안전하게 저장소에 편입한다.
 
-## 7.1 무엇이 “한 번의 clone으로 복원”되는가
+## 8.1 무엇이 “한 번의 clone으로 복원”되는가
 
 OS 이미지 등록, 초기 암호, 저장소 접근 자격 증명은 Git 바깥의 bootstrap이다. 특히 Private 저장소는 새 컴퓨터의 공개 키를 GitHub에 등록해야 clone할 수 있다. 그 뒤의 선언 상태는 한 저장소 clone에서 복원한다.
 
@@ -25,7 +25,7 @@ Git 저장소
 
 언어 런타임 캐시는 Git에 넣지 않지만 프로젝트 파일을 기준으로 다시 받을 수 있다.
 
-## 7.2 새 NixOS-WSL 전체 복원
+## 8.2 새 NixOS-WSL 전체 복원
 
 Windows에서 NixOS-WSL을 등록하고 들어온다.
 
@@ -90,9 +90,21 @@ $ git --version
 $ nvim --version
 ```
 
-## 7.3 프로젝트 복원
+## 8.3 프로젝트 복원
 
 개발 환경과 프로젝트 저장소는 별도다. 각 프로젝트를 clone한 뒤 해당 생태계의 잠금 명령을 사용한다.
+
+프로젝트가 7장의 `devShell`과 `.envrc`를 제공한다면 먼저 내용을 검토하고 환경을 승인한다.
+
+```console
+$ git clone <project-url>
+$ cd <project>
+$ less .envrc
+$ direnv allow
+$ nix develop -c jq --version
+```
+
+`direnv allow`는 신뢰한 저장소에서만 실행한다. 이후에는 디렉터리에 들어갈 때 잠긴 Nix 개발 환경이 자동으로 로드된다.
 
 ```console
 # Python
@@ -113,7 +125,7 @@ $ cargo build --locked
 
 Node 프로젝트는 디렉터리 진입 시 NVM 훅이 먼저 `.nvmrc`를 처리한다.
 
-## 7.4 네이티브 NixOS에서 사용자 환경만 복원
+## 8.4 네이티브 NixOS에서 사용자 환경만 복원
 
 대상 네이티브 NixOS의 사용자 이름과 예제의 `username`이 같다면 시스템 설정을 건드리지 않고 Home Manager만 적용할 수 있다.
 
@@ -127,7 +139,7 @@ $ nix run .#home-manager -- switch --flake .#nixos
 
 사용자 이름이 다르면 `flake.nix`의 `username`과 `home.homeDirectory`가 일치하도록 자신의 저장소에 별도 Home Manager 출력을 추가한다. 여러 사용자를 지원하려면 출력 이름을 `user@host` 형태로 늘릴 수 있다.
 
-## 7.5 네이티브 시스템 설정까지 관리
+## 8.5 네이티브 시스템 설정까지 관리
 
 실제 네이티브 호스트에서 생성된 파일을 복사한다.
 
@@ -155,7 +167,7 @@ $ sudo nixos-rebuild switch --flake .#native
 
 하드웨어 모듈은 비밀 파일은 아니지만 호스트 구조를 노출할 수 있다. 공개 저장소에 둘지 조직의 위협 모델에 따라 판단한다.
 
-## 7.6 성공 기준
+## 8.6 성공 기준
 
 - `nixos-rebuild build --flake .#wsl` 또는 `.#native`가 성공한다.
 - `nix run .#home-manager -- build --flake .#nixos`가 성공한다.
@@ -186,4 +198,4 @@ $ sudo nixos-rebuild list-generations
 - 네이티브 시스템 출력에는 해당 호스트의 하드웨어 모듈과 기존 상태 버전이 필요하다.
 - 프로젝트는 언어별 버전 파일과 lockfile에서 다시 만든다.
 
-[← 6장](../06_language_toolchains/chapter.md) · [목차](../index.md) · [8장: 운영과 문제 해결 →](../08_operations_and_troubleshooting/chapter.md)
+[← 7장](../07_nix_develop/chapter.md) · [목차](../index.md) · [9장: 운영과 문제 해결 →](../08_operations_and_troubleshooting/chapter.md)
