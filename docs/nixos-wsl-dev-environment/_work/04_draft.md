@@ -1,9 +1,9 @@
 ---
 title: NixOS-WSL 개발 환경 구축 초고
-version: 0.3
+version: 0.4
 status: draft
 owner: agent
-updated: 2026-07-15
+updated: 2026-07-21
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -299,7 +299,40 @@ $ cargo build --locked
 
 `RUSTUP_AUTO_INSTALL=1`이므로 프로젝트가 요구한 툴체인이 없을 때 rustup 프록시가 설치할 수 있다. 네트워크 사용을 명시적으로 통제하려면 `RUSTUP_AUTO_INSTALL=0`으로 바꾸고 `rustup toolchain install`을 수동 실행한다.
 
-### 5.7 네이티브 NixOS에서 사용자 환경 복원
+### 5.7 nix develop, direnv, LazyVim 연결
+
+Home Manager는 `nvim`, lazy.nvim, 최소 LazyVim 기반, uv, NVM, rustup, direnv,
+nix-direnv를 제공한다. Python·TypeScript·Rust extra는 전역 설정에서 제외한다.
+프로젝트는 `.lazy.lua`와 `.lazy-lock.json`으로 plugin을 선택·고정하고, 네이티브
+라이브러리를 `flake.nix`에 선언하며 `.envrc`에서 `use flake`를 호출한다.
+
+```console
+$ nix flake lock
+$ nix develop
+$ command -v <language-runtime> <language-server>
+$ nvim .
+```
+
+Python devShell은 `.venv/bin`, Node.js devShell은 `node_modules/.bin`을 PATH 앞에
+둔다. Rust는 `rust-toolchain.toml`의 `rust-analyzer` component와 rustup proxy를
+사용한다. Mason은 공통으로 끄고 각 `.lazy.lua`가 필요한 언어 extra만 켠다.
+plugin root도 프로젝트 경로 hash로 분리해 서로 다른 lock 리비전이 충돌하지 않게 한다.
+
+수동 진입이 성공한 뒤 `.envrc`를 읽고 승인한다.
+
+```console
+$ exit
+$ less .envrc
+$ less .lazy.lua
+$ direnv allow
+$ nvim .
+```
+
+`.envrc` 승인은 direnv에, `.lazy.lua` 승인은 Neovim trust DB에 따로 저장된다.
+Neovim에서는 `:Lazy sync`, `:LazyHealth`, `:checkhealth vim.lsp`, `:LspInfo`로
+확인한다. 생성된 프로젝트 `.lazy-lock.json`을 언어 lock 파일과 함께 커밋한다.
+
+### 5.8 네이티브 NixOS에서 사용자 환경 복원
 
 네이티브 NixOS에서도 사용자 이름과 홈 경로가 `nixos`라면 시스템과 무관하게 다음만으로 같은 사용자 환경을 적용할 수 있다.
 
@@ -328,7 +361,8 @@ $ sudo nixos-rebuild switch --flake .#native
 2. `modules/home/programs.nix`에 Git 사용자 이름과 이메일을 추가하되 공개 저장소에 넣어도 되는 값인지 판단한다.
 3. Neovim 설정 한 줄을 바꾸고 `home-manager build`와 `switch`의 차이를 확인한다.
 4. Python, Node, Rust 테스트 프로젝트를 만들고 각 버전 파일을 커밋한 뒤 새 셸에서 자동 선택을 검증한다.
-5. `nix flake update` 전후의 `flake.lock` diff를 읽고, 빌드 성공 뒤에만 커밋한다.
+5. 세 프로젝트에서 `nix develop`과 direnv가 같은 LSP 경로를 제공하는지 확인하고 `:LspInfo`와 비교한다.
+6. `nix flake update` 전후의 `flake.lock` diff를 읽고, 빌드 성공 뒤에만 커밋한다.
 
 ## 7. 흔한 오류
 

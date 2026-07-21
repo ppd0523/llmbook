@@ -94,17 +94,23 @@ $ nvim --version
 
 개발 환경과 프로젝트 저장소는 별도다. 각 프로젝트를 clone한 뒤 해당 생태계의 잠금 명령을 사용한다.
 
-프로젝트가 7장의 `devShell`과 `.envrc`를 제공한다면 먼저 내용을 검토하고 환경을 승인한다.
+프로젝트가 7장의 `devShell`, `.envrc`, `.lazy.lua`를 제공한다면 실행 가능한 두 파일을
+각각 검토한다.
 
 ```console
 $ git clone <project-url>
 $ cd <project>
 $ less .envrc
+$ less .lazy.lua
 $ direnv allow
 $ nix develop -c jq --version
+$ nvim .
+# Neovim의 .lazy.lua 신뢰 확인 뒤 :Lazy restore
 ```
 
-`direnv allow`는 신뢰한 저장소에서만 실행한다. 이후에는 디렉터리에 들어갈 때 잠긴 Nix 개발 환경이 자동으로 로드된다.
+`direnv allow`는 `.envrc`만 승인한다. `.lazy.lua`는 Neovim이 별도로 신뢰를 확인한다.
+이후에는 디렉터리에 들어갈 때 잠긴 Nix 개발 환경이 자동으로 로드되고, Neovim은
+커밋된 `.lazy-lock.json`에서 프로젝트 plugin 리비전을 복원한다.
 
 ```console
 # Python
@@ -174,6 +180,7 @@ $ sudo nixos-rebuild switch --flake .#native
 - 로그인 셸이 zsh다.
 - 지정한 사용자 도구가 PATH에서 발견된다.
 - Neovim 설정이 `~/.config/nvim`에 배치된다.
+- 프로젝트의 `.lazy.lua`가 승인되고 `.lazy-lock.json`이 plugin 리비전을 복원한다.
 - `.nvmrc`, `.python-version`, `rust-toolchain.toml`이 각각 런타임을 선택한다.
 - clone 후 `flake.lock`에 변경이 생기지 않는다.
 

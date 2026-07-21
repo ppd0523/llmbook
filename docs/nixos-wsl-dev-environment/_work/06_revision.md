@@ -1,9 +1,9 @@
 ---
 title: 퇴고 계획 및 반영 내역
-version: 0.3
+version: 0.4
 status: complete
 owner: agent
-updated: 2026-07-15
+updated: 2026-07-21
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -12,10 +12,10 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 
 ## 1. 퇴고 목표
 
-- 구조 개선: 개념에서 설치, 저장소, 시스템, 사용자, 언어, 복원, 운영 순으로 8개 장을 구성한다.
+- 구조 개선: 개념에서 설치, 저장소, 시스템, 사용자, 언어, 프로젝트 개발 셸, 복원, 운영 순으로 9개 장을 구성한다.
 - 학습성 개선: 기존 `nvm`·`uv` 경험과 Nix의 입력·출력·잠금 개념을 연결한다.
 - 누락 보강: WSL 자체 설치, GitHub 최초 저장소와 SSH bootstrap, Windows PATH 선택, 사용자 이름 변경, 네이티브 하드웨어 파일을 보강한다.
-- 중복 제거: 설치 명령은 2장, 반복 복원은 7장, 업데이트·롤백은 8장에 집중한다.
+- 중복 제거: 설치 명령은 2장, 프로젝트 개발 셸은 7장, 반복 복원은 8장, 업데이트·롤백은 9장에 집중한다.
 - 예제 개선: 본문과 `assets/example-config`가 같은 명령과 파일 경계를 사용하게 한다.
 - 연습문제 개선: 선언 변경, build, switch, 프로젝트 런타임 선택을 직접 확인하게 한다.
 
@@ -23,7 +23,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 
 | 위치 | 변경 전 문제 | 변경 방향 | 우선순위 |
 |---|---|---|---|
-| 전체 초고 | 한 파일에서 개념과 절차가 길게 이어짐 | 의존 순서에 따라 8개 장으로 분리 | 높음 |
+| 전체 초고 | 한 파일에서 개념과 절차가 길게 이어짐 | 의존 순서에 따라 9개 장으로 분리 | 높음 |
 | 언어 버전 | 도구 버전과 런타임 버전의 고정 단위가 혼동될 수 있음 | 도구/런타임/의존성 잠금 표를 모든 설명의 기준으로 사용 | 높음 |
 | Node 예시 | `.nvmrc`에 메이저만 쓰면 미래의 패치 버전으로 달라질 수 있음 | 작성 시 선택한 정확한 `node --version` 값을 커밋하도록 설명 | 높음 |
 | 설치 절차 | 구성 저장소가 이미 있다고 가정하고 clone부터 시작 | 첫 저장소 생성은 2장, 구조 해설은 3장, 이후 머신 복원은 7장으로 분리 | 높음 |
@@ -31,6 +31,10 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | WSL interop | Windows PATH 제외의 효과가 불명확 | 재현성과 편의의 선택으로 명시 | 중간 |
 | 예제 코드 | 모든 파일을 본문에 반복하면 흐름이 끊김 | 핵심 코드는 본문, 전체 파일은 companion 링크로 제공 | 중간 |
 | 오류 처리 | Nix 오류와 언어 도구 오류가 섞임 | 시스템/홈/프로젝트 세 계층으로 진단 순서 제시 | 중간 |
+| 편집기 통합 | Mason과 프로젝트 관리자가 같은 LSP를 중복 설치할 수 있음 | Mason을 끄고 활성화된 프로젝트 PATH의 LSP만 사용 | 높음 |
+| LazyVim 소유권 | 언어별 plugin을 사용자 전역으로 켜면 프로젝트마다 다른 요구사항을 표현하기 어려움 | Home Manager는 최소 기반, 프로젝트는 `.lazy.lua`와 `.lazy-lock.json` 소유 | 높음 |
+| LazyVim 격리 | project lock만 분리하고 plugin checkout을 공유하면 리비전이 충돌할 수 있음 | 프로젝트 경로 hash로 plugin root까지 분리 | 높음 |
+| LazyVim 기본 lock | Nix Store 링크에서는 프로젝트 밖 기본 `lazy-lock.json`을 쓸 수 없음 | Neovim dotfiles만 out-of-store 링크로 연결 | 중간 |
 
 ## 3. 구조 점검
 
@@ -61,9 +65,13 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | 공통 시스템과 WSL/네이티브 호스트 분리 | 4장 | 호스트 종속성을 사용자 환경에서 제거 |
 | standalone Home Manager와 NVM 쓰기 가능 디렉터리 | 5장 | 선택한 배포 방식과 NVM의 셸 함수 성격 반영 |
 | 정확한 프로젝트 런타임 버전 고정 | 6장 | 도구 고정만으로 부족한 재현성 보완 |
-| WSL과 네이티브 복원 절차 분리 | 7장 | 하드웨어 모듈의 비이식성 명확화 |
+| Python·Node.js·Rust LazyVim 개발 셸 | 7장과 `assets/example-dev-shell` | 설치한 direnv·nix-direnv·언어 관리자를 일상 편집 흐름으로 연결 |
+| 프로젝트별 `.lazy.lua`, `.lazy-lock.json`, plugin cache | 7장과 세 언어 예제 | `.vscode`와 유사한 프로젝트 소유권과 plugin 리비전 격리 |
+| `.envrc`와 `.lazy.lua` 이중 신뢰 절차 | 7장 | 셸 코드와 Lua 코드를 별도 trust DB에서 검토 |
+| `nix develop` 수동 진단 후 `direnv allow` | 7장 | Nix 평가 오류와 자동화 훅 오류를 구분 |
+| WSL과 네이티브 복원 절차 분리 | 8장 | 하드웨어 모듈의 비이식성 명확화 |
 | 잠긴 Home Manager bootstrap 앱 | 3장과 5장 | 최초 실행도 `flake.lock`의 입력을 사용 |
-| build-before-switch와 계층별 롤백 | 8장 | 안전한 운영 루틴 제시 |
+| build-before-switch와 계층별 롤백 | 9장 | 안전한 운영 루틴 제시 |
 
 ## 6. 교정 전 확인
 

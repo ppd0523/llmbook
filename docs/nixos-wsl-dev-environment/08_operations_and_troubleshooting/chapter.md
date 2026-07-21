@@ -35,6 +35,20 @@ $ git commit -m "Update Nix inputs"
 
 이 커밋은 Nixpkgs, Home Manager, NixOS-WSL 입력의 변경을 하나의 검토 단위로 만든다. 특정 입력만 갱신하려면 사용 중인 Nix의 `nix flake update --help`에서 입력별 문법을 먼저 확인한다. Nix CLI 버전에 따라 이 문법이 달라질 수 있다.
 
+프로젝트 LazyVim plugin은 시스템 Flake와 별도 업데이트 단위다. 해당 프로젝트에서
+Neovim을 열고 `:Lazy update`를 실행한 뒤 lock diff와 프로젝트 검증을 함께 수행한다.
+
+```console
+$ cd <project>
+$ nvim .
+# Neovim에서 :Lazy update, :LazyHealth
+$ git diff -- .lazy-lock.json
+$ git add .lazy-lock.json
+$ git commit -m "Update project editor plugins"
+```
+
+다른 컴퓨터의 복원에서는 update가 아니라 `:Lazy restore`를 사용한다.
+
 ## 9.2 롤백 단위
 
 시스템 전환이 문제라면 NixOS 세대를 되돌린다.
@@ -52,7 +66,9 @@ $ home-manager switch --rollback
 
 Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 rebuild가 같은 상태를 유지한다. 세대 롤백은 현재 실행 상태를 바꾸고, Git 되돌리기는 다음 빌드의 입력을 바꾼다. 둘은 목적이 다르다.
 
-프로젝트의 `.nvmrc`, `.python-version`, `rust-toolchain.toml` 변경은 NixOS 세대 롤백 대상이 아니다. 프로젝트 Git 이력과 언어별 설치 상태를 확인한다.
+프로젝트의 `.nvmrc`, `.python-version`, `rust-toolchain.toml`, `.lazy.lua`,
+`.lazy-lock.json` 변경은 NixOS 세대 롤백 대상이 아니다. 프로젝트 Git 이력과 언어별
+설치 상태를 확인하고 이전 lock 커밋에서 `:Lazy restore`를 실행한다.
 
 ## 9.3 계층별 진단 순서
 
@@ -65,6 +81,9 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 
 런타임은 맞지만 빌드가 실패
   → 프로젝트 lockfile / 네이티브 라이브러리
+
+LSP는 맞지만 editor plugin 구성이 다름
+  → .lazy.lua / .lazy-lock.json / Neovim trust
 ```
 
 처음부터 `nixos-rebuild`를 반복하기보다 실패한 소유권 계층에서 시작한다.
@@ -83,6 +102,8 @@ Git의 `flake.lock`도 문제가 생기기 전 커밋으로 되돌려야 다음 
 | `native` 출력이 없음 | 하드웨어 파일 부재 또는 Git 미추적 | `git ls-files hosts/native` | 파일 복사 후 `git add` |
 | 복원 직후 `flake.lock` 변경 | 복원 중 update 실행 | `git diff flake.lock` | 잠긴 커밋으로 되돌리고 다시 build |
 | Windows 명령이 이름으로 실행되지 않음 | Windows PATH 제외 정책 | `wsl.interop.includePath` | 명시 경로 또는 옵션 변경 |
+| `.lazy.lua`가 적용되지 않음 | 프로젝트 파일을 신뢰하지 않았거나 내용이 변경됨 | Neovim trust 요청, `:messages` | 파일 검토 후 `:trust`, Neovim 재실행 |
+| 프로젝트 plugin 버전이 다름 | `.lazy-lock.json` 미복원 또는 실수로 update 실행 | lock diff와 현재 lock 경로 | Git lock 복원 후 `:Lazy restore` |
 
 ## 9.5 사용자 이름 변경
 

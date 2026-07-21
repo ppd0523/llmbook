@@ -6,6 +6,7 @@
 {
   imports = [
     ./programs.nix
+    ./lazyvim.nix
     ./nvm.nix
   ];
 
@@ -42,9 +43,6 @@
       RUSTUP_AUTO_INSTALL = "1";
     };
   };
-
-  xdg.enable = true;
-  xdg.configFile."nvim".source = ../../dotfiles/nvim;
 
   # Keep the standalone Home Manager CLI in the managed profile after the
   # one-time bootstrap command.

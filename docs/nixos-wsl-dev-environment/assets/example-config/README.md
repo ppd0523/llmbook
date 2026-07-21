@@ -29,6 +29,7 @@ $ sudo nixos-rebuild switch \
     --flake .#wsl
 $ nix run .#home-manager -- build --flake .#nixos
 $ nix run .#home-manager -- switch --flake .#nixos
+$ exec zsh
 $ git commit -m "Bootstrap NixOS-WSL environment"
 $ git push -u origin main
 $ exit
@@ -61,6 +62,7 @@ $ sudo nixos-rebuild switch \
     --flake .#wsl
 $ nix run .#home-manager -- build --flake .#nixos
 $ nix run .#home-manager -- switch --flake .#nixos
+$ exec zsh
 $ exit
 ```
 
@@ -75,6 +77,19 @@ external `git` executable that the initial image does not yet have. If the
 first `nix flake lock` later reports an API rate-limit error, wait for the
 limit to reset or pass a GitHub token through Nix's `access-tokens` option;
 never commit that token.
+
+## LazyVim and project-local plugins
+
+`modules/home/lazyvim.nix` installs Neovim, lazy.nvim, and only the shared
+LazyVim requirements. It enables lazy.nvim's trusted project-local spec
+support. Each application repository owns its language extras in `.lazy.lua`
+and the resolved plugin revisions in `.lazy-lock.json`; run `:Lazy sync` once
+and commit the populated lock file. The complete variants are in the
+[project development shell examples](../example-dev-shell/README.md).
+
+The project directory also gets an isolated plugin cache. Language runtimes
+and LSP executables still come from uv, NVM/npm, or rustup after direnv has
+loaded that project's development shell.
 
 ## Routine update
 

@@ -1,0 +1,16 @@
+{
+  "name": "lazyvim-nodejs-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "devDependencies": {
+    "@vtsls/language-server": "0.2.9",
+    "prettier": "3.6.2",
+    "tsx": "4.23.1",
+    "typescript": "6.0.2"
+  }
+}
