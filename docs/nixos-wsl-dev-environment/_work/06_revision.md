@@ -1,6 +1,6 @@
 ---
 title: 퇴고 계획 및 반영 내역
-version: 0.5
+version: 0.6
 status: complete
 owner: agent
 updated: 2026-07-22
@@ -36,7 +36,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | LazyVim 소유권 | 언어별 plugin을 사용자 전역으로 켜면 프로젝트마다 다른 요구사항을 표현하기 어려움 | Home Manager는 최소 기반, 프로젝트는 `.lazy.lua`와 `.lazy-lock.json` 소유 | 높음 |
 | LazyVim 격리 | project lock만 분리하고 plugin checkout을 공유하면 리비전이 충돌할 수 있음 | 프로젝트 경로 hash로 plugin root까지 분리 | 높음 |
 | LazyVim 기본 lock | Nix Store 링크에서는 프로젝트 밖 기본 `lazy-lock.json`을 쓸 수 없음 | Neovim dotfiles만 out-of-store 링크로 연결 | 중간 |
-| 파일 내용 예제 | 코드만 보면 어느 파일에 넣을지 알 수 없음 | 3.3절 이후 모든 파일 내용 블록에 `파일:` 경로와 발췌 범위를 표기 | 높음 |
+| 파일 내용 예제 | 코드만 보면 어느 경로 또는 파일인지 알 수 없음 | 3.1절 이후 구조 블록에는 `경로:`, 파일 내용 블록에는 `파일:`과 발췌 범위를 표기 | 높음 |
 
 ## 3. 구조 점검
 
@@ -74,7 +74,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | WSL과 네이티브 복원 절차 분리 | 8장 | 하드웨어 모듈의 비이식성 명확화 |
 | 잠긴 Home Manager bootstrap 앱 | 3장과 5장 | 최초 실행도 `flake.lock`의 입력을 사용 |
 | build-before-switch와 계층별 롤백 | 9장 | 안전한 운영 루틴 제시 |
-| 코드 블록별 파일 경로와 발췌 범위 | 3.3절부터 7장 | 독자가 내용을 저장할 정확한 위치를 바로 식별하게 함 |
+| 코드 블록별 파일 경로와 발췌 범위 | 3.1절부터 7장 | 독자가 내용을 저장할 정확한 위치를 바로 식별하게 함 |
 
 ## 6. 교정 전 확인
 

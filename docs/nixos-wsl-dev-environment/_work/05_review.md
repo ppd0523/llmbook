@@ -1,6 +1,6 @@
 ---
 title: 기술 검증
-version: 0.5
+version: 0.6
 status: complete
 owner: agent
 updated: 2026-07-22
@@ -33,7 +33,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | LazyVim 신뢰 | `.envrc` 승인만으로 `.lazy.lua`까지 승인된다고 오해할 수 있음 | direnv 승인과 Neovim `vim.secure.read()` 신뢰 절차를 분리 | 반영 |
 | LSP 소유권 | Mason과 언어 lock이 서로 다른 LSP를 설치할 수 있음 | Mason을 끄고 uv·npm·rustup이 제공한 실행 파일만 사용 | 반영 |
 | 기본 LazyVim lock | Nix Store 링크는 `lazy-lock.json`을 쓸 수 없음 | 공통 Neovim dotfiles만 Git 작업 트리의 out-of-store 링크로 연결 | 반영 |
-| 코드 블록의 파일 문맥 | 3.3절 이후 일부 Nix·Lua·TOML 블록은 경로 없이 내용만 제시됨 | 모든 파일 내용 블록 앞에 기준 루트, 경로, 전체/일부 여부를 명시 | 반영 |
+| 코드 블록의 파일 문맥 | 3.1절 이후 일부 구조·Nix·Lua·TOML 블록은 경로 없이 내용만 제시됨 | 디렉터리 구조에는 기준 경로를, 파일 내용에는 경로와 전체/일부 여부를 명시 | 반영 |
 
 ## 3. 출처 확인
 
@@ -56,7 +56,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - Nix 파일 12개: 괄호·대괄호·중괄호 개수 정적 대조
 - `git diff --check`: 공백 오류 검사
 - MkDocs strict build: 내부 링크와 내비게이션을 포함한 사이트 빌드
-- 3.3절부터 9장까지: Nix·Lua·TOML·zsh·`.envrc` 내용 블록의 `파일:` 표기 전수 검사
+- 3.1절부터 9장까지: 디렉터리 구조의 `경로:`와 Nix·Lua·TOML·zsh·`.envrc` 내용 블록의 `파일:` 표기 전수 검사
 
 결과는 모두 통과했다. 세 프로젝트의 초기 `.lazy-lock.json`은 유효한 빈 JSON 객체이며,
 최초 `:Lazy sync`가 실제 플러그인 리비전을 기록하도록 문서화했다.

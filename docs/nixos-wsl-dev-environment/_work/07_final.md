@@ -1,6 +1,6 @@
 ---
 title: NixOS-WSL 개발 환경을 Git으로 복원하기
-version: 1.4
+version: 1.5
 status: final
 owner: agent
 updated: 2026-07-22
@@ -296,8 +296,13 @@ GitHub에 `flake.nix`, `flake.lock`, `hosts/`, `modules/`, `dotfiles/`가 보이
 
 ### 3.1 목표 구조
 
+이 장에서 `파일:`로 표시하는 상대 경로는 별도 설명이 없으면 구성 저장소 루트인
+`~/.config/nixos`를 기준으로 한다.
+
+경로: `~/.config/nixos/` (구성 저장소 루트의 디렉터리 구조)
+
 ```text
-.
+~/.config/nixos
 ├── flake.nix
 ├── flake.lock
 ├── hosts
@@ -335,6 +340,8 @@ GitHub에 `flake.nix`, `flake.lock`, `hosts/`, `modules/`, `dotfiles/`가 보이
 
 예제는 네 입력을 사용한다.
 
+파일: `~/.config/nixos/flake.nix` (`inputs` 부분)
+
 ```nix
 inputs = {
   nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -359,9 +366,6 @@ inputs = {
 `follows = "nixpkgs"`는 NixOS-WSL과 Home Manager가 최상위와 같은 Nixpkgs 입력을 보게 한다. NVM 저장소는 Flake가 아니므로 `flake = false`로 소스 트리만 잠근다.
 
 ### 3.3 공통 NixOS 생성 함수
-
-이 절부터 `파일:`로 표시하는 구성 경로는 별도 설명이 없으면 구성 저장소 루트인
-`~/.config/nixos`를 기준으로 한다.
 
 파일: `flake.nix` (`outputs`의 `let` 바인딩 일부)
 
