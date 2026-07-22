@@ -1,9 +1,9 @@
 ---
 title: NixOS-WSL 개발 환경 구축 초고
-version: 0.4
+version: 0.5
 status: draft
 owner: agent
-updated: 2026-07-21
+updated: 2026-07-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -79,7 +79,7 @@ $ home-manager switch --flake .#nixos
 
 ### 3.4 dotfiles
 
-dotfiles는 별도의 배포 도구가 아니라 프로그램 설정의 원본이다. 예제의 `dotfiles/nvim/init.lua`는 Home Manager의 `xdg.configFile."nvim".source`가 `~/.config/nvim`에 연결한다. 셸 설정처럼 Home Manager 옵션이 충분히 표현력 있는 경우에는 별도 `.zshrc`를 복사하지 않고 `programs.zsh` 모듈을 사용한다.
+dotfiles는 별도의 배포 도구가 아니라 프로그램 설정의 원본이다. 예제의 `dotfiles/nvim/init.lua`는 Home Manager가 읽어 `~/.config/nvim/init.lua`를 생성하고, `lua/`와 쓰기 가능한 lock 파일은 경로별로 연결한다. 셸 설정처럼 Home Manager 옵션이 충분히 표현력 있는 경우에는 별도 `.zshrc`를 복사하지 않고 `programs.zsh` 모듈을 사용한다.
 
 판단 기준은 다음과 같다.
 

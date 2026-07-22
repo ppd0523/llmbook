@@ -73,7 +73,7 @@ $ home-manager switch --flake .#nixos
 
 ## 1.5 dotfiles는 데이터다
 
-dotfiles는 프로그램이 읽는 설정 원본이다. Home Manager와 경쟁하는 별도 계층이 아니다. 예를 들어 Neovim의 `init.lua`는 저장소의 `dotfiles/nvim/init.lua`에 두고 Home Manager가 `~/.config/nvim/init.lua`로 연결한다.
+dotfiles는 프로그램이 읽는 설정 원본이다. Home Manager와 경쟁하는 별도 계층이 아니다. 예를 들어 Neovim의 `init.lua` 원본은 `dotfiles/nvim/init.lua`에 두고 Home Manager가 이를 읽어 `~/.config/nvim/init.lua`를 생성한다. Lua 설정 디렉터리와 쓰기 가능한 lock 파일은 충돌하지 않도록 별도 경로 단위로 연결한다.
 
 반면 zsh, Git, Starship처럼 Home Manager에 안정적인 전용 모듈이 있으면 Nix 옵션으로 표현한다. 기준은 다음과 같다.
 

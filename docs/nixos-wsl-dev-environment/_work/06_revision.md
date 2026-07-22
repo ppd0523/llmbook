@@ -1,6 +1,6 @@
 ---
 title: 퇴고 계획 및 반영 내역
-version: 0.7
+version: 0.8
 status: complete
 owner: agent
 updated: 2026-07-22
@@ -35,7 +35,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | 편집기 통합 | Mason과 프로젝트 관리자가 같은 LSP를 중복 설치할 수 있음 | Mason을 끄고 활성화된 프로젝트 PATH의 LSP만 사용 | 높음 |
 | LazyVim 소유권 | 언어별 plugin을 사용자 전역으로 켜면 프로젝트마다 다른 요구사항을 표현하기 어려움 | Home Manager는 최소 기반, 프로젝트는 `.lazy.lua`와 `.lazy-lock.json` 소유 | 높음 |
 | LazyVim 격리 | project lock만 분리하고 plugin checkout을 공유하면 리비전이 충돌할 수 있음 | 프로젝트 경로 hash로 plugin root까지 분리 | 높음 |
-| LazyVim 기본 lock | Nix Store 링크에서는 프로젝트 밖 기본 `lazy-lock.json`을 쓸 수 없음 | Neovim dotfiles만 out-of-store 링크로 연결 | 중간 |
+| LazyVim 경로 소유권 | 전체 `nvim` 링크와 Home Manager 생성 `init.lua`가 충돌하고 Nix Store의 기본 lock에는 쓸 수 없음 | `init.lua`는 Home Manager가 생성하고 `lua/`, `stylua.toml`, 기본 lock만 개별 out-of-store 링크로 연결 | 높음 |
 | 파일 내용 예제 | 코드만 보면 어느 경로 또는 파일인지 알 수 없음 | 3.1절 이후 구조 블록에는 `경로:`, 파일 내용 블록에는 `파일:`과 발췌 범위를 표기 | 높음 |
 | 5.2장 프로그램 모듈 | 축약 코드와 상세 asset의 범위가 달라 설명을 추적하기 어려움 | 실제 `programs.nix` 전체를 기준으로 코드와 프로그램별 해설을 확장 | 높음 |
 
@@ -77,6 +77,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | build-before-switch와 계층별 롤백 | 9장 | 안전한 운영 루틴 제시 |
 | 코드 블록별 파일 경로와 발췌 범위 | 3.1절부터 7장 | 독자가 내용을 저장할 정확한 위치를 바로 식별하게 함 |
 | `programs.nix` 전체 코드와 설정·상태 경계 해설 | 5.2장 | companion 예제를 단일 기준 구현으로 유지하고 설정 효과를 추적 가능하게 함 |
+| Neovim `init.lua`와 dotfiles 경로별 소유권 분리 | 1장·5장·7장·예제 asset | 부모 디렉터리 링크와 Home Manager 생성 파일의 충돌을 제거하고 기본 lock만 쓰기 가능하게 유지 |
 
 ## 6. 교정 전 확인
 

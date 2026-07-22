@@ -1,6 +1,6 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 1.8
+version: 1.9
 status: complete
 owner: agent
 updated: 2026-07-22
@@ -35,6 +35,8 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 ## 3. 예제 구성 검수
 
 - [x] `modules/home/lazyvim.nix`가 Neovim, lazy.nvim, 공통 요구사항만 제공한다.
+- [x] `init.lua` 생성과 `lua/`·`stylua.toml`·기본 lock 링크의 소유권이 겹치지 않는다.
+- [x] 수정된 standalone Home Manager 구성이 사용자 NixOS-WSL에서 정상 평가된다.
 - [x] 공통 Neovim 설정에서 Mason을 비활성화한다.
 - [x] 프로젝트 `.lazy.lua`가 Python, TypeScript, Rust extra를 각각 선택한다.
 - [x] 세 프로젝트 모두 `.lazy-lock.json`을 추적 대상으로 제공한다.
@@ -50,7 +52,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 |---|---|
 | Markdown | 20개 UTF-8 읽기·코드 펜스·상대 링크 통과 |
 | Chapter | 9개 H1 구조 통과 |
-| JSON | 5개 파싱 통과 |
+| JSON | 6개 파싱 통과 |
 | TOML | 4개 파싱 통과 |
 | Nix | 12개 괄호 수 정적 검사 통과 |
 | Git diff | `git diff --check` 통과 |
@@ -58,15 +60,17 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 
 ## 5. 실행 환경 한계
 
-작성 호스트에는 Nix와 Neovim이 없어 Flake 평가, NixOS·Home Manager build, Lua runtime
-검증은 수행하지 않았다. 이 범위와 실제 환경에서 실행할 명령은 `_work/05_review.md`와
-본문의 각 실습에 남겼다. 상태를 바꾸는 전환보다 `build`를 먼저 수행하며, 프로젝트
-플러그인은 최초 `:Lazy sync` 후 생성된 `.lazy-lock.json` diff를 검토한다.
+작성 호스트에는 Nix와 Neovim이 없지만 수정한 standalone Home Manager 구성은 사용자
+NixOS-WSL에서 정상 평가되었다. NixOS 전체 build, Home Manager switch, Lua runtime
+검증 범위와 실제 환경에서 실행할 명령은 `_work/05_review.md`와 본문의 각 실습에
+남겼다. 상태를 바꾸는 전환보다 `build`를 먼저 수행하며, 프로젝트 플러그인은 최초
+`:Lazy sync` 후 생성된 `.lazy-lock.json` diff를 검토한다.
 
 ## 6. 최종 결론
 
 - 배포 대상은 `index.md`, 9개 챕터, 두 예제 asset 디렉터리다.
 - Home Manager는 최소 LazyVim 기반을, 각 프로젝트는 `.lazy.lua`와
   `.lazy-lock.json`을 소유하는 최종 구조로 정리했다.
+- Neovim 설정의 경로별 소유권 분리는 사용자 NixOS-WSL의 Home Manager 평가를 통과했다.
 - Markdown 사이트는 MkDocs strict build 기준으로 출판 가능하다.
 - NixOS와 Neovim 실행 검증은 실제 대상 환경에서 완료해야 한다.

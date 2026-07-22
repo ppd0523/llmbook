@@ -229,11 +229,14 @@ programs.neovim = {
     tree-sitter
   ];
   plugins = [ pkgs.vimPlugins.lazy-nvim ];
+  initLua = builtins.readFile ../../dotfiles/nvim/init.lua;
 };
 ```
 
 Git, ripgrep, C 컴파일러는 앞의 Home Manager 패키지 목록에 이미 있다. LazyVim 설치
-문서는 현재 Neovim 0.11.2 이상을 요구하므로 적용 뒤 버전을 확인한다.
+문서는 현재 Neovim 0.11.2 이상을 요구하므로 적용 뒤 버전을 확인한다. `initLua`는
+Git에 있는 `init.lua`를 Home Manager가 생성하는 `~/.config/nvim/init.lua`에 포함한다.
+따라서 `~/.config/nvim` 부모 디렉터리 전체를 별도 링크로 선언해서는 안 된다.
 
 ```console
 $ home-manager build --flake ~/.config/nixos#nixos
@@ -304,11 +307,21 @@ $ nvim .
 
 ### 기본 lock과 프로젝트 lock
 
-LazyVim은 플러그인 리비전을 `~/.config/nvim/lazy-lock.json`에 쓴다. Nix Store의
-디렉터리는 읽기 전용이므로 예제 Home Manager는 `~/.config/nvim`을 Git 작업 트리인
-`~/.config/nixos/dotfiles/nvim`으로 연결하는 out-of-store 링크를 사용한다. 이 예외로
-프로젝트 밖에서 사용하는 기본 lock을 구성 저장소에 커밋할 수 있다. clone 위치를
-바꾸면 링크 대상도 바꿔야 한다.
+LazyVim은 플러그인 리비전을 `~/.config/nvim/lazy-lock.json`에 쓴다. 예제는
+`~/.config/nvim` 전체가 아니라 이 lock 파일만 Git 작업 트리의
+`dotfiles/nvim/lazy-lock.json`으로 연결한다. `programs.neovim`이 생성하는 `init.lua`와
+부모 디렉터리 링크가 충돌하지 않으면서도, 프로젝트 밖에서 사용하는 기본 lock은
+쓰기 가능하고 Git으로 추적된다.
+
+같은 모듈은 `lua/`와 `stylua.toml`도 개별 out-of-store 링크로 연결한다. 따라서
+`~/.config/nvim`은 일반 디렉터리이고 그 안의 각 경로마다 소유자가 명확하다.
+
+| Neovim 경로 | 소유자 | 변경 적용 방식 |
+|---|---|---|
+| `~/.config/nvim/init.lua` | `programs.neovim` | 원본 `dotfiles/nvim/init.lua` 변경 후 Home Manager 재전환 |
+| `~/.config/nvim/lua` | 구성 저장소의 `dotfiles/nvim/lua` | out-of-store 링크를 통해 작업 트리에 바로 반영 |
+| `~/.config/nvim/stylua.toml` | 구성 저장소 | out-of-store 링크를 통해 작업 트리에 바로 반영 |
+| `~/.config/nvim/lazy-lock.json` | 구성 저장소의 기본 plugin lock | `:Lazy sync` 후 구성 저장소에 커밋 |
 
 `.lazy.lua`가 있는 프로젝트에서는 기본 lock 대신 프로젝트 루트의
 `.lazy-lock.json`을 사용한다. 예제의 초기 파일은 빈 JSON 객체이며 최초 동기화가 실제
@@ -592,7 +605,8 @@ $ git add flake.nix flake.lock .envrc .lazy.lua .lazy-lock.json
 | 새 Nix 파일을 찾지 못함 | Git Flake에서 파일이 아직 추적되지 않음 | `git status --short` 확인 후 필요한 파일 `git add` |
 | 수정 뒤에도 이전 환경이 보임 | 자동 재평가가 끝나지 않았거나 캐시된 환경 사용 | `direnv reload`; 필요하면 셸을 나갔다 다시 진입 |
 | WSL의 첫 평가가 매우 느림 | 입력과 패키지를 처음 다운로드·빌드함 | 완료를 기다린 뒤 재사용; 프로젝트는 Linux 파일 시스템 아래 배치 |
-| LazyVim이 `lazy-lock.json`을 쓰지 못함 | `~/.config/nvim`이 Nix Store의 읽기 전용 링크 | 예제의 `mkOutOfStoreSymlink` 설정 적용 후 Home Manager 전환 |
+| Home Manager가 `.config/nvim/init.lua`를 `$HOME` 밖에 설치한다고 실패 | `programs.neovim`의 생성 파일과 `xdg.configFile."nvim"` 부모 링크가 충돌 | 부모 링크를 제거하고 예제처럼 `lua/`, `stylua.toml`, `lazy-lock.json`만 개별 연결 |
+| LazyVim이 기본 `lazy-lock.json`을 쓰지 못함 | 파일이 Nix Store 링크이거나 개별 out-of-store 링크가 누락됨 | `nvimSource`와 `nvim/lazy-lock.json` 선언을 확인한 뒤 Home Manager 전환 |
 | `.lazy.lua` 플러그인이 보이지 않음 | Neovim 신뢰 요청을 거부했거나 파일 변경 뒤 재승인하지 않음 | 파일을 버퍼에서 검토하고 `:trust`; Neovim 다시 실행 |
 | `.lazy-lock.json`이 `{}`로 남음 | 아직 프로젝트에서 plugin sync를 하지 않음 | 프로젝트에서 `nvim .`, `:Lazy sync` 후 diff 확인 |
 | 프로젝트마다 plugin 다운로드 반복 | 격리를 위해 plugin cache를 프로젝트별로 분리함 | 정상 동작; lock은 Git에, cache는 `$XDG_DATA_HOME`에 유지 |

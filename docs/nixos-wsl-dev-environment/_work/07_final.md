@@ -1,6 +1,6 @@
 ---
 title: NixOS-WSL 개발 환경을 Git으로 복원하기
-version: 1.6
+version: 1.7
 status: final
 owner: agent
 updated: 2026-07-22
@@ -87,7 +87,7 @@ $ home-manager switch --flake .#nixos
 
 ### 1.5 dotfiles는 데이터다
 
-dotfiles는 프로그램이 읽는 설정 원본이다. Home Manager와 경쟁하는 별도 계층이 아니다. 예를 들어 Neovim의 `init.lua`는 저장소의 `dotfiles/nvim/init.lua`에 두고 Home Manager가 `~/.config/nvim/init.lua`로 연결한다.
+dotfiles는 프로그램이 읽는 설정 원본이다. Home Manager와 경쟁하는 별도 계층이 아니다. 예를 들어 Neovim의 `init.lua` 원본은 `dotfiles/nvim/init.lua`에 두고 Home Manager가 이를 읽어 `~/.config/nvim/init.lua`를 생성한다. Lua 설정 디렉터리와 쓰기 가능한 lock 파일은 충돌하지 않도록 별도 경로 단위로 연결한다.
 
 반면 zsh, Git, Starship처럼 Home Manager에 안정적인 전용 모듈이 있으면 Nix 옵션으로 표현한다. 기준은 다음과 같다.
 
@@ -818,24 +818,40 @@ Neovim과 LazyVim은 `lazyvim.nix`로 분리한다. 이 모듈은 Neovim, Nixpkg
 
 ### 5.3 dotfiles 배치
 
-Neovim 설정은 Lua 원본을 유지한다. 프로젝트 밖의 LazyVim 기본 구성은 plugin
-리비전을 `lazy-lock.json`에 쓰므로 설정 디렉터리를 Git 작업 트리의 쓰기 가능한
-링크로 둔다.
+Neovim 설정은 Git 저장소의 Lua 원본을 유지하되 `~/.config/nvim` 전체를 링크하지
+않는다. `programs.neovim`이 생성하는 `init.lua`와 비재귀 부모 디렉터리 링크를 함께
+선언하면 `Error installing file '.config/nvim/init.lua' outside $HOME` 오류가 발생한다.
 
-파일: `modules/home/lazyvim.nix` (Neovim dotfiles 링크 부분)
+파일: `modules/home/lazyvim.nix` (Neovim 설정 배치 부분)
 
 ```nix
-xdg.enable = true;
-xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink
-  "${config.home.homeDirectory}/.config/nixos/dotfiles/nvim";
+let
+  nvimSource = "${config.home.homeDirectory}/.config/nixos/dotfiles/nvim";
+in
+{
+  programs.neovim = {
+    enable = true;
+    plugins = [ pkgs.vimPlugins.lazy-nvim ];
+    initLua = builtins.readFile ../../dotfiles/nvim/init.lua;
+  };
+
+  xdg.configFile = {
+    "nvim/lua".source =
+      config.lib.file.mkOutOfStoreSymlink "${nvimSource}/lua";
+    "nvim/stylua.toml".source =
+      config.lib.file.mkOutOfStoreSymlink "${nvimSource}/stylua.toml";
+    "nvim/lazy-lock.json".source =
+      config.lib.file.mkOutOfStoreSymlink "${nvimSource}/lazy-lock.json";
+  };
+}
 ```
 
-이 선언은 저장소의 [Neovim 설정](../assets/example-config/dotfiles/nvim/init.lua)을
-`~/.config/nvim`에 연결한다. clone 위치를 바꾸면 링크 대상도 바꾼다. Neovim 설정과
-기본 `lazy-lock.json`은 링크 대상인 Git 작업 트리에서 검토하고 커밋한다. 프로젝트
-안에서는 해당 저장소의 `.lazy-lock.json`을 사용한다.
-
-큰 Neovim 구성을 여러 파일로 나눠도 `dotfiles/nvim/` 디렉터리 전체를 그대로 관리할 수 있다.
+Home Manager는 `init.lua`를 생성하고 `lua/`, `stylua.toml`, 기본 `lazy-lock.json`만
+Git 작업 트리로 연결한다. 따라서 `~/.config/nvim` 부모는 일반 디렉터리로 남고 각
+경로의 소유자가 겹치지 않는다. `init.lua` 원본 변경에는 Home Manager 재전환이
+필요하지만 out-of-store 링크의 Lua 파일 변경은 작업 트리에 바로 반영된다. 기본 lock은
+쓰기 가능하며 구성 저장소에 커밋한다. 프로젝트 안에서는 해당 저장소의
+`.lazy-lock.json`을 사용한다. clone 위치를 바꾸면 `nvimSource`도 바꾼다.
 
 ### 5.4 NVM은 일반 패키지와 다르다
 
@@ -951,6 +967,8 @@ $ starship --version
 | `nvm`이 명령이 아님 | zsh 초기화가 적용되지 않음 | `echo $SHELL`, 생성된 `.zshrc`, 새 로그인 세션 확인 |
 | NVM이 Node를 설치하지 못함 | `$NVM_DIR` 전체가 읽기 전용 링크 | 개별 스크립트만 링크하고 부모 디렉터리를 쓰기 가능하게 유지 |
 | `home-manager` 명령이 없음 | 최초 bootstrap 전 | `nix run ...release-26.05 -- switch ...` 실행 |
+| `init.lua`를 `$HOME` 밖에 설치한다는 Home Manager 오류 | `programs.neovim`의 생성 파일과 `xdg.configFile."nvim"` 부모 링크 충돌 | 부모 링크를 제거하고 `lua/`, `stylua.toml`, `lazy-lock.json`만 개별 연결 |
+| LazyVim 기본 lock을 쓸 수 없음 | 기본 lock의 개별 out-of-store 링크 누락 | `nvimSource`와 `nvim/lazy-lock.json` 선언 확인 |
 
 ### 요약
 
