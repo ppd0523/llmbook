@@ -54,6 +54,8 @@ binary wheel, path가 플랫폼에 종속될 수 있으므로 WSL project 안에
 
 Project root에 `pyproject.toml`을 만든다. 이 예제는 Ruff policy만 담는다.
 
+파일: `<project-root>/pyproject.toml`
+
 ```toml
 [tool.ruff]
 line-length = 100
@@ -63,6 +65,8 @@ select = ["E", "F", "I"]
 ```
 
 `main.py`를 만든다.
+
+파일: `<project-root>/main.py`
 
 ```python
 def total(values: list[int]) -> int:
@@ -105,6 +109,8 @@ Interpreter를 바꾼 직후 기존 LSP client가 이전 환경을 계속 사용
 3. `<leader>cr`로 symbol을 rename한다.
 4. 사용하지 않는 import를 추가해 Ruff diagnostic을 확인한다.
 5. 다음 type error를 만들어 Pyright diagnostic을 확인한다.
+
+파일(일부): `<project-root>/main.py`
 
 ```python
 answer = total([10, "20", 12])

@@ -53,6 +53,7 @@ topic: LazyVim 다중 언어 개발 환경의 정확성 검토
 - Lua 정적 검증: `luaparser 4.1.0`으로 예제 설정의 Lua 파일 6개를 모두 parse했다.
 - 출판 검증: `mkdocs-material 9.7.6` 환경에서 `mkdocs build --strict`가 성공했다.
 - 문서 정적 검증: 최종 산출물의 상대 Markdown 링크, 파일별 단일 H1, 미완성 표식을 검사했다.
+- 파일 경로 검증: 최종 챕터의 파일-content 코드 블록 13개에 `파일:` 또는 `파일(일부):` 경로가 바로 앞에 있는지 검사했다. 1장, 2장, 7장의 블록은 명령·출력·흐름도이므로 대상이 없었다.
 - 제한: 현재 작성 host에는 Neovim/Linux runtime이 없어 plugin download, LSP attach, breakpoint session은 실행하지 못했다.
 - 보완: 최종 문서에 language별 smoke test와 기대 상태를 넣고, 실행하지 못한 결과를 성공했다고 단정하지 않는다.
 

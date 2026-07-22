@@ -51,6 +51,8 @@ TypeScript 사용 여부, module format은 자신의 project와 맞게 선택한
 
 Prettier 설정 `.prettierrc.json`도 만든다.
 
+파일: `<project-root>/.prettierrc.json`
+
 ```json
 {
   "semi": true,
@@ -64,6 +66,8 @@ Prettier 설정 `.prettierrc.json`도 만든다.
 ## 4.3 TypeScript smoke-test file
 
 `src/index.ts`를 만든다.
+
+파일: `<project-root>/src/index.ts`
 
 ```typescript
 function add(left: number, right: number): number {
@@ -104,6 +108,8 @@ Filetype은 `typescript`여야 하고 active client에 vtsls가 있어야 한다
 
 의도적으로 type error를 만든다.
 
+파일(일부): `<project-root>/src/index.ts`
+
 ```typescript
 const answer: number = "forty-two";
 ```
@@ -131,6 +137,8 @@ ESLint client가 붙지 않으면 다음 순서로 본다.
 ## 4.6 Prettier formatting 확인
 
 Source를 일부러 흐트러뜨린다.
+
+파일(일부): `<project-root>/src/index.ts`
 
 ```typescript
 const values=[1,2,3]
@@ -174,6 +182,8 @@ runtime이 없어 실패한다.
 
 Project가 고정된 debug command를 사용한다면 `.vscode/launch.json`을 commit할 수 있다.
 DAP core는 이 파일을 읽는다.
+
+파일: `<project-root>/.vscode/launch.json`
 
 ```json
 {

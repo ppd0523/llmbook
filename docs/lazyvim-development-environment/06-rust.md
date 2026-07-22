@@ -65,6 +65,8 @@ $ nvim .
 
 `src/main.rs`를 다음처럼 수정한다.
 
+파일: `<project-root>/src/main.rs`
+
 ```rust
 fn add(left: i32, right: i32) -> i32 {
     left + right

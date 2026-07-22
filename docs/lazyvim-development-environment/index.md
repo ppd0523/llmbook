@@ -1,6 +1,6 @@
 ---
 title: LazyVim으로 다중 언어 개발 환경 구축하기
-version: 1.0
+version: 1.1
 updated: 2026-07-22
 ---
 
@@ -50,6 +50,13 @@ LazyVim은 LuaJIT으로 빌드한 Neovim 0.11.2 이상과 Git 2.19 이상을 요
 Mason은 편집기에서 사용하는 외부 도구를 간편하게 설치한다. 반면 application runtime,
 library, project lockfile과 `package.json`, `pyproject.toml`, `Cargo.toml`은 각 프로젝트가
 소유한다. 이 경계를 유지해야 편집기 설정이 프로젝트 의존성 관리자를 대신하지 않는다.
+
+## 코드 블록의 파일 경로 표기
+
+코드 블록이 파일 내용을 나타낼 때는 블록 바로 위에 `파일:`과 경로를 표시한다. 기존
+파일에서 바꿀 부분만 보여 주는 블록은 `파일(일부):`로 표시한다. `<project-root>`는 해당
+장에서 만든 smoke-test project의 최상위 directory를 뜻한다. `console`과 `vim` 블록은
+파일 내용이 아니라 shell 또는 Neovim command line에서 실행할 명령이다.
 
 ## 함께 제공하는 예제
 

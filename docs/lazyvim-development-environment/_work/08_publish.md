@@ -1,6 +1,6 @@
 ---
 title: LazyVim 개발 환경 가이드 출판 검수
-version: 1.0
+version: 1.1
 status: published
 owner: agent
 updated: 2026-07-22
@@ -70,6 +70,7 @@ topic: LazyVim 다중 언어 개발 환경 가이드의 MkDocs 출판 검수
 | 상대 링크 | 통과 | 존재하지 않는 Markdown 대상 없음 |
 | H1 개수 | 통과 | 최종 Markdown 파일마다 한 개 |
 | 미완성 표식 | 통과 | 최종 본문과 asset에서 발견되지 않음 |
+| 파일-content 코드 블록 경로 | 통과 | 대상 13개 모두 `파일:` 또는 `파일(일부):` 표시 |
 
 실제 Linux/WSL의 Neovim에서 plugin을 내려받고 LSP를 attach하거나 breakpoint session을 시작하는 검증은 작성 host 제약으로 실행하지 않았다. 이 항목은 각 언어 장의 smoke test와 문제 해결 절차로 독자가 재현할 수 있게 구성했다.
 
