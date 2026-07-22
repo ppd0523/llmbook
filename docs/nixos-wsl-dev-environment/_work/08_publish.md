@@ -1,9 +1,9 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 1.5
+version: 1.6
 status: complete
 owner: agent
-updated: 2026-07-21
+updated: 2026-07-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -28,6 +28,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - [x] 최종 사용자 문서에 미완료 작업 표지가 없다.
 - [x] 시스템, 사용자, 프로젝트 설정의 소유권 표와 예제가 일치한다.
 - [x] `.envrc`와 `.lazy.lua`의 별도 신뢰 절차가 복원·운영 장에도 연결된다.
+- [x] 3.3절 이후 파일 내용 코드 블록마다 기준 루트, 경로, 전체/일부 여부가 표시된다.
 - [x] MkDocs strict build가 통과한다.
 
 ## 3. 예제 구성 검수

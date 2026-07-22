@@ -72,6 +72,11 @@ inputs = {
 
 ## 3.3 공통 NixOS 생성 함수
 
+이 절부터 `파일:`로 표시하는 구성 경로는 별도 설명이 없으면 구성 저장소 루트인
+`~/.config/nixos`를 기준으로 한다.
+
+파일: `flake.nix` (`outputs`의 `let` 바인딩 일부)
+
 ```nix
 let
   system = "x86_64-linux";
@@ -96,6 +101,8 @@ in
 
 ## 3.4 시스템 출력
 
+파일: `flake.nix` (`nixosConfigurations` 부분)
+
 ```nix
 nixosConfigurations = {
   wsl = mkNixos [
@@ -111,6 +118,8 @@ nixosConfigurations = {
 WSL 출력에는 공식 `nixosModules.default`와 WSL 호스트 모듈을 넣는다. 네이티브 출력은 실제 `hardware-configuration.nix`가 있을 때만 노출한다. 템플릿을 실수로 실제 하드웨어에 적용하지 않기 위한 안전장치다.
 
 ## 3.5 독립 실행형 Home Manager 출력
+
+파일: `flake.nix` (`homeConfigurations` 부분)
 
 ```nix
 homeConfigurations.${username} =
@@ -128,6 +137,8 @@ $ home-manager switch --flake .#nixos
 ```
 
 최초 bootstrap도 잠긴 Home Manager 입력을 사용하도록 같은 Flake가 `apps.x86_64-linux.home-manager`를 노출한다.
+
+파일: `flake.nix` (`apps.${system}.home-manager` 부분)
 
 ```nix
 apps.${system}.home-manager = {

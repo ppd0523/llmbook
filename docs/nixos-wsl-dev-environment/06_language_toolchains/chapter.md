@@ -70,6 +70,8 @@ pnpm이나 Yarn을 사용한다면 해당 패키지 관리자의 lockfile과 Cor
 
 rustup은 `rustc`와 Cargo 앞의 프록시로 동작하며 디렉터리의 `rust-toolchain.toml`을 보고 툴체인을 선택한다.
 
+파일: 프로젝트 루트의 `rust-toolchain.toml` (전체 예시)
+
 ```toml
 [toolchain]
 channel = "1.88.0"
