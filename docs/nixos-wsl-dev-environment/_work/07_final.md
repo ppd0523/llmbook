@@ -1,6 +1,6 @@
 ---
 title: NixOS-WSL 개발 환경을 Git으로 복원하기
-version: 1.5
+version: 1.6
 status: final
 owner: agent
 updated: 2026-07-22
@@ -713,37 +713,104 @@ $ test -e /lib64/ld-linux-x86-64.so.2 && echo nix-ld:ok
 - fzf
 - Autojump
 
-대표적인 형태는 다음과 같다.
+이 파일은 짧은 발췌가 아니라 다음 전체 내용으로 구성한다. 따라서 본문의 설명과
+복제해 사용하는 예제가 정확히 같은 설정을 가리킨다.
 
-파일: `modules/home/programs.nix` (프로그램 선언 일부)
+파일: `modules/home/programs.nix` (전체)
 
 ```nix
-programs = {
-  git = {
-    enable = true;
-    settings = {
-      init.defaultBranch = "main";
-      core.editor = "nvim";
-      pull.rebase = false;
+{ ... }:
+{
+  programs = {
+    git = {
+      enable = true;
+      settings = {
+        init.defaultBranch = "main";
+        core.editor = "nvim";
+        pull.rebase = false;
+      };
+    };
+
+    bat = {
+      enable = true;
+      config = {
+        style = "plain";
+        pager = "less -FR";
+      };
+    };
+
+    zsh = {
+      enable = true;
+      enableCompletion = true;
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
+
+      history = {
+        size = 100000;
+        save = 100000;
+        share = true;
+      };
+
+      shellAliases = {
+        cat = "bat";
+        grep = "rg";
+        ll = "ls -alh";
+      };
+    };
+
+    starship = {
+      enable = true;
+      enableZshIntegration = true;
+      settings.add_newline = false;
+    };
+
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
+    autojump = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
+    # Load each project's Nix development shell when entering its directory.
+    direnv = {
+      enable = true;
+      enableZshIntegration = true;
+      nix-direnv.enable = true;
     };
   };
-
-  zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-  };
-
-  starship.enable = true;
-  fzf.enable = true;
-  autojump.enable = true;
-};
+}
 ```
 
-Home Manager 모듈은 패키지 설치와 셸 통합을 함께 처리한다. 예를 들어 `enableZshIntegration = true`는 필요한 초기화 코드를 생성하므로 `.zshrc`에 같은 코드를 다시 쓰지 않는다.
+각 선언은 단순히 실행 파일만 설치하는 것이 아니라 사용자 설정과 셸 연결까지 함께
+관리한다.
 
-Nixpkgs의 bat 실행 파일 이름은 Ubuntu의 `batcat`이 아니라 `bat`다. 예제는 익숙한 `cat` 사용을 위해 `cat = "bat"` 별칭을 추가한다.
+| 선언 | Home Manager가 관리하는 내용 | 사용 시 확인할 점 |
+|---|---|---|
+| `git` | Git 설치, 기본 브랜치 `main`, Neovim 편집기, merge 방식의 pull 정책 | 개인 이름·이메일과 credential은 머신별 또는 별도 비밀 설정으로 둔다. |
+| `bat` | `bat` 설치, 장식 없는 출력, 짧은 출력에서는 종료되는 `less -FR` pager | Nixpkgs의 명령 이름은 Ubuntu의 `batcat`이 아니라 `bat`다. |
+| `zsh` | completion, 자동 제안, syntax highlighting, 공유 history, 공통 alias | history 파일은 생성 상태이므로 구성 저장소에 커밋하지 않는다. |
+| `starship` | 프롬프트 설치와 zsh 초기화, 프롬프트 앞 빈 줄 제거 | 별도 `eval` 명령을 `.zshrc`에 중복해서 넣지 않는다. |
+| `fzf` | fuzzy finder 설치와 zsh 키 바인딩·completion 연결 | Home Manager가 생성한 초기화 코드를 사용한다. |
+| `autojump` | 방문 디렉터리 기반 이동 도구와 zsh 연결 | 방문 기록 데이터는 머신별 생성 상태다. |
+| `direnv` | direnv 설치, zsh hook, nix-direnv 구현 연결 | `.envrc`는 저장소별로 내용을 검토한 뒤 `direnv allow`한다. |
+
+`enableZshIntegration = true`는 해당 도구의 zsh 초기화 코드를 Home Manager가 생성하게
+한다. 따라서 Starship, fzf, Autojump, direnv를 위한 `eval`이나 `source` 명령을 수동
+`.zshrc`에 다시 작성하지 않는다. 수동 설정과 생성 설정을 함께 두면 hook이 중복
+등록되거나 실행 순서가 달라질 수 있다.
+
+zsh의 `history.size`는 현재 셸이 메모리에 보관하는 항목 수이고 `history.save`는 history
+파일에 저장할 항목 수다. `share = true`는 여러 zsh 세션의 history를 공유한다. 반면
+`shellAliases`는 선언적 설정이므로 Git으로 복원된다. 예제는 Ubuntu에서 익숙한 사용
+흐름을 유지하려고 `cat`을 `bat`, `grep`을 `rg`에 연결한다.
+
+direnv는 디렉터리 진입 시 프로젝트의 `.envrc`를 실행하고, nix-direnv는 그 안의
+`use flake`가 만든 개발 환경을 캐시한다. 이 파일은 통합 기능을 켜는 역할만 하며,
+프로젝트별 `.envrc`와 `flake.nix`는 각 프로젝트 저장소가 소유한다. 승인 절차와
+`devShell` 사용법은 7장의 프로젝트 개발 셸 설명에서 다룬다.
 
 Neovim과 LazyVim은 `lazyvim.nix`로 분리한다. 이 모듈은 Neovim, Nixpkgs가
 고정한 lazy.nvim, 공통 요구사항과 dotfiles 링크만 제공한다. 언어별 extra는 각

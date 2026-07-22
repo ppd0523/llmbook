@@ -1,6 +1,6 @@
 ---
 title: 기술 검증
-version: 0.6
+version: 0.7
 status: complete
 owner: agent
 updated: 2026-07-22
@@ -34,6 +34,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 | LSP 소유권 | Mason과 언어 lock이 서로 다른 LSP를 설치할 수 있음 | Mason을 끄고 uv·npm·rustup이 제공한 실행 파일만 사용 | 반영 |
 | 기본 LazyVim lock | Nix Store 링크는 `lazy-lock.json`을 쓸 수 없음 | 공통 Neovim dotfiles만 Git 작업 트리의 out-of-store 링크로 연결 | 반영 |
 | 코드 블록의 파일 문맥 | 3.1절 이후 일부 구조·Nix·Lua·TOML 블록은 경로 없이 내용만 제시됨 | 디렉터리 구조에는 기준 경로를, 파일 내용에는 경로와 전체/일부 여부를 명시 | 반영 |
+| 5.2장과 companion 예제 | 축약한 `programs.nix` 블록에서 bat·history·alias·zsh 통합·direnv가 보이지 않음 | 실제 asset 전체를 본문에 그대로 싣고 프로그램별 효과와 생성 상태를 설명 | 반영 |
 
 ## 3. 출처 확인
 
@@ -57,6 +58,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - `git diff --check`: 공백 오류 검사
 - MkDocs strict build: 내부 링크와 내비게이션을 포함한 사이트 빌드
 - 3.1절부터 9장까지: 디렉터리 구조의 `경로:`와 Nix·Lua·TOML·zsh·`.envrc` 내용 블록의 `파일:` 표기 전수 검사
+- 5.2장의 Nix 코드 블록과 `assets/example-config/modules/home/programs.nix`의 텍스트 일치 검사
 
 결과는 모두 통과했다. 세 프로젝트의 초기 `.lazy-lock.json`은 유효한 빈 JSON 객체이며,
 최초 `:Lazy sync`가 실제 플러그인 리비전을 기록하도록 문서화했다.
