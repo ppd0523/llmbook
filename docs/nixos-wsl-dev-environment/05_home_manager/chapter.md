@@ -362,6 +362,7 @@ $ direnv version
 
 ## 추가 읽을거리
 
+- [NixOS에서 standalone Home Manager 운영하기](../../home-manager-guide/index.md)
 - [Home Manager standalone 설치](https://nix-community.github.io/home-manager/installation/standalone.html)
 - [Home Manager 옵션](https://nix-community.github.io/home-manager/options.html)
 - [NVM 공식 저장소](https://github.com/nvm-sh/nvm)
