@@ -10,6 +10,8 @@
 
 1장의 input은 release branch를 가리킨다.
 
+파일: `<project-root>/flake.nix` (`inputs.nixpkgs.url` 부분)
+
 ```nix
 inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 ```
@@ -28,6 +30,8 @@ inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 ## 2.2 잠금 그래프 읽기
 
 `flake.lock`은 JSON 문서다. 실제 값은 생성 시점마다 달라지지만 구조는 다음과 같다.
+
+파일: `<project-root>/flake.lock` (생성되는 잠금 파일의 구조 예시)
 
 ```json
 {

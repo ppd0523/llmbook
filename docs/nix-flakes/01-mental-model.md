@@ -38,6 +38,8 @@ github:NixOS/nixpkgs/...      packages.<system>.default
 
 다음 `flake.nix`는 Nixpkgs의 GNU Hello package를 기본 package로 내보낸다.
 
+파일: `<project-root>/flake.nix` (전체)
+
 ```nix
 {
   description = "A first flake";
@@ -68,6 +70,8 @@ github:NixOS/nixpkgs/...      packages.<system>.default
 ## 1.3 `self`와 나머지 입력
 
 `outputs` 함수에 전달되는 속성 집합에는 `self`와 선언된 input이 들어온다.
+
+파일: `<project-root>/flake.nix` (`outputs` 함수 선언 부분)
 
 ```nix
 outputs = { self, nixpkgs }: {

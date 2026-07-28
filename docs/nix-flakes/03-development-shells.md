@@ -54,6 +54,8 @@ package를 Flake output으로 선언한다.
 
 1장의 `flake.nix`를 다음처럼 확장한다.
 
+파일: `<project-root>/flake.nix` (전체)
+
 ```nix
 {
   description = "A development shell with cowsay";
@@ -145,6 +147,8 @@ $ nix develop -c sh -c 'command -v cowsay && cowsay "ready"'
 
 셸 진입 시 안내를 표시하려면 `shellHook`을 추가할 수 있다.
 
+파일: `<project-root>/flake.nix` (`devShells.${system}.default` 부분)
+
 ```nix
 devShells.${system}.default = pkgs.mkShellNoCC {
   packages = [ pkgs.cowsay ];
@@ -167,6 +171,8 @@ devShells.${system}.default = pkgs.mkShellNoCC {
 ## 3.7 이름 있는 개발 셸
 
 프로젝트에 문서용과 개발용 환경이 따로 필요하면 이름을 나눈다.
+
+파일: `<project-root>/flake.nix` (`devShells.${system}` 부분)
 
 ```nix
 devShells.${system} = {
@@ -193,6 +199,8 @@ $ nix develop .#docs
 ## 3.8 package 추가 실습
 
 `cowsay`와 함께 공식 튜토리얼에서 사용하는 `lolcat`을 추가한다.
+
+파일: `<project-root>/flake.nix` (`devShells.${system}.default` 부분)
 
 ```nix
 devShells.${system}.default = pkgs.mkShellNoCC {

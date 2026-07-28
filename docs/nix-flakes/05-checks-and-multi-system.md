@@ -10,6 +10,8 @@
 
 앞 장까지는 설명을 단순하게 유지하려고 다음 값을 고정했다.
 
+파일: `<project-root>/flake.nix` (`outputs`의 `let` 바인딩 일부)
+
 ```nix
 system = "x86_64-linux";
 ```
@@ -19,6 +21,8 @@ package와 app은 플랫폼마다 다른 binary와 dependency를 가질 수 있�
 system 축이 필요하다.
 
 일반적인 네 플랫폼을 목록으로 선언한다.
+
+파일: `<project-root>/flake.nix` (`outputs`의 `let` 바인딩 일부)
 
 ```nix
 systems = [
@@ -40,6 +44,8 @@ Nixpkgs 26.05 평가에서는 `x86_64-darwin`이 지원되는 마지막 release�
 ## 5.2 `genAttrs`로 시스템별 출력 만들기
 
 Nixpkgs library의 `genAttrs`는 이름 목록과 값 생성 함수를 받아 속성 집합을 만든다.
+
+파일: `<project-root>/flake.nix` (`outputs`의 `let` 바인딩 일부)
 
 ```nix
 forAllSystems = nixpkgs.lib.genAttrs systems;
@@ -66,6 +72,8 @@ forAllSystems (system: "value for ${system}")
 `packages.<system>.*`가 된다.
 
 ## 5.3 package와 app을 여러 시스템으로 확장
+
+파일: `<project-root>/flake.nix` (`outputs`의 `packages`와 `apps` 부분)
 
 ```nix
 packages = forAllSystems (
@@ -103,6 +111,8 @@ apps = forAllSystems (system: {
 
 Flake는 프로젝트가 사용할 formatter도 출력으로 제공할 수 있다.
 
+파일: `<project-root>/flake.nix` (`outputs`의 `formatter` 부분)
+
 ```nix
 formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt);
 ```
@@ -130,6 +140,8 @@ $ git diff -- flake.nix
 
 먼저 package 자체를 check로 재사용한다.
 
+파일: `<project-root>/flake.nix` (`outputs`의 `checks` 부분)
+
 ```nix
 checks = forAllSystems (system: {
   package = self.packages.${system}.default;
@@ -141,6 +153,8 @@ checks = forAllSystems (system: {
 검증 루프에 포함된다.
 
 실제 실행 결과도 검사하려면 `runCommand`를 추가한다.
+
+파일: `<project-root>/flake.nix` (`outputs`의 `checks` 부분)
 
 ```nix
 checks = forAllSystems (
@@ -177,6 +191,8 @@ checks = forAllSystems (
 ## 5.6 완성형 `flake.nix`
 
 지금까지의 출력을 합치면 다음과 같다.
+
+파일: `docs/nix-flakes/assets/flake-greeter/flake.nix` (전체)
 
 ```nix
 {

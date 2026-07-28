@@ -1,7 +1,7 @@
 ---
 title: "Nix Flake 입문: 개발 셸에서 패키지·앱·검사까지"
 version: 1.0
-updated: 2026-07-24
+updated: 2026-07-28
 baseline: Nix 2.34, Nixpkgs 26.05
 ---
 
@@ -15,6 +15,9 @@ Flake를 처음 보면 `inputs`, `outputs`, `${system}`이 한꺼번에 등장�
 Nixpkgs의 `cowsay`가 들어 있는 개발 셸에서 시작해 패키지, 앱, formatter, check를
 하나씩 추가한다. 마지막에는 네 가지 일반 플랫폼에 같은 출력을 제공하는 작은
 `flake-greeter` 프로젝트를 완성한다.
+
+코드 블록이 파일 내용을 나타낼 때는 블록 바로 위에 `파일:`과 경로를 표시한다.
+`<project-root>`는 현재 실습 중인 Flake의 루트, 즉 `flake.nix`가 있는 디렉터리다.
 
 ## 학습 목표
 
@@ -49,11 +52,15 @@ $ nix flake --help
 기능이 비활성화됐다는 오류가 나오면 사용자 설정
 `~/.config/nix/nix.conf`에 다음 값을 넣는다.
 
+파일: `~/.config/nix/nix.conf` (`experimental-features` 설정 부분)
+
 ```ini
 experimental-features = nix-command flakes
 ```
 
-NixOS의 선언적 설정에서는 같은 의미를 다음처럼 표현한다.
+NixOS의 기본 단일 파일 구성에서는 같은 의미를 다음처럼 표현한다.
+
+파일: `/etc/nixos/configuration.nix` (`nix.settings.experimental-features` 설정 부분)
 
 ```nix
 nix.settings.experimental-features = [

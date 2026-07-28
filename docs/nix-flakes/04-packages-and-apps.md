@@ -24,6 +24,8 @@ app을 명시하면 공개 실행 진입점과 설명을 분명히 할 수 있�
 
 3장의 Flake에 `self`를 받고 package를 추가한다.
 
+파일: `<project-root>/flake.nix` (전체)
+
 ```nix
 {
   description = "A package and app backed by cowsay";
@@ -78,12 +80,17 @@ PATH에 연결한다.
 
 다음 줄에는 Nix와 shell이 모두 `${...}` 문법을 사용한다.
 
+파일: `<project-root>/flake.nix` (`packages.${system}.flake-greeter.text` 부분)
+
 ```nix
 message="''${1:-Hello from a Nix flake!}"
 ```
 
 Nix의 indented string `'' ... ''`에서 `''${`는 문자 `${`를 결과 script에 남긴다.
 따라서 실제 실행되는 shell은 다음 코드를 받는다.
+
+생성 파일: `/nix/store/<hash>-flake-greeter/bin/flake-greeter`
+(Nix가 생성한 shell script의 본문 일부)
 
 ```bash
 message="${1:-Hello from a Nix flake!}"
@@ -128,6 +135,8 @@ $ nix build .#flake-greeter
 
 package의 실행 파일을 기본 app으로 노출한다.
 
+파일: `<project-root>/flake.nix` (`apps.${system}.default` 부분)
+
 ```nix
 apps.${system}.default = {
   type = "app";
@@ -156,6 +165,8 @@ $ nix run . -- "run as an app"
 
 기본 app과 같은 package를 다른 이름으로 노출할 수도 있다.
 
+파일: `<project-root>/flake.nix` (`apps.${system}` 부분)
+
 ```nix
 apps.${system} = {
   default = {
@@ -181,6 +192,8 @@ $ nix run .#greet -- "named app"
 
 개발 중 `flake-greeter`를 바로 실행하려면 현재 Flake의 package를 개발 셸에 넣는다.
 
+파일: `<project-root>/flake.nix` (`devShells.${system}.default` 부분)
+
 ```nix
 devShells.${system}.default = pkgs.mkShellNoCC {
   packages = [
@@ -200,6 +213,8 @@ $ nix develop -c flake-greeter "available during development"
 ## Worked Example: 실행 실패 추적
 
 다음 app은 평가되지만 실행 경로가 틀렸다.
+
+파일: `<project-root>/flake.nix` (`apps.${system}.default`의 잘못된 예)
 
 ```nix
 apps.${system}.default = {
