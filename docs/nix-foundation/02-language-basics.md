@@ -362,7 +362,22 @@ NixOS와 Home Manager 파일 첫 줄에서 자주 만나는 코드는 함수다.
 
 ## 2.8 `inherit`, `with`, `import`
 
-### `inherit`
+세 구문은 모두 이름을 짧게 쓰는 데 관여하지만 하는 일은 전혀 다르다.
+
+| 구문 | 핵심 동작 | 결과 |
+|---|---|---|
+| `inherit` | 이미 scope에 있는 이름을 같은 이름의 binding으로 복사 | 속성 또는 `let` binding |
+| `with` | 속성 집합의 이름을 한 표현식 안에서만 짧게 사용 | `with` 뒤 표현식의 값 |
+| `import` | 다른 Nix 파일을 평가 | 그 파일이 반환한 값 |
+
+먼저 “현재 scope에 무슨 이름이 있는가”와 “이 표현식이 무슨 값을 반환하는가”를
+분리해 생각한다.
+
+### 2.8.1 `inherit`: 같은 이름을 전달한다
+
+#### 바깥 scope의 변수를 속성으로 복사
+
+다음 식에서 `name`과 `version`은 `let`이 만든 현재 scope의 변수다.
 
 ```nix
 let
@@ -374,22 +389,162 @@ in
 }
 ```
 
-다음의 축약이다.
+`inherit name version;`은 다음 두 정의의 축약이다.
 
 ```nix
+let
+  name = "demo";
+  version = "1.0";
+in
 {
   name = name;
   version = version;
 }
 ```
 
-다른 속성 집합에서 꺼낼 수도 있다.
+각 정의의 왼쪽은 새 속성의 이름이고 오른쪽은 바깥 scope에서 찾은 변수다.
 
-```nix
-{ inherit (pkgs) git ripgrep; }
+```text
+inherit name;
+        │
+        ├── 결과 속성 이름: name
+        └── 현재 scope에서 읽을 변수: name
 ```
 
-### `with`
+`inherit`가 값을 새로 계산하거나 두 값을 연결하는 것은 아니다. 같은 이름을 반복해서
+쓰는 수고를 줄일 뿐이다.
+
+#### 함수에 인자를 전달하는 가장 흔한 패턴
+
+NixOS와 Home Manager 코드에서는 다음 형태를 자주 본다.
+
+```nix
+import ./packages.nix { inherit pkgs; }
+```
+
+여기서 `{ inherit pkgs; }`만 풀어 쓰면 다음과 같다.
+
+```nix
+{ pkgs = pkgs; }
+```
+
+- 왼쪽 `pkgs`: 호출할 함수에 전달하는 속성 이름
+- 오른쪽 `pkgs`: 현재 module 함수가 인자로 받은 package 집합
+
+즉 “현재의 `pkgs`를 `pkgs`라는 이름으로 다음 함수에 전달한다”라는 뜻이다.
+값의 출처를 추적할 때는 오른쪽 `pkgs`가 어느 함수 인자나 `let`에서 왔는지 찾는다.
+
+이름을 바꿔 전달하려면 `inherit`가 아니라 일반 정의를 쓴다.
+
+```nix
+{
+  packages = pkgs;
+}
+```
+
+#### 특정 속성 집합에서 선택
+
+괄호를 사용하면 현재 scope가 아니라 지정한 속성 집합에서 값을 꺼낸다.
+
+```nix
+let
+  metadata = {
+    name = "demo";
+    version = "1.0";
+    internal = true;
+  };
+in
+{
+  inherit (metadata) name version;
+}
+```
+
+다음과 같다.
+
+```nix
+let
+  metadata = {
+    name = "demo";
+    version = "1.0";
+    internal = true;
+  };
+in
+{
+  name = metadata.name;
+  version = metadata.version;
+}
+```
+
+`internal`은 이름을 나열하지 않았으므로 결과에 들어가지 않는다. 이 형태는 큰 속성
+집합에서 전달할 값만 명시적으로 선택한다.
+
+```nix
+{
+  inherit (pkgs) git ripgrep;
+}
+```
+
+이 결과는 package **목록**이 아니라 다음 모양의 **속성 집합**이다.
+
+```nix
+{
+  git = pkgs.git;
+  ripgrep = pkgs.ripgrep;
+}
+```
+
+따라서 list type인 `home.packages`에는 그대로 넣을 수 없다.
+
+```nix
+# 올바른 package 목록
+home.packages = [
+  pkgs.git
+  pkgs.ripgrep
+];
+```
+
+#### `let` 안에서도 사용
+
+`inherit`는 결과 속성 집합뿐 아니라 `let` binding에도 쓸 수 있다.
+
+```nix
+let
+  tools = {
+    formatter = "nixfmt";
+    search = "ripgrep";
+  };
+
+  inherit (tools) formatter search;
+in
+"${formatter} and ${search}"
+```
+
+다음과 같은 뜻이다.
+
+```nix
+let
+  tools = {
+    formatter = "nixfmt";
+    search = "ripgrep";
+  };
+
+  formatter = tools.formatter;
+  search = tools.search;
+in
+"${formatter} and ${search}"
+```
+
+`inherit (set) name;`에서 `name`이 실제로 존재하지 않으면 평가 오류가 발생한다.
+
+### 2.8.2 `with`: 한 표현식에 임시 scope를 연다
+
+`with`의 구조는 다음과 같다.
+
+```nix
+with 속성집합; 본문표현식
+```
+
+Nix는 본문에서 이름을 찾을 때 해당 속성 집합의 속성도 후보로 사용한다.
 
 다음 두 목록은 같은 package를 가리킨다.
 
@@ -407,16 +562,159 @@ with pkgs; [
 ]
 ```
 
-`with pkgs;`는 범위 안에서 `pkgs`의 속성을 짧게 쓸 수 있게 한다. 짧은 설정을
-읽는 데는 편하지만 값의 출처가 흐려질 수 있다. 입문 실습에서는 `pkgs.git`처럼
-출처를 명시한다.
+#### scope는 세미콜론 뒤 표현식 하나뿐이다
 
-### `import`
+```nix
+let
+  tools = {
+    git = "git-value";
+    jq = "jq-value";
+  };
+in
+{
+  inside = with tools; [ git jq ];
+  outside = tools.git;
+}
+```
 
-`import ./packages.nix`는 파일을 텍스트처럼 붙이는 기능이 아니다. 그 파일의 Nix
-표현식을 평가해 나온 값을 반환한다.
+`inside`의 목록 안에서는 `git`과 `jq`를 짧게 쓸 수 있다. `with`가 끝난
+`outside`에서는 다시 `tools.git`이라고 써야 한다.
 
-파일: `packages.nix`
+다음 코드는 `outside = git;`의 `git`을 찾을 수 없어 실패한다.
+
+```nix
+let
+  tools = {
+    git = "git-value";
+  };
+in
+{
+  inside = with tools; git;
+  outside = git;
+}
+```
+
+`with`는 주변 scope를 영구히 변경하거나 속성 집합을 수정하지 않는다. 세미콜론 뒤의
+본문 표현식을 평가할 때만 이름 검색 범위를 추가한다.
+
+#### 기존 변수와 이름이 겹칠 때
+
+`with`가 추가한 이름은 `let`이나 함수 인자로 들어온 lexical binding을 덮지 않는다.
+
+```nix
+let
+  git = "from-let";
+in
+with {
+  git = "from-with";
+  jq = "jq-from-with";
+};
+[
+  git
+  jq
+]
+```
+
+결과는 다음과 같다.
+
+```nix
+[
+  "from-let"
+  "jq-from-with"
+]
+```
+
+`git`은 기존 `let` binding이 우선하고, 기존 scope에 없던 `jq`만 `with`의 속성
+집합에서 온다. 반면 여러 `with`가 중첩되면 안쪽 `with`가 바깥 `with`의 같은 이름을
+가릴 수 있다.
+
+이 규칙 때문에 다음처럼 범위가 큰 `with`는 이름의 출처를 찾기 어렵다.
+
+```nix
+with pkgs;
+{
+  # 수십 줄의 설정
+}
+```
+
+공식 Nix 모범 사례도 파일 최상위의 `with`를 피하고 명시적인 이름을 권장한다.
+입문 단계에서는 다음 순서로 선택한다.
+
+1. 가장 명확한 형태인 `pkgs.git`을 쓴다.
+2. 같은 이름을 여러 번 쓸 때 `let`과 `inherit (pkgs)`를 고려한다.
+3. `with pkgs; [ ... ]`는 package 목록처럼 짧고 경계가 분명한 곳에 제한한다.
+
+```nix
+# 출처가 가장 분명하다.
+home.packages = [
+  pkgs.git
+  pkgs.ripgrep
+];
+```
+
+```nix
+# 이름을 반복해서 사용할 때 선택적으로 scope에 넣는다.
+let
+  inherit (pkgs) git ripgrep;
+in
+{
+  home.packages = [
+    git
+    ripgrep
+  ];
+}
+```
+
+```nix
+# 짧은 목록에서는 흔히 볼 수 있다.
+home.packages = with pkgs; [
+  git
+  ripgrep
+];
+```
+
+세 코드는 같은 package 값을 선택한다. 차이는 이름의 출처를 얼마나 명확하게
+드러내는가다.
+
+### 2.8.3 `import`: 파일을 평가해 값을 받는다
+
+`import`는 Nix evaluator에 내장된 함수다. 경로를 받아 그 파일의 표현식 하나를
+평가하고 결과를 그대로 반환한다. 파일을 텍스트처럼 현재 위치에 붙이는 기능이 아니다.
+
+#### 파일은 어떤 값이든 반환할 수 있다
+
+파일: `<practice>/answer.nix` (전체)
+
+```nix
+40 + 2
+```
+
+```console
+$ nix eval --expr 'import ./answer.nix'
+42
+```
+
+속성 집합을 반환하는 파일도 있다.
+
+파일: `<practice>/metadata.nix` (전체)
+
+```nix
+{
+  name = "demo";
+  version = "1.0";
+}
+```
+
+```console
+$ nix eval --raw --expr '(import ./metadata.nix).name'
+demo
+```
+
+`import` 결과가 속성 집합이므로 `.name`으로 속성을 선택했다.
+
+#### 함수 파일은 import한 다음 호출한다
+
+파일: `<practice>/packages.nix` (전체)
 
 ```nix
 { pkgs }:
@@ -426,7 +724,7 @@ with pkgs; [
 ]
 ```
 
-파일: `home.nix` (일부)
+파일: `<practice>/home.nix` (일부)
 
 ```nix
 { pkgs, ... }:
@@ -435,13 +733,79 @@ with pkgs; [
 }
 ```
 
-순서는 다음과 같다.
+함수 적용은 공백으로 이어지므로 괄호를 보충해 읽으면 다음과 같다.
+
+```nix
+home.packages = (import ./packages.nix) { pkgs = pkgs; };
+```
+
+평가 순서는 다음과 같다.
 
 1. `import ./packages.nix`의 결과는 함수다.
-2. 그 함수에 `{ pkgs = pkgs; }`를 전달한다.
-3. 결과인 package 목록을 `home.packages`에 정의한다.
+2. `{ inherit pkgs; }`는 `{ pkgs = pkgs; }`가 된다.
+3. import가 반환한 함수에 그 속성 집합을 전달한다.
+4. 함수가 반환한 package 목록을 `home.packages`에 정의한다.
 
-반면 module을 합칠 때는 보통 module 시스템의 `imports`를 쓴다.
+`import`가 자동으로 `pkgs`를 제공한 것이 아니다. 호출하는 쪽에서 명시적으로
+전달했다.
+
+#### imported 파일은 호출자의 지역 변수를 자동으로 보지 못한다
+
+다음 파일은 `pkgs`를 선언하거나 인자로 받지 않았다.
+
+파일: `<practice>/broken-packages.nix` (잘못된 예)
+
+```nix
+[
+  pkgs.git
+]
+```
+
+바깥 파일의 `let pkgs = ...;` 안에서 import하더라도 imported 파일이 그 지역
+scope를 상속하지는 않는다. `undefined variable 'pkgs'` 오류가 난다. 파일 사이에
+값을 전달하려면 앞 예제처럼 imported 파일을 함수로 만들고 인자를 넘긴다.
+
+```nix
+# packages.nix
+{ pkgs }:
+[
+  pkgs.git
+]
+```
+
+```nix
+# 호출하는 파일
+{ pkgs, ... }:
+let
+  packages = import ./packages.nix { inherit pkgs; };
+in
+{
+  home.packages = packages;
+}
+```
+
+이 패턴은 파일이 외부에서 무엇을 필요로 하는지 함수 인자에 드러낸다.
+
+#### 디렉터리를 import하면 `default.nix`를 찾는다
+
+다음 두 표현식은 `./tools/default.nix`가 있을 때 같은 파일을 평가한다.
+
+```nix
+import ./tools
+```
+
+```nix
+import ./tools/default.nix
+```
+
+상대 path literal은 그 path literal이 적힌 Nix 파일을 기준으로 해석된다.
+`--expr`로 직접 입력한 상대 경로는 명령을 실행한 현재 디렉터리를 기준으로 생각하면
+된다.
+
+#### `import`와 module의 `imports`는 다르다
+
+`imports`는 Nix 언어의 키워드가 아니라 module system이 해석하기로 약속한 평범한
+속성 이름이다.
 
 ```nix
 {
@@ -452,7 +816,96 @@ with pkgs; [
 }
 ```
 
-`import`와 `imports`는 같은 기능이 아니다. 자세한 차이는 5장에서 다룬다.
+| 구분 | `import ./file.nix` | `imports = [ ./file.nix ];` |
+|---|---|---|
+| 처리 주체 | Nix 언어 evaluator | NixOS·Home Manager module system |
+| 즉시 얻는 것 | imported 파일이 반환한 값 | 함께 평가할 module graph |
+| 함수 인자 | 호출자가 직접 전달 | module system이 `pkgs`, `config`, `lib` 등을 전달 |
+| 여러 definition merge | 하지 않음 | option type 규칙에 따라 수행 |
+
+NixOS module 파일을 `import ./module.nix`하면 보통 module 함수 값만 얻는다. 그것만으로
+현재 NixOS 구성에 option이 합쳐지지 않는다. 일반적인 module 분할은 `imports` 목록에
+path를 넣는다. 자세한 merge 과정은 5장에서 다룬다.
+
+### 2.8.4 세 구문을 함께 읽기
+
+다음 Home Manager 조각을 왼쪽에서 오른쪽으로 해석해 보자.
+
+```nix
+{ pkgs, ... }:
+let
+  basePackages = with pkgs; [
+    git
+    ripgrep
+  ];
+
+  extraPackages = import ./extra-packages.nix {
+    inherit pkgs;
+  };
+in
+{
+  home.packages = basePackages ++ extraPackages;
+}
+```
+
+파일: `<same-directory>/extra-packages.nix` (전체)
+
+```nix
+{ pkgs }:
+[
+  pkgs.jq
+]
+```
+
+1. 바깥 module 함수가 `pkgs`를 인자로 받는다.
+2. `with pkgs;`는 첫 번째 짧은 목록 안에서 `git`, `ripgrep`을 찾게 한다.
+3. `import`는 `extra-packages.nix`를 평가해 함수를 얻는다.
+4. `{ inherit pkgs; }`가 현재 `pkgs`를 imported 함수에 전달한다.
+5. 두 함수 결과는 각각 package 목록이다.
+6. `++`가 두 목록을 연결해 `home.packages`의 최종 정의를 만든다.
+
+이 코드를 읽을 때 세 구문을 “전부 package를 가져오는 문법”으로 묶지 않는다.
+`with`는 이름 검색 범위, `inherit`는 값 전달, `import`는 파일 평가를 담당한다.
+
+### 직접 확인
+
+다음 표현식을 `nix repl`이나 `nix eval --expr`로 확인한다.
+
+```nix
+let
+  source = {
+    x = 1;
+    y = 2;
+  };
+in
+{
+  inherited = {
+    inherit (source) x;
+  };
+
+  selected = with source; x + y;
+}
+```
+
+예상 결과:
+
+```nix
+{
+  inherited = { x = 1; };
+  selected = 3;
+}
+```
+
+그리고 다음 질문에 답해 본다.
+
+1. `{ inherit pkgs; }`를 풀어 쓰면 무엇인가?
+2. `with pkgs; [ git ]`의 `git`은 어느 값인가?
+3. `import ./file.nix`의 결과 type은 항상 속성 집합인가?
+4. imported 함수가 `pkgs`를 요구하면 누가 전달해야 하는가?
+5. NixOS module을 다른 module과 합칠 때 `import`와 `imports` 중 무엇을 쓰는가?
+
+정답은 각각 `{ pkgs = pkgs; }`, `pkgs.git`, “아니며 파일 표현식에 따라 달라진다”,
+“호출하는 쪽”, “module system의 `imports`”다.
 
 ## 2.9 path와 문자열을 구분한다
 
@@ -555,6 +1008,8 @@ in
 - 함수 파일은 `import`한 함수에 인자를 전달해 최종 값을 얻는다.
 - 목록은 공백으로, 속성 정의는 세미콜론으로 구분한다.
 - 함수는 `인자: 결과`, 호출은 `함수 인자` 형태다.
+- `inherit`는 현재 scope나 지정한 속성 집합에서 같은 이름의 binding을 만든다.
+- `with`는 뒤따르는 표현식에만 이름 검색 범위를 추가하며 큰 범위에서는 피한다.
 - NixOS와 Home Manager 파일은 보통 module 인자를 받아 option 정의를 반환하는 함수다.
 - `import`는 파일의 값을 평가하고, module의 `imports`는 module graph를 구성한다.
 
@@ -565,6 +1020,7 @@ in
 - [`nix repl`](https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-repl.html)
 - [Nix 2.34 언어 개요](https://nix.dev/manual/nix/2.34/language/)
 - [Nix 2.34 문법 reference](https://nix.dev/manual/nix/2.34/language/syntax.html)
+- [`import` built-in](https://nix.dev/manual/nix/2.34/language/builtins.html#builtins-import)
 - [Nix 모범 사례](https://nix.dev/guides/best-practices.html)
 
 [← 1장](./01-ecosystem-and-mental-model.md) · [목차](./index.md) ·
