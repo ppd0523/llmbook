@@ -4,7 +4,9 @@
 
 1. 값, 목록, 속성 집합, 함수, `let`, 문자열 보간을 읽는다.
 2. `.nix` 파일 하나가 표현식 하나라는 사실을 이해한다.
-3. NixOS와 Home Manager module의 함수 머리 부분을 해석한다.
+3. REPL, 한 줄 표현식, `.nix` 파일을 직접 평가한다.
+4. 평가, 빌드, 실행, module 적용에 사용하는 명령을 구분한다.
+5. NixOS와 Home Manager module의 함수 머리 부분을 해석한다.
 
 ## 2.1 Nix 파일은 “문장 목록”이 아니라 표현식 하나다
 
@@ -32,7 +34,158 @@ $ nix eval --expr '1 + 2'
 절차형 언어의 “이 줄 다음 저 줄을 실행한다”는 모형이 없다. 값 사이의 의존 관계를
 평가한다.
 
-## 2.2 가장 자주 보는 값
+## 2.2 Nix 언어를 실행하는 방법
+
+Nix 언어에는 일반 프로그램의 `main` 함수처럼 무조건 실행되는 시작점이 없다.
+표현식을 **평가**해 값을 얻고, 결과가 derivation이면 그 계획을 **실현**한다.
+따라서 무엇을 얻고 싶은지에 따라 명령이 달라진다.
+
+### 한 줄 표현식 평가
+
+가장 짧은 실험은 `nix eval --expr`로 실행한다.
+
+```console
+$ nix eval --expr '1 + 2'
+3
+
+$ nix eval --expr 'let x = 3; in x * x'
+9
+```
+
+기본 출력은 다시 읽을 수 있는 Nix 표현식 형태다. 문자열의 따옴표 없이 내용만
+필요하면 `--raw`를 사용한다.
+
+```console
+$ nix eval --raw --expr '"hello, Nix"'
+hello, Nix
+```
+
+속성 집합이나 목록을 다른 도구로 넘기려면 JSON이 편리하다.
+
+```console
+$ nix eval --json --expr '{ name = "Alice"; tools = [ "git" "jq" ]; }'
+{"name":"Alice","tools":["git","jq"]}
+```
+
+함수처럼 JSON으로 표현할 수 없는 값에는 `--json`을 사용할 수 없다.
+
+### REPL에서 대화형 평가
+
+여러 표현식을 조금씩 바꿔 볼 때는 REPL을 연다.
+
+```console
+$ nix repl
+```
+
+```nix
+nix-repl> person = { name = "Alice"; age = 20; }
+
+nix-repl> person.name
+"Alice"
+
+nix-repl> (x: x + 1) 41
+42
+
+nix-repl> :q
+```
+
+REPL은 read-eval-print loop의 약자다. 입력을 읽고 평가한 뒤 결과를 출력하는 과정을
+반복한다. `:q`로 종료한다.
+
+### `.nix` 파일 평가
+
+다음 파일 전체는 문자열 하나가 되는 표현식이다.
+
+파일: `<practice>/hello.nix` (전체)
+
+```nix
+let
+  name = "Nix";
+in
+"Hello, ${name}!"
+```
+
+파일을 직접 평가한다.
+
+```console
+$ nix eval --file ./hello.nix
+"Hello, Nix!"
+
+$ nix eval --raw --file ./hello.nix
+Hello, Nix!
+```
+
+`--file` 뒤에 속성 경로를 붙이면 파일 결과의 일부만 선택할 수 있다.
+
+파일: `<practice>/person.nix` (전체)
+
+```nix
+{
+  name = "Alice";
+  role = "developer";
+}
+```
+
+```console
+$ nix eval --raw --file ./person.nix name
+Alice
+```
+
+### 함수가 들어 있는 파일 호출
+
+파일 전체가 함수라면 평가만 해서는 최종 문자열이 나오지 않는다.
+
+파일: `<practice>/greet.nix` (전체)
+
+```nix
+{ name, greeting ? "Hello" }:
+"${greeting}, ${name}!"
+```
+
+`import`로 함수 값을 얻고 속성 집합 인자를 전달한다.
+
+```console
+$ nix eval --raw --expr '(import ./greet.nix) { name = "Alice"; }'
+Hello, Alice!
+```
+
+이 명령은 다음 순서로 읽는다.
+
+1. `import ./greet.nix`가 파일을 평가해 함수를 반환한다.
+2. `{ name = "Alice"; }`를 함수 인자로 전달한다.
+3. 함수의 결과 문자열을 `--raw`로 출력한다.
+
+### 결과 종류에 맞는 명령 선택
+
+| 원하는 결과 | 대표 명령 | 의미 |
+|---|---|---|
+| 숫자·문자열·속성 집합 | `nix eval` | 표현식을 값으로 계산 |
+| 대화형 문법 실험 | `nix repl` | 입력과 평가를 반복 |
+| package·derivation output | `nix build` | Store 결과를 확보 |
+| Flake app 실행 | `nix run` | app이 가리키는 프로그램 실행 |
+| 프로젝트 개발 환경 | `nix develop` | dev shell process 시작 |
+| NixOS 구성 | `nixos-rebuild build` | NixOS module 전체 평가·빌드 |
+| Home Manager 구성 | `home-manager build` | Home Manager module 전체 평가·빌드 |
+
+`configuration.nix`와 `home.nix`는 보통 module 함수다. Module system이 `pkgs`,
+`config`, `lib` 같은 인자를 제공하고 option을 합쳐야 하므로 일반 파일처럼 단독
+평가해서 적용하지 않는다.
+
+```console
+$ sudo nixos-rebuild build --flake .#myhost
+$ home-manager build --flake .#alice
+```
+
+이 명령들도 `build`만으로 현재 환경을 전환하지는 않는다. 실제 활성화와 `switch`의
+차이는 6장에서 다룬다.
+
+!!! note
+    `nix eval`, `nix repl` 같은 새 CLI에서 experimental feature 오류가 발생하면
+    [목차의 준비 설정](./index.md#prerequisites)에서 `nix-command`와 `flakes`
+    설정을 확인한다. 단순 `--expr`·`--file` 평가에는 Flake가 필요하지 않지만,
+    이 자료의 후속 Flake 명령을 위해 두 기능을 함께 준비한다.
+
+## 2.3 가장 자주 보는 값
 
 | 종류 | 예 | 읽는 법 |
 |---|---|---|
@@ -70,7 +223,7 @@ $ nix eval --expr '1 + 2'
 
 각 속성 정의는 `;`로 끝난다. JavaScript 객체와 달리 쉼표를 쓰지 않는다.
 
-## 2.3 속성 경로와 중첩
+## 2.4 속성 경로와 중첩
 
 다음 두 값은 같은 구조다.
 
@@ -116,7 +269,7 @@ person.name
 
 결과는 `"Alice"`다.
 
-## 2.4 `let ... in`: 이름 붙여 반복을 줄인다
+## 2.5 `let ... in`: 이름 붙여 반복을 줄인다
 
 ```nix
 let
@@ -143,7 +296,7 @@ in
 }
 ```
 
-## 2.5 함수 호출에는 괄호도 쉼표도 없다
+## 2.6 함수 호출에는 괄호도 쉼표도 없다
 
 Nix 함수는 `인자: 결과` 형태다.
 
@@ -179,7 +332,7 @@ x: x + 1
 Nix에서 함수 적용의 결합 우선순위가 높기 때문에 긴 호출을 읽을 때는 “왼쪽 함수가
 오른쪽 값 하나를 받는다”라고 괄호를 마음속으로 그린다.
 
-## 2.6 `{ config, pkgs, ... }:`의 정체
+## 2.7 `{ config, pkgs, ... }:`의 정체
 
 NixOS와 Home Manager 파일 첫 줄에서 자주 만나는 코드는 함수다.
 
@@ -207,7 +360,7 @@ NixOS와 Home Manager 파일 첫 줄에서 자주 만나는 코드는 함수다.
 중요한 점은 `pkgs`가 Nix 언어의 예약어가 아니라 호출자가 넘겨준 함수 인자라는
 사실이다.
 
-## 2.7 `inherit`, `with`, `import`
+## 2.8 `inherit`, `with`, `import`
 
 ### `inherit`
 
@@ -301,7 +454,7 @@ with pkgs; [
 
 `import`와 `imports`는 같은 기능이 아니다. 자세한 차이는 5장에서 다룬다.
 
-## 2.8 path와 문자열을 구분한다
+## 2.9 path와 문자열을 구분한다
 
 ```nix
 {
@@ -317,7 +470,7 @@ with pkgs; [
 이식성을 낮추며, Flake의 순수 평가에서는 home 경로나 현재 시스템 같은 외부 상태가
 제한될 수 있다.
 
-## 2.9 lazy evaluation은 “아무것도 안 한다”는 뜻이 아니다
+## 2.10 lazy evaluation은 “아무것도 안 한다”는 뜻이 아니다
 
 Nix는 값이 필요할 때 평가한다. 이 성질 덕분에 module이 최종 `config`를 인자로
 받으면서 그 `config`의 일부를 정의하는 패턴이 가능하다.
@@ -398,6 +551,8 @@ in
 ## 요약
 
 - `.nix` 파일 하나는 평가되어 값 하나가 되는 표현식이다.
+- 값은 `nix eval`이나 `nix repl`로 평가하고 derivation은 `nix build`로 실현한다.
+- 함수 파일은 `import`한 함수에 인자를 전달해 최종 값을 얻는다.
 - 목록은 공백으로, 속성 정의는 세미콜론으로 구분한다.
 - 함수는 `인자: 결과`, 호출은 `함수 인자` 형태다.
 - NixOS와 Home Manager 파일은 보통 module 인자를 받아 option 정의를 반환하는 함수다.
@@ -406,6 +561,8 @@ in
 ## 공식 자료
 
 - [Nix 언어 입문](https://nix.dev/tutorials/nix-language.html)
+- [`nix eval`](https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-eval.html)
+- [`nix repl`](https://nix.dev/manual/nix/2.34/command-ref/new-cli/nix3-repl.html)
 - [Nix 2.34 언어 개요](https://nix.dev/manual/nix/2.34/language/)
 - [Nix 2.34 문법 reference](https://nix.dev/manual/nix/2.34/language/syntax.html)
 - [Nix 모범 사례](https://nix.dev/guides/best-practices.html)

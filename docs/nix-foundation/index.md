@@ -1,6 +1,6 @@
 ---
 title: "Nix 첫걸음: NixOS·개발 셸·Home Manager를 위한 기초"
-version: 1.0
+version: 1.1
 updated: 2026-07-29
 baseline: Nix 2.34, NixOS/Nixpkgs 26.05, Home Manager 26.05
 ---
@@ -63,7 +63,7 @@ experimental-features = nix-command flakes
 1. Nix, Nixpkgs, NixOS, Flake, Home Manager는 각각 무엇인가?
 2. `/nix/store`의 긴 경로와 심볼릭 링크는 왜 필요한가?
 3. 평가, 빌드(또는 다운로드), 활성화는 어떻게 다른가?
-4. Nix 코드의 속성 집합, 목록, 함수, `let`, `import`를 어떻게 읽는가?
+4. Nix 코드의 속성 집합, 목록, 함수, `let`, `import`를 어떻게 읽고 실행하는가?
 5. `nix shell`, `nix develop`, `nix-shell` 중 무엇을 선택해야 하는가?
 6. NixOS와 Home Manager의 `{ config, pkgs, ... }:`는 왜 함수인가?
 7. package, option, module, profile, generation, Flake를 어떻게 구분하는가?
@@ -74,7 +74,7 @@ experimental-features = nix-command flakes
 | 장 | 주제 | 권장 시간 | 결과 |
 |---|---|---:|---|
 | 1 | 생태계와 정신 모형 | 35분 | 이름과 책임 구분 |
-| 2 | Nix 언어 읽기 | 70분 | 기본 설정 코드 해석 |
+| 2 | Nix 언어 읽기와 실행 | 80분 | 값·파일·함수 평가와 설정 코드 해석 |
 | 3 | Store와 세대 | 45분 | 불변 저장소와 롤백 이해 |
 | 4 | 패키지와 셸 | 60분 | 임시·프로젝트 환경 선택 |
 | 5 | 모듈 시스템 | 55분 | option과 module 해석 |
