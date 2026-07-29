@@ -4,6 +4,7 @@
 
 ## 책 목록
 
+- [Nix 첫걸음: NixOS·개발 셸·Home Manager를 위한 기초](./nix-fundamentals/index.md)
 - [NixOS-WSL 개발 환경을 Git으로 복원하기](./nixos-wsl-dev-environment/index.md)
 - [NixOS에서 standalone Home Manager 운영하기](./home-manager-guide/index.md)
 - [Nix Flake 입문: 개발 셸에서 패키지·앱·검사까지](./nix-flakes/index.md)
