@@ -1,0 +1,30 @@
+{% set cmake_version = os.getenv("CMAKE_PLATFORM_VERSION") %}
+{% set gcc_version = os.getenv("CROSS_GCC_VERSION") %}
+{% set target_cc = os.getenv("AARCH64_CC") %}
+{% set target_cxx = os.getenv("AARCH64_CXX") %}
+
+[settings]
+os=Linux
+arch=armv8
+compiler=gcc
+compiler.version={{ gcc_version }}
+compiler.libcxx=libstdc++11
+compiler.cppstd=17
+build_type=Release
+
+[options]
+*:shared=False
+cyclonedds/*:with_ssl=False
+cyclonedds/*:with_shm=False
+cyclonedds/*:enable_security=False
+cyclonedds/*:enable_discovery=True
+
+[conf]
+tools.build:compiler_executables={"c": "{{ target_cc }}", "cpp": "{{ target_cxx }}"}
+tools.build:cflags=["-static"]
+tools.build:cxxflags=["-static"]
+tools.build:exelinkflags=["-static"]
+tools.cmake.cmaketoolchain:generator=Unix Makefiles
+
+[platform_tool_requires]
+cmake/{{ cmake_version }}

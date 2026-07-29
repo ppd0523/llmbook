@@ -1,0 +1,20 @@
+{% set cmake_version = os.getenv("CMAKE_PLATFORM_VERSION") %}
+{% set gcc_version = os.getenv("NATIVE_GCC_VERSION") %}
+{% set native_cc = os.getenv("NATIVE_CC") %}
+{% set native_cxx = os.getenv("NATIVE_CXX") %}
+
+[settings]
+os=Linux
+arch=x86_64
+compiler=gcc
+compiler.version={{ gcc_version }}
+compiler.libcxx=libstdc++11
+compiler.cppstd=17
+build_type=Release
+
+[conf]
+tools.build:compiler_executables={"c": "{{ native_cc }}", "cpp": "{{ native_cxx }}"}
+tools.cmake.cmaketoolchain:generator=Unix Makefiles
+
+[platform_tool_requires]
+cmake/{{ cmake_version }}

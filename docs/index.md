@@ -8,4 +8,5 @@
 - [NixOS-WSL 개발 환경을 Git으로 복원하기](./nixos-wsl-dev-environment/index.md)
 - [NixOS에서 standalone Home Manager 운영하기](./home-manager-guide/index.md)
 - [Nix Flake 입문: 개발 셸에서 패키지·앱·검사까지](./nix-flakes/index.md)
+- [Nix·Conan·CMake로 Cyclone DDS C++ 교차 개발 환경 만들기](./nix-cpp-cyclonedds/index.md)
 - [LazyVim으로 다중 언어 개발 환경 구축하기](./lazyvim-development-environment/index.md)

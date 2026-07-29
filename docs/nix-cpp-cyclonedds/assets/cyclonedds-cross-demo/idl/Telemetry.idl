@@ -1,0 +1,8 @@
+module tutorial {
+  @final
+  struct Telemetry {
+    unsigned long sample_id;
+    long long timestamp_ms;
+    string<64> source;
+  };
+};
