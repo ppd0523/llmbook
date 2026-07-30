@@ -1,6 +1,6 @@
 ---
 title: "Nix 첫걸음: NixOS·개발 셸·Home Manager를 위한 기초"
-version: 1.3
+version: 1.4
 updated: 2026-07-30
 baseline: Nix 2.34, NixOS/Nixpkgs 26.05, Home Manager 26.05
 ---
@@ -77,7 +77,7 @@ experimental-features = nix-command flakes
 | 2 | Nix 언어 읽기와 실행 | 110분 | 값·파일·함수·scope 평가와 설정 코드 해석 |
 | 3 | Store와 세대 | 45분 | 불변 저장소와 롤백 이해 |
 | 4 | 패키지 검색과 셸 | 90분 | package를 찾고 임시·프로젝트 환경 선택 |
-| 5 | 모듈 시스템 | 55분 | option과 module 해석 |
+| 5 | 모듈 시스템 | 110분 | module·option과 `mk...` helper의 선언·merge 해석 |
 | 6 | NixOS와 Home Manager | 45분 | 설정의 소유 계층 결정 |
 | 7 | 통합 실습 | 60분 | 작은 개발 셸 직접 생성 |
 | 8 | 문제 해결·용어·다음 단계 | 30분 | 스스로 조사하는 기준 마련 |
