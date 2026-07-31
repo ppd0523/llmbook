@@ -4,17 +4,92 @@ Discord는 편리하지만 message가 언제 새 turn이 되고 언제 실행 �
 모르면 작업을 잃기 쉽다. 가장 안전한 기본 운영법은 “작업 하나당 thread 하나,
 후속 작업은 `/queue`, 실행 중 보정은 `/steer`”다.
 
-## DM, channel, thread의 session
+## 먼저 알아둘 Discord 용어
+
+Discord 화면의 위치와 Hermes의 대화 상태는 같은 개념이 아니다. 먼저 Discord에서
+사용하는 장소와 동작을 구분한다. 이 장에서 `channel`은 별도 설명이 없으면 text
+channel을 뜻한다.
+
+| 용어 | Discord에서 뜻하는 것 | Hermes가 기본적으로 다루는 방식 |
+|---|---|---|
+| server | 사람, bot, channel을 담는 하나의 공동 공간이다. Discord API에서는 guild라고도 부른다. | server 전체를 하나의 대화로 사용하지 않는다. DM·channel·thread와 사용자 정보를 조합해 session을 구분한다. |
+| bot | server에 초대된 Hermes의 Discord 계정이다. | message를 받으면 접근 권한과 mention 조건을 확인한 뒤 Hermes agent를 실행한다. |
+| DM | server channel을 거치지 않고 사용자와 bot이 직접 주고받는 private chat이다. Direct Message의 약자다. | 모든 message에 응답한다. `@Hermes`라고 부를 필요가 없으며 DM용 session을 사용한다. |
+| server channel | server 안에 있는 `#general`, `#research` 같은 대화 공간이다. 여러 사용자가 함께 볼 수 있다. | 기본적으로 Hermes를 직접 mention한 message에만 응답한다. |
+| regular text channel | DM, thread, forum post가 아닌 보통의 server text channel이다. Hermes 공식 문서의 “regular channel”은 별도의 Discord 기능 이름이 아니라 이런 일반 `#채널`을 뜻한다. | 기본 설정에서는 Hermes를 mention하면 그 작업을 위한 새 thread를 자동 생성한다. |
+| thread | channel의 특정 message에서 갈라져 나온 하위 대화방이다. 원래 channel을 parent channel이라고 부른다. | parent channel과 분리된 session history를 사용하고 같은 thread 안에서 답한다. |
+| mention | message에 `@Hermes`를 넣어 bot을 직접 부르는 동작이다. | server channel에서 “이 message를 처리하라”는 기본 호출 조건이다. DM에서는 필요 없다. |
+| free-response channel | Hermes 설정으로 mention 없이도 응답하도록 지정한 server channel이다. Discord 자체의 채널 종류가 아니다. | 모든 허용된 사용자의 message에 inline으로 답하며 기본 auto-thread 생성을 건너뛴다. |
+| shared channel | 여러 사용자가 함께 말하는 channel을 설명하는 일반 표현이다. Discord의 별도 channel 종류는 아니다. | 기본적으로 같은 channel 안에서도 사용자별 session history를 분리한다. |
+| slash command | `/status`, `/queue`처럼 `/`로 시작하는 bot 명령이다. | 일반 자연어 요청과 달리 session 조회·전환·중단 같은 정해진 제어 동작을 실행한다. |
+
+### mention은 무엇을 하는가
+
+server channel에서 다음 message를 보냈다고 하자.
+
+```text
+@Hermes 이 repository의 인증 오류를 조사해 줘.
+```
+
+`@Hermes`는 단순히 이름을 표시하는 장식이 아니다. 기본
+`discord.require_mention: true` 설정에서는 Hermes가 이 message를 처리하게 만드는
+호출 신호다. `@Alice`처럼 다른 사용자만 mention하고 Hermes는 mention하지 않으면
+Hermes는 기본적으로 끼어들지 않는다.
+
+mention하지 않은 channel message가 항상 완전히 사라지는 것은 아니다. 기본
+history backfill이 켜져 있으면, 나중에 Hermes를 mention했을 때 Hermes의 마지막
+응답 이후에 쌓인 최근 channel message 일부가 참고 맥락으로 함께 전달될 수 있다.
+그러나 그 message만으로 Hermes가 먼저 실행되지는 않는다.
+
+### regular channel과 thread의 차이
+
+예를 들어 `#research`가 regular text channel이라고 하자.
+
+```text
+Server: My Team
+└─ #research                 ← regular text channel
+   ├─ 일반 대화
+   └─ @Hermes 시장 조사해 줘
+      └─ 시장 조사 thread    ← 해당 작업의 하위 대화방
+```
+
+기본 `discord.auto_thread: true`에서는 regular channel에서 Hermes를 mention한
+message마다 새 thread를 만든다. Hermes의 답변과 이후 작업 대화는 그 thread 안에서
+이어진다. 이 구조는 `#research`의 main timeline을 어지럽히지 않고 작업별 session
+history를 분리한다.
+
+free-response channel에서는 동작이 다르다. mention 없이 대화하는 가벼운 bot 전용
+channel로 취급하므로 Hermes가 새 thread를 만들지 않고 channel에 바로 답한다.
+
+## Discord 위치가 Hermes session으로 바뀌는 방식
+
+session은 Discord 용어가 아니라 Hermes가 conversation history와 실행 중 agent를
+구분하는 내부 단위다. 같은 화면에 보이는 message라도 서로 다른 session에 들어갈 수
+있다.
 
 기본 동작은 다음과 같다.
 
-- DM에서는 모든 message에 응답하며 DM별 session을 사용한다.
-- server channel에서는 bot을 `@mention`해야 응답한다.
-- regular channel의 mention은 기본적으로 새 thread를 만들고, 그 thread가 독립된
-  session namespace가 된다.
-- bot이 이미 참여한 thread에서는 기본적으로 다시 mention하지 않아도 응답한다.
-- 같은 shared channel에서도 `group_sessions_per_user: true`가 기본이므로 사용자별
-  transcript가 분리된다.
+- DM은 DM용 session을 사용한다.
+- server의 각 thread는 parent channel과 분리된 session 영역을 사용한다.
+- regular channel에서는 같은 channel에 있더라도 기본적으로 사용자별 session을
+  사용한다.
+- Hermes가 이미 참여한 thread에서는 기본 `thread_require_mention: false`에 따라
+  이후 message에 매번 mention하지 않아도 계속 응답한다.
+- Hermes가 아직 참여하지 않은 기존 thread에서는 먼저 mention해 호출하는 편이
+  명확하다.
+
+예를 들어 Alice와 Bob이 같은 `#research` channel에서 각각 Hermes를 불러도 기본
+`group_sessions_per_user: true`에서는 서로 다른 conversation history가 된다.
+
+```text
+#research에서 보이는 화면
+├─ Alice → Hermes session: #research + Alice
+└─ Bob   → Hermes session: #research + Bob
+```
+
+반면 `group_sessions_per_user: false`로 바꾸면 channel 또는 thread의 참가자들이 하나의
+history와 하나의 실행 slot을 공유한다. 이때 Alice의 긴 작업 중 Bob이 후속 message를
+보내면 같은 agent 실행을 interrupt하거나 뒤에 queue될 수 있다.
 
 따라서 서로 다른 목적의 작업을 같은 thread에 계속 쌓지 않는다. 기존 history가 도움이
 되지 않는 새 목적이라면 새 thread를 만들거나 `/new meaningful-name`을 사용한다.

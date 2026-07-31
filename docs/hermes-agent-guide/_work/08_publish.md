@@ -36,3 +36,6 @@ topic: Hermes Agent 운영 가이드
 2026-07-30에 MkDocs Material 9.7.6과 MkDocs 1.6.1로
 `python -m mkdocs build --strict`를 실행해 성공했다. 배포 가능한 Markdown 책으로
 판단한다.
+
+2026-07-31에 Discord 용어와 session 설명을 보강한 버전 1.1도 같은 strict build로
+다시 검증해 성공했다.

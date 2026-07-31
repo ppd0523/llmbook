@@ -1,7 +1,7 @@
 ---
 title: Hermes Agent 실전 운영 가이드
-version: 1.0
-updated: 2026-07-30
+version: 1.1
+updated: 2026-07-31
 ---
 
 # Hermes Agent 실전 운영 가이드
