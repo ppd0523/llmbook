@@ -51,6 +51,8 @@
           <input id="t2" type="range" min="-180" max="180" step="1" value="90">
         </div>
         <div class="values" aria-live="polite">
+          <div class="value"><span>팔꿈치 x₁</span><strong id="x1-value"></strong></div>
+          <div class="value"><span>팔꿈치 y₁</span><strong id="y1-value"></strong></div>
           <div class="value"><span>손 위치 x</span><strong id="x-value"></strong></div>
           <div class="value"><span>손 위치 y</span><strong id="y-value"></strong></div>
           <div class="value"><span>링크 2 방향</span><strong id="direction-value"></strong></div>
@@ -62,7 +64,7 @@
         <div class="legend"><span><i class="dot"></i>링크 1</span><span><i class="dot two"></i>링크 2</span><span class="hint">축 눈금: 길이 단위 1</span></div>
       </section>
     </div>
-    <p class="hint">실험: θ₁을 30°, θ₂를 60°로 놓으세요. 링크 2가 x축에서 90°를 향하고, 손 위치가 (2√3, 4)가 되는지 관찰하세요.</p>
+    <p class="hint">실험: θ₁을 30°, θ₂를 60°로 놓으세요. 링크 2가 x축에서 90°를 향하고, 손 위치가 (3√3/2, 7/2)가 되는지 관찰하세요.</p>
   </main>
   <script>
     const $ = (id) => document.getElementById(id);
@@ -81,6 +83,10 @@
       ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
     }
     function update() {
+      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const colors = dark
+        ? { grid: '#334155', axis: '#94a3b8', text: '#cbd5e1', origin: '#f8fafc' }
+        : { grid: '#e2e8f0', axis: '#64748b', text: '#334155', origin: '#0f172a' };
       const l1 = Number($('l1').value), l2 = Number($('l2').value);
       const t1 = Number($('t1').value), t2 = Number($('t2').value);
       $('l1-out').textContent = fmt(l1); $('l2-out').textContent = fmt(l2);
@@ -88,6 +94,7 @@
       const x1 = l1 * Math.cos(rad(t1)), y1 = l1 * Math.sin(rad(t1));
       const x = x1 + l2 * Math.cos(rad(t1 + t2));
       const y = y1 + l2 * Math.sin(rad(t1 + t2));
+      $('x1-value').textContent = fmt(x1); $('y1-value').textContent = fmt(y1);
       $('x-value').textContent = fmt(x); $('y-value').textContent = fmt(y);
       $('direction-value').textContent = `${t1 + t2}°`; $('radius-value').textContent = fmt(Math.hypot(x, y));
 
@@ -98,13 +105,12 @@
       const scale = Math.min(width, height) / 12;
       const origin = { x: width / 2, y: height * .58 };
       const point = (px, py) => ({ x: origin.x + px * scale, y: origin.y - py * scale });
-      ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
-      for (let i = -5; i <= 5; i++) { drawLine(point(i, -5), point(i, 5), '#e2e8f0', 1); drawLine(point(-5, i), point(5, i), '#e2e8f0', 1); }
-      drawLine(point(-5.5, 0), point(5.5, 0), '#64748b', 1.5); drawLine(point(0, -5), point(0, 5), '#64748b', 1.5);
+      for (let i = -5; i <= 5; i++) { drawLine(point(i, -5), point(i, 5), colors.grid, 1); drawLine(point(-5, i), point(5, i), colors.grid, 1); }
+      drawLine(point(-5.5, 0), point(5.5, 0), colors.axis, 1.5); drawLine(point(0, -5), point(0, 5), colors.axis, 1.5);
       const o = point(0, 0), p1 = point(x1, y1), p2 = point(x, y);
       drawLine(o, p1, '#2563eb', 10); drawLine(p1, p2, '#f97316', 10);
-      drawJoint(o, '#0f172a'); drawJoint(p1, '#2563eb'); drawJoint(p2, '#dc2626', 8);
-      ctx.fillStyle = '#334155'; ctx.font = '14px system-ui';
+      drawJoint(o, colors.origin); drawJoint(p1, '#2563eb'); drawJoint(p2, '#dc2626', 8);
+      ctx.fillStyle = colors.text; ctx.font = '14px system-ui';
       ctx.fillText('O', o.x - 18, o.y + 20); ctx.fillText('E', p2.x + 11, p2.y - 10);
       ctx.fillText('x', width - 18, origin.y - 8); ctx.fillText('y', origin.x + 8, 18);
     }

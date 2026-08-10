@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D 회전·강체변환 실습</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #08111f;
+      --panel: #101d30;
+      --panel-2: #15243a;
+      --line: #2a3d58;
+      --text: #edf5ff;
+      --muted: #9fb0c6;
+      --cyan: #62d9ff;
+      --amber: #ffc857;
+      --red: #ff6b6b;
+      --green: #69db7c;
+      --blue: #74a9ff;
+      --focus: #fff3bf;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 80% 0%, rgba(66, 153, 225, .16), transparent 36rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select { font: inherit; }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    header {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 34px 24px 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--cyan);
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.15;
+      letter-spacing: -.035em;
+    }
+
+    header > p:last-child {
+      max-width: 760px;
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(520px, 1fr);
+      gap: 18px;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 0 24px 42px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(16, 29, 48, .94);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .2);
+    }
+
+    aside {
+      align-self: start;
+      padding: 20px;
+    }
+
+    h2, h3 { margin-top: 0; }
+
+    h2 { font-size: 1.15rem; }
+
+    h3 {
+      margin-bottom: 11px;
+      color: #dceaff;
+      font-size: .95rem;
+    }
+
+    .control-group {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .select-label, .range-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 12px 0 5px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .value {
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-weight: 700;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #0a1627;
+      color: var(--text);
+      padding: 9px 10px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 0;
+      accent-color: var(--cyan);
+    }
+
+    .triplet {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .triplet label {
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .triplet input { margin-top: 4px; }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    button {
+      min-height: 42px;
+      border: 1px solid #365373;
+      border-radius: 10px;
+      background: #182b44;
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px 10px;
+      font-weight: 750;
+    }
+
+    button:hover { background: #203957; }
+
+    .stage {
+      overflow: hidden;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      min-height: 520px;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        #091525;
+      background-size: 28px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 520px;
+    }
+
+    .legend {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      max-width: calc(100% - 32px);
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(8, 17, 31, .82);
+      color: var(--muted);
+      font-size: .78rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .key::before {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background: var(--key);
+      content: "";
+    }
+
+    .readout {
+      padding: 18px;
+    }
+
+    .formula {
+      margin: 0 0 14px;
+      border-left: 4px solid var(--cyan);
+      border-radius: 6px;
+      background: #0a1627;
+      padding: 11px 13px;
+      color: #dceaff;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: minmax(210px, .8fr) minmax(300px, 1.2fr) minmax(230px, 1fr);
+      gap: 12px;
+    }
+
+    .matrix-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-2);
+      padding: 14px;
+    }
+
+    .matrix-card h3 { margin: 0 0 10px; }
+
+    .matrix {
+      position: relative;
+      display: grid;
+      gap: 5px 9px;
+      width: max-content;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 7px 12px;
+      color: #f8fbff;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: clamp(.72rem, 1.4vw, .9rem);
+      text-align: right;
+    }
+
+    .matrix::before, .matrix::after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 7px;
+      border-top: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      content: "";
+    }
+
+    .matrix::before { left: 0; border-left: 2px solid var(--muted); }
+    .matrix::after { right: 0; border-right: 2px solid var(--muted); }
+
+    .checks {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: .83rem;
+    }
+
+    .checks strong { color: var(--green); }
+
+    .missions {
+      grid-column: 1 / -1;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(16, 29, 48, .94);
+      padding: 18px 20px;
+    }
+
+    .missions ol {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: mission;
+    }
+
+    .missions li {
+      position: relative;
+      min-height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0c192a;
+      padding: 15px 14px 14px 48px;
+      color: var(--muted);
+      counter-increment: mission;
+    }
+
+    .missions li::before {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--cyan);
+      color: #05101d;
+      content: counter(mission);
+      font-weight: 900;
+    }
+
+    .missions strong { color: var(--text); }
+
+    @media (max-width: 1250px) {
+      main { grid-template-columns: 1fr; }
+      .matrix-row { grid-template-columns: 1fr 1fr; }
+      .matrix-card:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 680px) {
+      header { padding-inline: 16px; }
+      main { padding-inline: 12px; }
+      .canvas-wrap, canvas { min-height: 420px; height: 420px; }
+      .matrix-row, .missions ol { grid-template-columns: 1fr; }
+      .matrix-card:last-child { grid-column: auto; }
+      .preset-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Robotics IK · Stage 02 Lab</p>
+    <h1>3D 회전·강체변환 실습</h1>
+    <p>각도와 이동을 바꾸며 좌표축, 회전행렬 R, 동차변환 T, 변환된 점이 한꺼번에 어떻게 달라지는지 관찰하세요. 모든 계산은 열벡터와 오른손 규칙을 사용합니다.</p>
+  </header>
+
+  <main>
+    <aside class="panel" aria-label="변환 입력">
+      <h2>변환 만들기</h2>
+      <label class="select-label" for="order"><span>회전 순서</span></label>
+      <select id="order">
+        <option value="zyx">Z-Y-X · Rz(ψ) Ry(θ) Rx(φ)</option>
+        <option value="xyz">X-Y-Z · Rx(φ) Ry(θ) Rz(ψ)</option>
+      </select>
+
+      <section class="control-group">
+        <h3>회전각</h3>
+        <label class="range-label" for="roll"><span>roll φ · x축</span><span class="value" id="rollValue">0°</span></label>
+        <input id="roll" type="range" min="-180" max="180" step="1" value="0">
+        <label class="range-label" for="pitch"><span>pitch θ · y축</span><span class="value" id="pitchValue">0°</span></label>
+        <input id="pitch" type="range" min="-180" max="180" step="1" value="0">
+        <label class="range-label" for="yaw"><span>yaw ψ · z축</span><span class="value" id="yawValue">0°</span></label>
+        <input id="yaw" type="range" min="-180" max="180" step="1" value="0">
+      </section>
+
+      <section class="control-group">
+        <h3>이동 p · A 좌표</h3>
+        <div class="triplet">
+          <label>px<input id="px" type="number" min="-3" max="3" step="0.1" value="0"></label>
+          <label>py<input id="py" type="number" min="-3" max="3" step="0.1" value="0"></label>
+          <label>pz<input id="pz" type="number" min="-3" max="3" step="0.1" value="0"></label>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h3>B 좌표 입력 r<sub>B</sub> / d<sub>B</sub></h3>
+        <div class="triplet">
+          <label>x<input id="pointX" type="number" min="-3" max="3" step="0.1" value="1"></label>
+          <label>y<input id="pointY" type="number" min="-3" max="3" step="0.1" value="0"></label>
+          <label>z<input id="pointZ" type="number" min="-3" max="3" step="0.1" value="0"></label>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h3>프리셋</h3>
+        <div class="preset-grid">
+          <button id="presetIdentity" type="button">항등 자세</button>
+          <button id="presetExample" type="button">z축 90° + 이동</button>
+          <button id="presetOrder" type="button">회전 순서 비교</button>
+          <button id="presetGimbal" type="button">pitch 90°</button>
+        </div>
+      </section>
+    </aside>
+
+    <section class="panel stage" aria-label="3차원 좌표계 시각화와 계산 결과">
+      <div class="canvas-wrap">
+        <canvas id="scene" role="img" aria-label="세계 좌표계 A와 변환된 좌표계 B, 변환된 점의 등각 투영 그림"></canvas>
+        <div class="legend" aria-hidden="true">
+          <span class="key" style="--key: var(--red)">x축</span>
+          <span class="key" style="--key: var(--green)">y축</span>
+          <span class="key" style="--key: var(--blue)">z축</span>
+          <span class="key" style="--key: var(--amber)">변환된 점 r<sub>A</sub></span>
+          <span>A: 흐린 축 · B: 밝은 축</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <p class="formula" id="sequence">적용 순서: Rx(roll) → Ry(pitch) → Rz(yaw)</p>
+        <p class="formula" id="pointEquation">r_A = R r_B + p</p>
+        <p class="formula" id="directionEquation">d_A = R d_B · 이동 p의 영향 없음</p>
+        <div class="matrix-row">
+          <article class="matrix-card">
+            <h3>회전행렬 R</h3>
+            <div class="matrix" id="rotationMatrix" aria-label="3 곱하기 3 회전행렬"></div>
+          </article>
+          <article class="matrix-card">
+            <h3>동차변환 T</h3>
+            <div class="matrix" id="transformMatrix" aria-label="4 곱하기 4 동차변환"></div>
+          </article>
+          <article class="matrix-card">
+            <h3>회전행렬 검사</h3>
+            <div class="checks">
+              <span>det(R) = <strong id="detValue">1.000000</strong></span>
+              <span>R<sup>T</sup>R − I 최대 오차 = <strong id="orthoValue">0.00e+0</strong></span>
+              <span>열 1·열 2 = <strong id="dotValue">0.000000</strong></span>
+              <span>열의 길이 = <strong id="lengthValue">1, 1, 1</strong></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="missions">
+      <h2>관찰 미션</h2>
+      <ol>
+        <li><strong>점과 방향 구별</strong><br>이동 p만 바꿔 본다. 점 r<sub>A</sub>는 움직이지만 같은 입력을 방향벡터로 계산한 d<sub>A</sub>는 그대로여야 한다.</li>
+        <li><strong>순서 비교</strong><br>프리셋을 누르고 Z-Y-X와 X-Y-Z를 번갈아 선택한다. r<sub>A</sub>가 +y와 +z로 달라지는지 확인한다.</li>
+        <li><strong>짐벌락 탐색</strong><br>pitch 90° 프리셋의 R을 기록한다. roll과 yaw를 모두 30°로 바꿔도 같은 R이 나오며 det(R)과 직교성은 유지되는지 확인한다.</li>
+      </ol>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const ids = ["roll", "pitch", "yaw", "px", "py", "pz", "pointX", "pointY", "pointZ"];
+      const elements = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
+      const order = document.getElementById("order");
+      const canvas = document.getElementById("scene");
+      const ctx = canvas.getContext("2d");
+      let current = null;
+
+      const multiply = (a, b) => a.map((row) =>
+        b[0].map((_, j) => row.reduce((sum, value, k) => sum + value * b[k][j], 0))
+      );
+
+      const multiplyVector = (matrix, vector) => matrix.map((row) =>
+        row.reduce((sum, value, index) => sum + value * vector[index], 0)
+      );
+
+      const transpose = (matrix) => matrix[0].map((_, j) => matrix.map((row) => row[j]));
+      const dot = (a, b) => a.reduce((sum, value, index) => sum + value * b[index], 0);
+      const norm = (vector) => Math.sqrt(dot(vector, vector));
+      const radians = (degrees) => degrees * Math.PI / 180;
+
+      const rx = (angle) => {
+        const c = Math.cos(angle), s = Math.sin(angle);
+        return [[1, 0, 0], [0, c, -s], [0, s, c]];
+      };
+
+      const ry = (angle) => {
+        const c = Math.cos(angle), s = Math.sin(angle);
+        return [[c, 0, s], [0, 1, 0], [-s, 0, c]];
+      };
+
+      const rz = (angle) => {
+        const c = Math.cos(angle), s = Math.sin(angle);
+        return [[c, -s, 0], [s, c, 0], [0, 0, 1]];
+      };
+
+      const determinant3 = (m) =>
+        m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+        - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+        + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+
+      const number = (id) => {
+        const parsed = Number(elements[id].value);
+        return Number.isFinite(parsed) ? parsed : 0;
+      };
+
+      const tidy = (value, digits = 3) => {
+        const clean = Math.abs(value) < 5e-10 ? 0 : value;
+        return clean.toFixed(digits);
+      };
+
+      function renderMatrix(targetId, matrix) {
+        const target = document.getElementById(targetId);
+        target.style.gridTemplateColumns = `repeat(${matrix[0].length}, minmax(42px, auto))`;
+        target.replaceChildren(...matrix.flat().map((value) => {
+          const cell = document.createElement("span");
+          cell.textContent = tidy(value);
+          return cell;
+        }));
+      }
+
+      function calculate() {
+        const angles = {
+          roll: radians(number("roll")),
+          pitch: radians(number("pitch")),
+          yaw: radians(number("yaw"))
+        };
+        const r = order.value === "zyx"
+          ? multiply(multiply(rz(angles.yaw), ry(angles.pitch)), rx(angles.roll))
+          : multiply(multiply(rx(angles.roll), ry(angles.pitch)), rz(angles.yaw));
+        const p = [number("px"), number("py"), number("pz")];
+        const pointB = [number("pointX"), number("pointY"), number("pointZ")];
+        const rotated = multiplyVector(r, pointB);
+        const pointA = rotated.map((value, index) => value + p[index]);
+        const t = [
+          [r[0][0], r[0][1], r[0][2], p[0]],
+          [r[1][0], r[1][1], r[1][2], p[1]],
+          [r[2][0], r[2][1], r[2][2], p[2]],
+          [0, 0, 0, 1]
+        ];
+        return { r, p, pointB, pointA, directionA: rotated, t };
+      }
+
+      function updateText(data) {
+        ["roll", "pitch", "yaw"].forEach((id) => {
+          document.getElementById(`${id}Value`).textContent = `${number(id)}°`;
+        });
+
+        document.getElementById("sequence").textContent = order.value === "zyx"
+          ? "적용 순서: Rx(roll) → Ry(pitch) → Rz(yaw) · 오른쪽부터"
+          : "적용 순서: Rz(yaw) → Ry(pitch) → Rx(roll) · 오른쪽부터";
+        document.getElementById("pointEquation").textContent =
+          `r_A = R r_B + p = [${data.pointA.map((v) => tidy(v)).join(", ")}]ᵀ`;
+        document.getElementById("directionEquation").textContent =
+          `d_A = R d_B = [${data.directionA.map((v) => tidy(v)).join(", ")}]ᵀ · 이동 p의 영향 없음`;
+        renderMatrix("rotationMatrix", data.r);
+        renderMatrix("transformMatrix", data.t);
+
+        const rtR = multiply(transpose(data.r), data.r);
+        let maxError = 0;
+        for (let i = 0; i < 3; i += 1) {
+          for (let j = 0; j < 3; j += 1) {
+            maxError = Math.max(maxError, Math.abs(rtR[i][j] - (i === j ? 1 : 0)));
+          }
+        }
+        const columns = transpose(data.r);
+        document.getElementById("detValue").textContent = tidy(determinant3(data.r), 6);
+        document.getElementById("orthoValue").textContent = maxError.toExponential(2);
+        document.getElementById("dotValue").textContent = tidy(dot(columns[0], columns[1]), 6);
+        document.getElementById("lengthValue").textContent = columns.map((column) => tidy(norm(column), 6)).join(", ");
+      }
+
+      function resizeCanvas() {
+        const ratio = window.devicePixelRatio || 1;
+        const box = canvas.getBoundingClientRect();
+        const width = Math.max(1, Math.round(box.width * ratio));
+        const height = Math.max(1, Math.round(box.height * ratio));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+
+      function draw(data) {
+        resizeCanvas();
+        const width = canvas.getBoundingClientRect().width;
+        const height = canvas.getBoundingClientRect().height;
+        ctx.clearRect(0, 0, width, height);
+        const scale = Math.min(width, height) / 8.5;
+        const origin = [width * 0.5, height * 0.58];
+        const project = ([x, y, z]) => [
+          origin[0] + (x - y) * 0.866 * scale,
+          origin[1] + (x + y) * 0.5 * scale - z * scale
+        ];
+
+        const line = (from, to, color, widthValue = 2, alpha = 1) => {
+          const a = project(from), b = project(to);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = color;
+          ctx.lineWidth = widthValue;
+          ctx.beginPath();
+          ctx.moveTo(a[0], a[1]);
+          ctx.lineTo(b[0], b[1]);
+          ctx.stroke();
+          ctx.restore();
+        };
+
+        const label = (point, textValue, color, offsetX = 6, offsetY = -7) => {
+          const [x, y] = project(point);
+          ctx.fillStyle = color;
+          ctx.font = "700 13px system-ui, sans-serif";
+          ctx.fillText(textValue, x + offsetX, y + offsetY);
+        };
+
+        const arrow = (from, direction, length, color, textValue, alpha = 1) => {
+          const end = from.map((value, index) => value + direction[index] * length);
+          line(from, end, color, alpha < 1 ? 2 : 4, alpha);
+          const [sx, sy] = project(from), [ex, ey] = project(end);
+          const angle = Math.atan2(ey - sy, ex - sx);
+          ctx.save();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.moveTo(ex, ey);
+          ctx.lineTo(ex - 10 * Math.cos(angle - Math.PI / 6), ey - 10 * Math.sin(angle - Math.PI / 6));
+          ctx.lineTo(ex - 10 * Math.cos(angle + Math.PI / 6), ey - 10 * Math.sin(angle + Math.PI / 6));
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+          label(end, textValue, color);
+        };
+
+        for (let i = -3; i <= 3; i += 1) {
+          line([-3, i, 0], [3, i, 0], "#28405d", 1, .35);
+          line([i, -3, 0], [i, 3, 0], "#28405d", 1, .35);
+        }
+
+        const colors = ["#ff6b6b", "#69db7c", "#74a9ff"];
+        const basis = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+        ["xA", "yA", "zA"].forEach((name, index) => arrow([0, 0, 0], basis[index], 2.6, colors[index], name, .42));
+
+        const axesB = transpose(data.r);
+        ["xB", "yB", "zB"].forEach((name, index) => arrow(data.p, axesB[index], 1.55, colors[index], name));
+
+        line(data.p, data.pointA, "#ffc857", 2, .75);
+        const [pointX, pointY] = project(data.pointA);
+        ctx.fillStyle = "#ffc857";
+        ctx.shadowColor = "rgba(255,200,87,.7)";
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(pointX, pointY, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        label(data.pointA, "rA", "#ffc857", 10, -10);
+
+        const [frameX, frameY] = project(data.p);
+        ctx.fillStyle = "#edf5ff";
+        ctx.beginPath();
+        ctx.arc(frameX, frameY, 4, 0, Math.PI * 2);
+        ctx.fill();
+        label(data.p, "B 원점 p", "#edf5ff", 8, 17);
+      }
+
+      function update() {
+        current = calculate();
+        updateText(current);
+        draw(current);
+      }
+
+      function setValues(values) {
+        Object.entries(values).forEach(([id, value]) => {
+          if (id === "order") order.value = value;
+          else elements[id].value = value;
+        });
+        update();
+      }
+
+      const presets = {
+        identity: { order: "zyx", roll: 0, pitch: 0, yaw: 0, px: 0, py: 0, pz: 0, pointX: 1, pointY: 0, pointZ: 0 },
+        example: { order: "zyx", roll: 0, pitch: 0, yaw: 90, px: 2, py: 1, pz: 3, pointX: 1, pointY: 0, pointZ: 0 },
+        order: { order: "zyx", roll: 90, pitch: 0, yaw: 90, px: 0, py: 0, pz: 0, pointX: 1, pointY: 0, pointZ: 0 },
+        gimbal: { order: "zyx", roll: 0, pitch: 90, yaw: 0, px: 1, py: 0.5, pz: 1, pointX: 1, pointY: 0, pointZ: 0 }
+      };
+
+      [...Object.values(elements), order].forEach((element) => element.addEventListener("input", update));
+      document.getElementById("presetIdentity").addEventListener("click", () => setValues(presets.identity));
+      document.getElementById("presetExample").addEventListener("click", () => setValues(presets.example));
+      document.getElementById("presetOrder").addEventListener("click", () => setValues(presets.order));
+      document.getElementById("presetGimbal").addEventListener("click", () => setValues(presets.gimbal));
+      window.addEventListener("resize", () => current && draw(current));
+      if ("ResizeObserver" in window) new ResizeObserver(() => current && draw(current)).observe(canvas);
+      update();
+    })();
+  </script>
+</body>
+</html>

@@ -20,14 +20,14 @@
     .solution label { display: flex; align-items: center; gap: 7px; font-weight: 500; margin: 8px 0; } .solution input { accent-color: #0284c7; }
     .formula { font-variant-numeric: tabular-nums; color: light-dark(#334155, #cbd5e1); font-size: .92rem; }
     canvas { display: block; width: 100%; aspect-ratio: 1.25; touch-action: none; } .legend { display: flex; gap: 13px; flex-wrap: wrap; margin-top: 10px; font-size: .9rem; }
-    .key { display: inline-block; width: .8em; height: .8em; margin-right: .3em; border-radius: 50%; background: #dc2626; } .key.alt { background: #7c3aed; } .key.target { background: #0f172a; }
+    .key { display: inline-block; width: .8em; height: .8em; margin-right: .3em; border-radius: 50%; background: #dc2626; } .key.alt { background: #7c3aed; } .key.target { background: light-dark(#0f172a, #f8fafc); }
     @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <main>
     <h1>2관절 평면 팔: 역기구학(IK) 연습</h1>
-    <p class="intro">목표 좌표를 입력하거나 그림을 클릭하세요. 가능한 경우 팔꿈치 위·아래의 두 해를 비교할 수 있습니다.</p>
+    <p class="intro">목표 좌표를 입력하거나 그림을 클릭하세요. 가능한 경우 sin θ₂의 부호가 다른 두 해를 비교하고 FK로 검산할 수 있습니다.</p>
     <div class="layout">
       <section class="panel" aria-label="IK 목표와 해">
         <div class="row">
@@ -36,16 +36,18 @@
         </div>
         <div class="presets" aria-label="연습 목표">
           <button type="button" data-x="3" data-y="2">예제 (3, 2)</button>
+          <button type="button" data-x="2" data-y="2">추가 목표 (2, 2)</button>
           <button type="button" data-x="5" data-y="0">완전 펴짐</button>
           <button type="button" data-x="1" data-y="0">완전 접힘</button>
           <button type="button" data-x="5.5" data-y="0">도달 불가</button>
         </div>
         <div id="status" class="status" aria-live="polite"></div>
         <div class="solution" id="solutions">
-          <label><input type="radio" name="solution" value="positive" checked> 해 1: sin θ₂ &gt; 0 분기</label>
-          <label><input type="radio" name="solution" value="negative"> 해 2: sin θ₂ &lt; 0 분기</label>
+          <label><input type="radio" name="solution" value="positive" checked> 해 1: sin θ₂ ≥ 0 분기</label>
+          <label><input type="radio" name="solution" value="negative"> 해 2: sin θ₂ ≤ 0 분기</label>
           <p class="formula" id="angles"></p>
           <p class="formula" id="cosine"></p>
+          <p class="formula" id="verification"></p>
         </div>
       </section>
       <section class="canvas-wrap">
@@ -74,17 +76,25 @@
     function line(a, b, color, width, dash = []) { ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.stroke(); ctx.setLineDash([]); }
     function drawArm(points, color, alpha) { ctx.globalAlpha = alpha; line(points[0], points[1], color, 9); line(points[1], points[2], color, 9); for (const p of points) { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill(); } ctx.globalAlpha = 1; }
     function draw() {
+      const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const colors = dark
+        ? { grid: '#334155', axis: '#94a3b8', text: '#cbd5e1', target: '#f8fafc' }
+        : { grid: '#e2e8f0', axis: '#64748b', text: '#334155', target: '#0f172a' };
       const width = Math.max(320, canvas.clientWidth), height = Math.round(width / 1.25), dpr = window.devicePixelRatio || 1;
       canvas.width = width * dpr; canvas.height = height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, width, height);
       const scale = Math.min(width, height) / 12, origin = { x: width / 2, y: height * .58 };
       const pt = (x, y) => ({ x: origin.x + x * scale, y: origin.y - y * scale });
-      for (let i = -5; i <= 5; i++) { line(pt(i, -5), pt(i, 5), '#e2e8f0', 1); line(pt(-5, i), pt(5, i), '#e2e8f0', 1); }
+      for (let i = -5; i <= 5; i++) { line(pt(i, -5), pt(i, 5), colors.grid, 1); line(pt(-5, i), pt(5, i), colors.grid, 1); }
       ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.arc(origin.x, origin.y, (l1 + l2) * scale, 0, Math.PI * 2); ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.stroke();
       ctx.beginPath(); ctx.arc(origin.x, origin.y, Math.abs(l1 - l2) * scale, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-      line(pt(-5.5, 0), pt(5.5, 0), '#64748b', 1.5); line(pt(0, -5), pt(0, 5), '#64748b', 1.5);
-      const x = Number($('x').value), y = Number($('y').value), target = pt(x, y);
-      ctx.beginPath(); ctx.arc(target.x, target.y, 7, 0, Math.PI * 2); ctx.fillStyle = '#0f172a'; ctx.fill();
-      ctx.fillStyle = '#334155'; ctx.font = '14px system-ui'; ctx.fillText(`(${fmt(x)}, ${fmt(y)})`, target.x + 10, target.y - 10);
+      line(pt(-5.5, 0), pt(5.5, 0), colors.axis, 1.5); line(pt(0, -5), pt(0, 5), colors.axis, 1.5);
+      const rawX = $('x').value.trim(), rawY = $('y').value.trim();
+      const x = Number(rawX), y = Number(rawY);
+      if (rawX !== '' && rawY !== '' && Number.isFinite(x) && Number.isFinite(y)) {
+        const target = pt(x, y);
+        ctx.beginPath(); ctx.arc(target.x, target.y, 7, 0, Math.PI * 2); ctx.fillStyle = colors.target; ctx.fill();
+        ctx.fillStyle = colors.text; ctx.font = '14px system-ui'; ctx.fillText(`(${fmt(x)}, ${fmt(y)})`, target.x + 10, target.y - 10);
+      }
       if (result && result.reachable) {
         const selected = document.querySelector('input[name="solution"]:checked').value;
         const other = selected === 'positive' ? 'negative' : 'positive';
@@ -93,16 +103,20 @@
       }
     }
     function update() {
-      const x = Number($('x').value), y = Number($('y').value); result = solve(x, y);
       const status = $('status'), solutions = $('solutions');
-      if (!Number.isFinite(x) || !Number.isFinite(y)) { status.textContent = '유효한 목표 좌표를 입력하세요.'; status.className = 'status bad'; solutions.hidden = true; draw(); return; }
+      const rawX = $('x').value.trim(), rawY = $('y').value.trim();
+      const x = Number(rawX), y = Number(rawY);
+      if (rawX === '' || rawY === '' || !Number.isFinite(x) || !Number.isFinite(y)) { result = null; status.textContent = '유효한 목표 좌표를 입력하세요.'; status.className = 'status bad'; solutions.hidden = true; draw(); return; }
+      result = solve(x, y);
       if (!result.reachable) { status.textContent = `도달 불가: 목표 거리 ${fmt(Math.hypot(x, y))}는 허용 범위 1.00–5.00 밖입니다.`; status.className = 'status bad'; solutions.hidden = true; draw(); return; }
       const singular = Math.abs(Math.abs(result.c2) - 1) < 1e-7;
-      status.textContent = singular ? '도달 가능 — 특이점: 두 해가 같은 일직선 자세로 합쳐집니다.' : '도달 가능 — 팔꿈치 방향이 다른 두 개의 해가 있습니다.';
+      status.textContent = singular ? '도달 가능 — 특이점: 두 분기가 같은 일직선 자세로 합쳐집니다.' : '도달 가능 — sin θ₂의 부호가 다른 두 개의 해가 있습니다.';
       status.className = 'status'; solutions.hidden = false;
       const choice = document.querySelector('input[name="solution"]:checked').value, s = result[choice];
       $('angles').textContent = `선택한 해: θ₁ = ${fmt(radToDeg(s.t1))}°, θ₂ = ${fmt(radToDeg(s.t2))}°`;
       $('cosine').textContent = `cos θ₂ = ${fmt(result.c2)}, 목표 거리 r = ${fmt(result.radius)}`;
+      const endpoint = armPoints(s)[2], error = Math.hypot(endpoint.x - x, endpoint.y - y);
+      $('verification').textContent = `FK 검산 오차 = ${error.toExponential(2)} (0에 가까우면 일치)`;
       draw();
     }
     $('x').addEventListener('input', update); $('y').addEventListener('input', update);
