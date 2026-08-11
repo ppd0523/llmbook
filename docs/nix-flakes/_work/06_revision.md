@@ -1,9 +1,9 @@
 ---
 title: 퇴고 계획 및 반영 내역
-version: 1.0
+version: 1.1
 status: final
 owner: agent
-updated: 2026-07-24
+updated: 2026-08-11
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake 학습성 개선
 ---
@@ -60,6 +60,9 @@ topic: Nix Flake 학습성 개선
 | functional check | 5장 | 평가 성공보다 강한 검증을 보여 주기 위해 |
 | 검증 사다리 | 6장 | 오류 단계에 맞는 명령을 선택하게 하기 위해 |
 | x86_64-darwin release 경고 | 5장 | 현재 stable의 버전 의존성을 드러내기 위해 |
+| 결과 예시 우선 배치 | 1장 | `nix flake show` 결과를 먼저 제시해 output tree의 목적을 선명하게 하기 위해 |
+| 새 용어의 첫 설명 보강 | 전체 챕터 | package, app, formatter, check, runtime dependency를 문맥 안에서 짧게 정의하기 위해 |
+| 최종 과제의 기대 동작 명시 | 6장 | 이름 있는 JSON app의 입력·출력·런타임 의존성을 명확하게 하기 위해 |
 
 ## 6. 교정 전 확인
 
@@ -71,3 +74,10 @@ topic: Nix Flake 학습성 개선
 ## 7. 남은 TODO
 
 - 없음
+
+## 8. 2026-08-11 추가 퇴고
+
+- [x] 결과 예시가 추상 설명보다 먼저 나오도록 1장 도입을 재배치했다.
+- [x] 새 용어를 처음 쓰는 문장에서 필요성, 한 문장 정의, 필요한 영문 표기를 함께 제시했다.
+- [x] 최종 과제가 요구하는 JSON app의 입력, 기대 출력, runtime dependency를 명시했다.
+- [x] 기존 기술 검증 범위를 바꾸지 않았으며, 기술적 주장은 검증 기록과 공식 출처를 유지했다.

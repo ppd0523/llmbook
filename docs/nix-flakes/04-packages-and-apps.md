@@ -8,9 +8,10 @@
 
 ## 4.1 package와 app은 같은 것이 아니다
 
-`packages.<system>.<name>`은 Nix가 빌드해 Nix Store에 둘 derivation을 제공한다.
-`apps.<system>.<name>`은 어떤 Store 내부 실행 파일을 실행할지 설명하는 작은 속성
-집합이다.
+패키지(package)는 Nix가 빌드해 Nix Store에 둘 결과다. 이 결과를 기술적으로
+derivation이라고 부르며, derivation은 빌드 절차와 그 결과를 Nix가 표현하는 값이다.
+`packages.<system>.<name>`은 이 패키지를 제공한다. 앱(app)은 어떤 Store 내부 실행
+파일을 시작할지 설명하는 작은 속성 집합이며, `apps.<system>.<name>`에 둔다.
 
 | 출력 | 질문 | 대표 명령 |
 |---|---|---|
@@ -65,8 +66,8 @@ app을 명시하면 공개 실행 진입점과 설명을 분명히 할 수 있�
 }
 ```
 
-`writeShellApplication`은 실행 가능한 shell application을 만들고 runtime dependency를
-PATH에 연결한다.
+`writeShellApplication`은 실행 가능한 shell application을 만들고 런타임 의존성(runtime
+dependency), 즉 빌드 뒤 프로그램을 실행할 때도 필요한 도구를 PATH에 연결한다.
 
 - `name`은 생성할 실행 파일명이다.
 - `runtimeInputs`의 `pkgs.cowsay`는 실행 시 필요한 command를 명시한다.
@@ -74,7 +75,8 @@ PATH에 연결한다.
 - `default = flake-greeter`는 인자 없는 `nix build`의 기본 package를 정한다.
 
 `pkgs.cowsay`를 개발 셸에만 넣고 package의 `runtimeInputs`에서 빼면 빌드 결과를 개발
-셸 밖에서 실행할 때 실패할 수 있다. 개발 의존성과 런타임 의존성은 별도로 선언한다.
+셸 밖에서 실행할 때 실패할 수 있다. 개발 의존성은 프로그램을 만들 때 필요한 도구이고,
+런타임 의존성은 완성된 프로그램이 실행할 때 필요한 도구이므로 별도로 선언한다.
 
 ## 4.3 Nix 문자열 안의 shell 확장
 

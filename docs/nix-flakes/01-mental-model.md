@@ -6,7 +6,24 @@
 2. Flake reference와 출력 속성 경로를 구분한다.
 3. `nix flake show`에서 현재 시스템의 기본 package를 찾는다.
 
-## 1.1 Flake가 추가하는 경계
+## 1.1 먼저 보이는 결과
+
+Flake를 읽을 때는 `flake.nix` 전체를 해석하려 하기보다, 먼저 이 프로젝트가 제공하는
+결과를 확인하는 편이 낫다. 1.2의 예제를 저장한 뒤 다음 명령을 실행하면 현재 시스템에
+제공하는 기본 패키지가 보인다.
+
+```console
+$ nix flake show
+git+file:///...?
+└───packages
+    └───x86_64-linux
+        └───default: package 'hello-...'
+```
+
+이 결과는 `nix build`가 기본으로 선택할 대상을 알려 준다. 이 장에서는 이처럼 명령이
+찾는 결과가 어디에서 만들어지는지 역순으로 살펴본다.
+
+## 1.2 Flake가 추가하는 경계
 
 Nix 표현식은 원래도 package와 개발 환경을 만들 수 있다. 문제는 다른 저장소의 Nix
 코드를 사용할 때다.
@@ -15,7 +32,9 @@ Nix 표현식은 원래도 package와 개발 환경을 만들 수 있다. 문제
 - 저장소가 package, 개발 셸, 앱 중 무엇을 제공하는지 어떻게 찾을 것인가?
 - 명령이 기본값으로 선택할 출력의 이름을 어떻게 맞출 것인가?
 
-Flake는 이 세 문제에 공통 경계를 제공한다.
+Flake는 이 세 문제에 공통 경계를 제공한다. 이 문서에서 입력(input)은 Flake가 평가할
+때 가져오는 다른 소스이고, 출력(output)은 패키지·앱·개발 셸처럼 명령이 사용할 수 있게
+Flake가 내놓는 Nix 값이다. 출력 스키마(output schema)는 그 값을 둘 속성 경로의 관례다.
 
 ```text
 input URL                     output schema
@@ -34,7 +53,7 @@ github:NixOS/nixpkgs/...      packages.<system>.default
 공식 문서는 Flake를 루트에 `flake.nix`를 가진 파일 시스템 트리이자, 입력과 출력을
 표준 구조로 선언하는 단위로 설명한다. Flake가 Nix 언어 자체를 대체하는 것은 아니다.
 
-## 1.2 세 가지를 분리해서 읽기
+## 1.3 세 가지를 분리해서 읽기
 
 다음 `flake.nix`는 Nixpkgs의 GNU Hello package를 기본 package로 내보낸다.
 
@@ -62,12 +81,13 @@ github:NixOS/nixpkgs/...      packages.<system>.default
 
 1. `description`은 사람을 위한 설명이다.
 2. `inputs.nixpkgs.url`은 Nixpkgs를 어디에서 가져올지 선언한다.
-3. `outputs`는 잠긴 입력을 받아 package 출력 트리를 반환하는 함수다.
+3. `outputs`는 잠긴 입력을 받아 패키지(package) 출력 트리를 반환하는 함수다. 패키지는
+   Nix가 빌드해 Nix Store에 둘 결과를 나타내는 값이다.
 
 현재 머신이 Apple Silicon macOS라면 예제의 시스템은 `aarch64-darwin`, Intel macOS면
 `x86_64-darwin`으로 바꾼다. 5장에서 이 하드코딩을 제거한다.
 
-## 1.3 `self`와 나머지 입력
+## 1.4 `self`와 나머지 입력
 
 `outputs` 함수에 전달되는 속성 집합에는 `self`와 선언된 input이 들어온다.
 
@@ -86,7 +106,7 @@ outputs = { self, nixpkgs }: {
 지금 예제는 `self`를 사용하지 않으므로 `{ nixpkgs, ... }`로 받았다. 4장에서 app이
 현재 Flake의 package를 가리킬 때 `self.packages.${system}.default`를 사용한다.
 
-## 1.4 Flake reference와 속성 경로
+## 1.5 Flake reference와 속성 경로
 
 다음 명령에서 `.`과 `hello`는 역할이 다르다.
 
@@ -108,7 +128,7 @@ $ nix build github:NixOS/nixpkgs/nixos-26.05#hello
 reference는 소스의 위치를 말하고, `#` 뒤는 그 소스가 제공하는 출력의 이름을 말한다.
 이 둘을 분리해 읽으면 긴 명령도 추적할 수 있다.
 
-## 1.5 첫 출력 확인
+## 1.6 첫 출력 확인
 
 빈 디렉터리에서 예제를 실습한다.
 
@@ -145,7 +165,7 @@ Hello, world!
 `result`는 Nix Store의 빌드 결과를 가리키는 심볼릭 링크다. package 자체가 현재
 디렉터리에 복사된 것은 아니다.
 
-## 1.6 명령은 출력 트리를 탐색한다
+## 1.7 명령은 출력 트리를 탐색한다
 
 자주 사용하는 기본 경로를 먼저 기억한다.
 

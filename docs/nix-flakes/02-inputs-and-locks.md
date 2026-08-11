@@ -20,6 +20,9 @@ inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 보면 어느 시점의 Nixpkgs를 사용했는지 알 수 없다. Nix는 URL을 해석한 결과를
 `flake.lock`에 기록한다.
 
+여기서 revision은 특정 Git commit을 가리키는 식별자다. 같은 branch 이름을 계속
+사용하더라도 잠금 파일에 기록된 revision이 같으면 Nix는 같은 시점의 소스를 사용한다.
+
 | 파일 | 답하는 질문 |
 |---|---|
 | `flake.nix` | 어떤 입력 계열을 사용하고 어떤 출력을 만들 것인가? |
@@ -29,7 +32,8 @@ inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
 ## 2.2 잠금 그래프 읽기
 
-`flake.lock`은 JSON 문서다. 실제 값은 생성 시점마다 달라지지만 구조는 다음과 같다.
+`flake.lock`은 JSON 문서다. 잠금 그래프는 input 이름과 그 input이 실제로 가리키는
+소스를 node로 연결한 구조다. 실제 값은 생성 시점마다 달라지지만 구조는 다음과 같다.
 
 파일: `<project-root>/flake.lock` (생성되는 잠금 파일의 구조 예시)
 
@@ -65,7 +69,8 @@ inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
 - `original`은 `flake.nix`에 선언한 의도를 정규화한 값이다.
 - `locked.rev`는 실제 Git revision이다.
-- `locked.narHash`는 가져온 소스 트리 내용의 hash다.
+- `locked.narHash`는 가져온 소스 트리 내용의 hash, 즉 내용이 달라지면 함께 달라지는
+  식별값이다.
 - `root.inputs`는 현재 Flake의 input 이름을 잠금 그래프 node에 연결한다.
 
 `lastModified`나 lock schema version을 직접 편집하지 않는다. Nix 명령으로 갱신하고

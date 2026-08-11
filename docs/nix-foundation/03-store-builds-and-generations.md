@@ -91,8 +91,9 @@ closure의 크기도 확인할 수 있다.
 $ nix path-info --recursive --closure-size nixpkgs#hello
 ```
 
-`nix path-info` 자체는 없는 output을 build하거나 내려받지 않으므로 먼저 `nix build`로
-결과를 확보했다.
+`nix path-info`는 output을 새로 build하는 명령이 아니므로, 이 예제에서는 먼저
+`nix build`로 결과를 확보했다. 다만 Store 설정에 따라 원격 cache의 메타데이터를
+조회할 수는 있다.
 
 `nix why-depends`는 예상하지 못한 의존성이 왜 들어왔는지 추적할 때 쓴다.
 
@@ -167,6 +168,11 @@ generation은 Git commit과 다르다.
 - generation은 **이미 빌드된 어떤 결과가 활성 상태였는지**를 보존한다.
 
 안전한 복구에는 둘 다 필요하다.
+
+따라서 롤백 직후에는 source도 확인한다. 이전 generation으로 돌아가도 Git의
+`flake.nix`, `configuration.nix`, `home.nix`가 자동으로 되돌아가지는 않는다. 원인을
+source에서 고치고 다시 build한 뒤 활성화해야 다음 변경에도 같은 문제가 재발하지
+않는다.
 
 ## 3.7 garbage root와 garbage collection
 

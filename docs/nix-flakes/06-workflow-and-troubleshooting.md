@@ -46,7 +46,8 @@ $ git status --short
 ```
 
 필요한 새 파일이 추적 대상인지 확인한다. Nix가 “파일을 찾을 수 없다”고 말할 때
-가장 먼저 볼 지점이다.
+가장 먼저 볼 지점이다. Git Flake는 Git이 추적하는 파일을 소스로 수집하므로, 새 파일은
+`git add`한 뒤 다시 확인한다.
 
 ### 2단계: 잠금과 metadata 확인
 
@@ -170,7 +171,8 @@ $ nix flake check
 
 - 로컬 파일이 없다고 나온다.
 - import path가 source에 존재하지 않는다.
-- dirty tree 또는 untracked file과 관련된 결과가 예상과 다르다.
+- 변경 사항이 남은 Git 작업 트리(dirty tree) 또는 미추적 파일과 관련된 결과가 예상과
+  다르다.
 
 확인:
 
@@ -269,8 +271,9 @@ $ nix build
 ```
 
 실행 결과가 check에 이미 포함되어 있다면 `nix flake check`가 핵심 진입점이 된다.
-플랫폼을 지원한다고 선언했다면 Linux runner 하나에서 모든 플랫폼을 build했다고
-간주하지 않는다. Linux와 macOS runner가 각자 현재 system의 check를 실행하게 한다.
+플랫폼을 지원한다고 선언했다면 Linux CI 실행 환경(runner) 하나에서 모든 플랫폼을
+build했다고 간주하지 않는다. Linux와 macOS runner가 각자 현재 system의 check를
+실행하게 한다.
 
 lock update 자동화는 build 검증과 diff review 없이 자동 merge하지 않는다. input
 revision 변경은 source code 변경과 같은 수준으로 검토한다.
@@ -295,9 +298,10 @@ state migration의 영향이 크다. 전체 구성은 다음 자료에서 이어
 완성형 예제를 다음 요구사항에 맞게 확장한다.
 
 1. 개발 셸에 Nixpkgs의 `jq`를 추가한다.
-2. `flake-greeter`에 `--json` 인자가 들어오면 `jq`로 JSON 메시지를 출력하는 별도
-   application을 설계한다.
-3. 기본 cowsay 동작과 새 동작을 각각 검사하는 check를 만든다.
+2. `greet-json`처럼 이름 있는 app을 추가한다. 이 app은 메시지 인자 하나를 받아
+   `jq`로 `{"message":"입력한 메시지"}` 형태의 JSON을 출력해야 한다. `jq`는 개발 셸뿐
+   아니라 이 app의 package가 실행될 때도 필요하므로 런타임 의존성으로 선언한다.
+3. 기본 cowsay 동작과 JSON app의 출력을 각각 검사하는 check를 만든다.
 4. 현재 system에서 `nix fmt`, `nix flake check`, `nix run`을 통과시킨다.
 5. `nixpkgs` input만 갱신하고 `flake.lock` diff와 검증 결과를 기록한다.
 

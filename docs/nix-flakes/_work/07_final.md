@@ -1,9 +1,9 @@
 ---
 title: 출판 전 최종 Markdown 원고
-version: 1.0
+version: 1.1
 status: final
 owner: agent
-updated: 2026-07-24
+updated: 2026-08-11
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake 입문
 ---
@@ -82,6 +82,13 @@ nix fmt flake.nix
 nix flake check
 nix flake check --all-systems --no-build
 ```
+
+## 2026-08-11 최종 교정
+
+- 1장은 `nix flake show` 결과를 먼저 보여 준 뒤 input, output, output schema를 설명한다.
+- package, app, formatter, check, runtime dependency는 처음 등장할 때 한국어 정의와 영문
+  표기를 함께 제공한다.
+- 최종 과제는 이름 있는 JSON app의 기대 출력과 `jq`의 런타임 의존성을 명시한다.
 
 NixOS WSL의 Nix 2.34.8에서 x86_64-linux의 평가·build·dev shell·app·check가
 통과했다. 네 system의 output schema는 `--all-systems --no-build`로 평가됐다.

@@ -157,6 +157,11 @@ $ git diff --cached
 - `flake.lock`에는 실제 선택된 revision과 hash 정보가 있다.
 - Store 결과물 자체를 Git에 넣지 않는다.
 
+이 실습에서 `git add`는 두 가지를 구분해 보여 준다. 새 `flake.nix`를 Git 기반
+Flake source에 포함시켜 평가할 수 있게 하고, 동시에 나중에 검토할 변경 목록에
+올린다. 아직 commit하지 않았으므로 `git diff --cached`로 내용을 확인한 뒤에만
+commit한다.
+
 ## 7.6 5단계: 개발 셸 검증
 
 먼저 비대화형으로 실행한다.
@@ -201,7 +206,8 @@ $ nix develop --command rg --version
 ```
 
 이 변경에서는 `flake.lock`이 바뀌지 않아야 한다. 입력 revision은 그대로이고, 그
-입력에서 선택한 package 목록만 바뀌었기 때문이다.
+입력에서 선택한 package 목록만 바뀌었기 때문이다. 실제로 바뀌었다면 명령 실행 중
+입력 갱신이 있었는지 diff로 확인하고, 이유를 모른 채 함께 commit하지 않는다.
 
 ```console
 $ git status --short

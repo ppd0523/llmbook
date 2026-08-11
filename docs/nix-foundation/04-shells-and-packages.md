@@ -63,6 +63,10 @@ $ nix develop .#backend
 장기간 재현할 명세로는 부족할 수 있다. 잠깐 시험하는 데는 편리하고, 프로젝트에서는
 `flake.lock`으로 정확한 입력 revision을 고정한다.
 
+`nixpkgs` registry는 사용자별 설정으로 바뀔 수 있다. 따라서 오류를 공유하거나
+문제를 재현할 때는 “`nixpkgs#...`를 썼다”만 적지 말고 Nix 버전, 입력 reference와
+프로젝트의 `flake.lock` 유무를 함께 기록한다.
+
 ## 4.3 `nix search`: 사용할 package 찾기
 
 `nix shell`에 넣을 이름을 모를 때 추측부터 하지 말고 먼저 검색한다.
@@ -385,7 +389,8 @@ $ nix develop
 
 Flake가 Git 저장소 안에 있으면 아직 Git index에 추가하지 않은 새 파일을 평가에서
 보지 못할 수 있다. “파일이 분명히 있는데 없다”는 오류가 나면 `git status`와
-`git add` 여부를 확인한다.
+`git add` 여부를 확인한다. 여기서 stage는 Flake source에 새 파일을 포함시키는
+확인 단계일 뿐, 변경을 원격 저장소에 보내거나 commit하는 동작은 아니다.
 
 ## 4.9 `flake.lock`은 언제 바뀌는가
 

@@ -1,9 +1,9 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 1.0
+version: 1.1
 status: final
 owner: agent
-updated: 2026-07-24
+updated: 2026-08-11
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake 입문 MkDocs 출판
 ---
@@ -13,7 +13,7 @@ topic: Nix Flake 입문 MkDocs 출판
 ## 1. 최종 산출물 계획
 
 - 기준 원고 Markdown: `_work/07_final.md`와 확정된 챕터 원고 집합
-- 원본 버전: 1.0
+- 원본 버전: 1.1
 - 최종 산출물 형식: MkDocs 챕터형 Markdown
 - 최종 산출물 경로: `docs/nix-flakes/`
 - MkDocs 책 폴더명: `nix-flakes`
@@ -22,13 +22,13 @@ topic: Nix Flake 입문 MkDocs 출판
 - 보조 산출물: `assets/flake-greeter/`
 - 구성 또는 변환 도구: MkDocs Material 9.7.6
 - 구성 또는 변환 명령: `uv run --no-cache --with-requirements requirements.txt mkdocs build --strict`
-- 구성 또는 변환 일시: 2026-07-24
+- 구성 또는 변환 일시: 2026-08-11
 
 ## 2. 산출 결과
 
 | 형식 | 파일 | 상태 | 비고 |
 |---|---|---|---|
-| Chapter Markdown | `index.md`, `01-*.md`~`06-*.md` | 완료 | 6개 챕터 |
+| Chapter Markdown | `index.md`, `01-*.md`~`06-*.md` | 완료 | 6개 챕터, 2026-08-11 strict build 통과 |
 | Example Flake | `assets/flake-greeter/` | 완료 | flake, lock, README |
 | HTML | `site/` | 검증용 생성 | Git 제외 대상 |
 | PDF | 해당 없음 | 미생성 | 요청 범위 아님 |
@@ -80,6 +80,7 @@ topic: Nix Flake 입문 MkDocs 출판
 |---|---|---|---|
 | 다중 system | Nixpkgs 26.05가 마지막 `x86_64-darwin` 지원 release라는 경고 | 5장에 버전 의존성 명시 | 반영 |
 | 실제 build | Darwin과 aarch64는 현재 host에서 build하지 않음 | 플랫폼별 CI 필요성을 본문과 review에 명시 | 반영 |
+| 문장 퇴고 | 새 용어가 정의보다 먼저 나오거나 최종 과제가 모호할 수 있음 | 결과 예시 우선 배치, 용어 첫 설명 보강, 과제의 기대 동작 명시 | 반영 |
 
 ## 7. 최종 결론
 

@@ -139,12 +139,13 @@ $ home-manager build --flake ~/.config/home-manager#alice
 $ home-manager switch --flake ~/.config/home-manager#alice
 ```
 
-- `build`: 새 home generation을 만들지만 활성화하지 않는다.
-- `switch`: build 후 해당 generation을 활성화한다.
+- `build`: 활성화 package를 build하고 보통 현재 디렉터리의 `result` 링크로 확인할
+  수 있게 한다. 이 명령만으로 새 home generation을 활성화하지는 않는다.
+- `switch`: build한 결과를 활성화하고 새 home generation을 현재 상태로 전환한다.
 
 Home Manager가 관리하는 파일을 직접 편집하면 그 변경은 원본 선언에 반영되지 않는다.
 설정 파일이 Store의 read-only 결과로 연결되어 있다면 편집 자체가 실패할 수 있다.
-`home.nix`나 그 source dotfile을 수정하고 다시 switch한다.
+`home.nix`나 그 source dotfile을 수정하고, 먼저 build로 확인한 뒤 switch한다.
 
 ## 6.5 standalone과 NixOS module 방식
 
@@ -254,10 +255,9 @@ generation 롤백 뒤에도 잘못된 source가 자동으로 고쳐지는 것은
 - 개인 인증서 private key
 - 서비스가 계속 갱신하는 database
 
-Nix source가 Store로 복사되면 같은 머신의 다른 사용자가 Store 내용을 읽을 수 있는
-구성도 많다. secret은 전용 secret 관리 방식을 선택하고, Nix에는 secret의 암호화된
-source나 안전한 runtime path 연결만 선언한다. 구체적인 secret 도구 선택은 이
-입문서 범위 밖이다.
+Nix source가 Store로 복사되면 Store path가 다른 사용자에게 읽히는 환경이 흔하다.
+secret은 전용 secret 관리 방식을 선택하고, Nix에는 secret의 암호화된 source나 안전한
+runtime path 연결만 선언한다. 구체적인 secret 도구 선택은 이 입문서 범위 밖이다.
 
 ## 직접 해보기
 

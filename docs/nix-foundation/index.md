@@ -52,6 +52,11 @@ experimental-features = nix-command flakes
 ```
 
 !!! note
+    이 책은 Nix 2.34와 2026-07-30에 확인한 26.05 계열을 기준으로 한다. Flake와
+    새 `nix` CLI는 여전히 experimental 인터페이스이므로, 실제 설정을 바꾸기 전에는
+    현재 잠근 입력의 release note와 option 문서를 함께 확인한다.
+
+!!! note
     Nix 2.34 기준 새 `nix` CLI와 Flake는 공식 문서에서도 experimental로 표시된다.
     이 자료는 현재 저장소의 다른 책과 연결하기 위해 이 인터페이스를 사용하고,
     오래된 자료를 읽는 데 필요한 legacy 명령은 비교표로만 설명한다.
@@ -110,6 +115,8 @@ experimental-features = nix-command flakes
 - `build`와 `switch`를 구분한다. 먼저 빌드하고 성공한 결과만 활성화한다.
 - 인터넷 예제의 `nix-shell`, channel, Flake 문법을 한 구성에 무작정 섞지 않는다.
 - `system.stateVersion`과 `home.stateVersion`을 업그레이드 번호처럼 올리지 않는다.
+- Flake를 Git 저장소에서 관리한다면, 새로 추가한 Nix source는 평가 전에 Git index에
+  포함되는지 확인한다. stage는 commit과 다르다.
 
 ## 공식 기준 자료
 

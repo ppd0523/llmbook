@@ -1,7 +1,7 @@
 ---
 title: "Nix Flake 입문: 개발 셸에서 패키지·앱·검사까지"
-version: 1.0
-updated: 2026-07-28
+version: 1.1
+updated: 2026-08-11
 baseline: Nix 2.34, Nixpkgs 26.05
 ---
 
@@ -12,9 +12,9 @@ Flake를 처음 보면 `inputs`, `outputs`, `${system}`이 한꺼번에 등장�
 된다.
 
 이 자료는 Flake를 **잠긴 입력을 받아 이름 있는 출력을 만드는 함수**로 읽는다.
-Nixpkgs의 `cowsay`가 들어 있는 개발 셸에서 시작해 패키지, 앱, formatter, check를
-하나씩 추가한다. 마지막에는 네 가지 일반 플랫폼에 같은 출력을 제공하는 작은
-`flake-greeter` 프로젝트를 완성한다.
+Nixpkgs의 `cowsay`가 들어 있는 개발 셸에서 시작해 패키지(package), 앱(app), 서식
+도구(formatter), 검사(check)를 하나씩 추가한다. 마지막에는 네 가지 일반 플랫폼에
+같은 출력을 제공하는 작은 `flake-greeter` 프로젝트를 완성한다.
 
 코드 블록이 파일 내용을 나타낼 때는 블록 바로 위에 `파일:`과 경로를 표시한다.
 `<project-root>`는 현재 실습 중인 Flake의 루트, 즉 `flake.nix`가 있는 디렉터리다.
@@ -85,8 +85,8 @@ nix.settings.experimental-features = [
 ```
 
 개발 셸에는 Nixpkgs의 예제 패키지 `cowsay`와 `nixfmt`가 들어간다. 패키지
-`flake-greeter`는 `cowsay`를 런타임 의존성으로 선언하며 `nix run`으로 바로 실행할
-수 있다.
+`flake-greeter`는 실행할 때 필요한 `cowsay`를 런타임 의존성(runtime dependency)으로
+선언하며 `nix run`으로 바로 실행할 수 있다.
 
 완성된 파일은 [`assets/flake-greeter/`](./assets/flake-greeter/README.md)에 있다.
 

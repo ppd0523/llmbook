@@ -17,9 +17,10 @@ Nix에서 package를 사용할 수 있게 만드는 방법은 여러 가지다.
 | 사용자 프로필 | `nix profile install` | 해당 사용자 프로필 |
 | NixOS 시스템 | `environment.systemPackages` | 시스템 구성 |
 
-이 장의 “설치”는 시스템 전체 설치가 아니다. `flake.nix`에 개발 의존성을 선언하여
-`nix develop`으로 연 셸의 `PATH`에 package를 제공한다. 프로젝트를 벗어나면 원래
-환경으로 돌아온다.
+이 장의 “설치”는 시스템 전체 설치가 아니다. 개발 셸(development shell)은 프로젝트에
+필요한 도구만 잠시 사용할 수 있게 만든 셸 환경이다. `flake.nix`에 개발 의존성을
+선언하여 `nix develop`으로 연 셸의 `PATH`에 package를 제공한다. 프로젝트를 벗어나면
+원래 환경으로 돌아온다.
 
 ## 3.2 Nixpkgs에서 package 확인하기
 
@@ -158,7 +159,8 @@ devShells.${system}.default = pkgs.mkShellNoCC {
 };
 ```
 
-`shellHook`은 편리하지만 다음 작업을 넣지 않는 편이 좋다.
+`shellHook`은 개발 셸을 열 때 한 번 실행되는 셸 코드다. 안내 메시지에는 편리하지만,
+다음 작업을 넣지 않는 편이 좋다.
 
 - 사용자 홈 파일을 수정하는 작업
 - 매번 네트워크에서 의존성을 내려받는 작업

@@ -141,8 +141,9 @@ Nix 명령에 `sudo`를 붙이지 않는다.
 
 ### Store 결과를 고쳤는데 되돌아온다
 
-Store는 생성 결과다. `result`, `~/.config/...`의 Store symlink가 아니라
-`configuration.nix`, `home.nix`, module, 원본 dotfile을 수정하고 다시 build한다.
+Store는 생성 결과다. `result`나 Store를 가리키는 Home Manager 관리 파일을 직접
+고치지 말고, `configuration.nix`, `home.nix`, module, 원본 dotfile을 수정한다.
+그다음 build로 결과를 확인하고 해당 계층을 다시 활성화한다.
 
 ## 8.5 안전한 변경 루프
 

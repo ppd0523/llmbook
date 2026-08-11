@@ -109,7 +109,8 @@ apps = forAllSystems (system: {
 
 ## 5.4 formatter 출력
 
-Flake는 프로젝트가 사용할 formatter도 출력으로 제공할 수 있다.
+서식 도구(formatter)는 프로젝트 파일을 정해진 형식으로 고치는 프로그램이다. Flake는
+프로젝트가 사용할 formatter도 출력으로 제공할 수 있다.
 
 파일: `<project-root>/flake.nix` (`outputs`의 `formatter` 부분)
 
@@ -138,7 +139,8 @@ $ git diff -- flake.nix
 
 ## 5.5 check 출력
 
-먼저 package 자체를 check로 재사용한다.
+검사(check)는 패키지를 빌드하거나 기대한 동작을 확인해 변경이 안전한지 판단하는
+derivation이다. 먼저 package 자체를 check로 재사용한다.
 
 파일: `<project-root>/flake.nix` (`outputs`의 `checks` 부분)
 
@@ -152,7 +154,8 @@ checks = forAllSystems (system: {
 `checks.<system>.*` derivation을 빌드한다. package를 check에 넣으면 기본 빌드가
 검증 루프에 포함된다.
 
-실제 실행 결과도 검사하려면 `runCommand`를 추가한다.
+실제 실행 결과도 검사하려면 셸 명령을 실행해 결과를 만드는 Nixpkgs helper인
+`runCommand`를 추가한다.
 
 파일: `<project-root>/flake.nix` (`outputs`의 `checks` 부분)
 
