@@ -1,9 +1,9 @@
 ---
 title: 작성 범위 정의
-version: 1.0
+version: 1.2
 status: complete
 owner: agent
-updated: 2026-07-30
+updated: 2026-08-11
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -22,9 +22,9 @@ topic: Hermes Agent 운영 가이드
 ## 독자 상태 진단
 
 - 기준 독자: 터미널 명령을 복사해 실행할 수 있지만 Hermes의 동작 방식은 모르는 사용자
-- 알고 있다고 가정하는 지식: Discord의 채널·스레드·멘션, 파일과 디렉터리의 기본 개념
-- 모른다고 가정하는 개념: 세션 키, gateway, profile, toolset, delegation, Kanban,
-  auxiliary model, fallback
+- 알고 있다고 가정하는 지식: 파일과 디렉터리의 기본 개념, 터미널 명령 복사·실행
+- 모른다고 가정하는 개념: Discord의 DM·server channel·regular channel·thread·mention,
+  세션 키, gateway, profile, toolset, delegation, Kanban, auxiliary model, fallback
 - 우선 학습 목적: 실무 운영과 문제 해결
 - 실패 가능 지점: 프로필을 sandbox로 오해하기, 바쁜 에이전트에게 평문을 보내 실행을
   중단하기, background 작업에 현재 대화 맥락이 전달된다고 가정하기, 동일 bot token을
@@ -71,7 +71,7 @@ topic: Hermes Agent 운영 가이드
 - 파일명 규칙: `NN-<chapter-slug>.md`
 - 보조 형식: 없음
 - 검증: MkDocs strict build, 내부 링크 검사, 공식 문서와 명령 대조
-- 기준 시점: 2026-07-30
+- 기준 시점: 2026-08-11
 
 ## 성공 기준
 

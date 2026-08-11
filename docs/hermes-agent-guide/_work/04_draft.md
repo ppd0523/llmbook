@@ -1,9 +1,9 @@
 ---
 title: 초고 기록
-version: 1.0
+version: 1.2
 status: complete
 owner: agent
-updated: 2026-07-30
+updated: 2026-08-11
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -24,3 +24,7 @@ topic: Hermes Agent 운영 가이드
 
 기술적으로 불확실한 항목은 공식 문서와 대조한 뒤 최종 원고에서 제거하거나 날짜
 조건을 붙였다. 특정 model의 가격과 절대 순위는 포함하지 않았다.
+
+2026-08-11 퇴고에서는 Discord 용어를 넓은 표에서 장소와 동작별 정의로 다시 구성하고,
+실행 방식의 수명과 완료 결과가 돌아오는 위치를 중심으로 예시를 보강했다. model 장은
+제품명 중심 추천에서 provider 제약, slot, task tier, acceptance suite 순서로 재작성했다.

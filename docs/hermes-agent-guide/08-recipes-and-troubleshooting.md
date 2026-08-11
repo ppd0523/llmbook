@@ -3,6 +3,21 @@
 처음부터 많은 profile과 model을 만들지 않는다. 한 개의 안전한 Discord assistant로
 session과 queue를 익힌 뒤, 반복되는 역할만 profile과 Kanban으로 분리한다.
 
+## 첫날에 해 볼 세 가지
+
+실제 파일 삭제나 외부 전송 없이 다음 세 가지를 연습한다.
+
+1. 일반 채널에서 `@Hermes`로 “현재 시간과 `/status` 확인 방법을 알려 줘”라고 보내고,
+   만들어진 스레드 안에서 답을 이어 간다.
+2. 짧은 읽기 전용 작업을 시킨 뒤 실행 중 `/steer 결과는 표가 아니라 세 문장으로 써 줘`
+   를 보내 현재 작업의 방향을 바꾼다.
+3. 같은 작업 중 `/queue 끝나면 사용한 도구와 남은 위험을 요약해 줘`를 보내 다음 차례가
+   현재 작업 뒤에 실행되는지 확인한다.
+
+그다음 `/status`, `/agents`, `/usage`로 세션·실행·비용이 어떻게 보이는지 확인한다.
+이 연습을 통과하기 전에는 공유 세션, 자동 승인, 여러 coder의 동시 쓰기 작업을 켜지
+않는다.
+
 ## 레시피 1: 개인용 Discord assistant
 
 목표는 한 bot으로 research, file 작업, reminder를 하되 대화가 서로 섞이지 않게 하는
@@ -114,6 +129,7 @@ writer task는 두 research task를 parent로, fact-check task는 writer를 pare
 | slash command가 계속 바뀜 | gateway config | 같은 app을 여러 gateway가 등록 | primary 한 곳만 registration |
 | cron이 project 규칙을 모름 | job workdir | repo 밖에서 실행 | absolute `--workdir` 설정 |
 | dangerous command가 cron에서 막힘 | approval log | `cron_mode: deny` | read-only workflow로 수정, 좁은 API 사용 |
+| `/new` 뒤 child 결과가 오지 않음 | `/agents`, session lifecycle | 소유 session reset으로 delegation 취소 | durable work는 Kanban·cron으로 이동 |
 
 ## 작업 시작 전 30초 점검
 
@@ -155,6 +171,8 @@ proposal을 읽는 용도로 먼저 실행하고, permanent allowlist 반영은 
 - [Scheduled Tasks](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron/)
 - [Configuring Models](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models)
 - [AI Providers](https://hermes-agent.nousresearch.com/docs/integrations/providers)
+- [Model Catalog](https://hermes-agent.nousresearch.com/docs/reference/model-catalog)
+- [Fallback Providers](https://hermes-agent.nousresearch.com/docs/user-guide/features/fallback-providers/)
 - [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security/)
 
 [← 7장](./07-security-cost-reliability.md) · [목차](./index.md)

@@ -1,9 +1,9 @@
 ---
 title: 조사 노트
-version: 1.0
+version: 1.2
 status: complete
 owner: agent
-updated: 2026-07-30
+updated: 2026-08-11
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -23,12 +23,13 @@ topic: Hermes Agent 운영 가이드
 | [Subagent Delegation](https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation) | fresh context, inherited tools, concurrency와 제약 |
 | [Kanban](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban) | durable task board, dispatcher, dependency, handoff |
 | [Scheduled Tasks](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron/) | cron과 workdir, skill, headless approval |
-| [Configuring Models](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models) | main·auxiliary model slot과 적용 시점 |
+| [Configuring Models](https://hermes-agent.nousresearch.com/docs/user-guide/configuring-models) | main·auxiliary model slot, picker, 적용 시점 |
 | [AI Providers](https://hermes-agent.nousresearch.com/docs/integrations/providers) | provider 종류와 설정 표면 |
 | [Fallback Providers](https://hermes-agent.nousresearch.com/docs/user-guide/features/fallback-providers/) | key rotation, primary fallback, auxiliary fallback |
+| [Model Catalog](https://hermes-agent.nousresearch.com/docs/reference/model-catalog) | live catalog, cache, bundled snapshot과 picker 동작 |
 | [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security/) | authorization, approval, file write guard, sandbox |
 
-모든 버전 의존 정보는 2026-07-30에 확인했다. 모델 catalog와 명령은 빠르게 바뀔 수
+모든 버전 의존 정보는 2026-08-11에 다시 확인했다. 모델 catalog와 명령은 빠르게 바뀔 수
 있으므로 본문은 live `/model` picker와 공식 model catalog를 최종 기준으로 안내한다.
 
 ## 핵심 용어
@@ -48,8 +49,12 @@ topic: Hermes Agent 운영 가이드
 
 - plain message의 기본 동작은 바쁜 session interrupt다. 안전한 후속 입력은 `/queue`,
   실행 중 방향 수정은 `/steer`, 독립 작업은 `/background`로 구분한다.
+- interrupt는 실행 중 도구를 강제 종료하는 동작이 아니다. 현재 도구 결과 경계에서
+  보정하고 이미 나온 응답과 완료된 tool call을 유지한다.
 - profile은 장기 identity와 state 격리, delegation은 짧은 fresh-context 병렬화,
   Kanban은 restart를 견디는 역할 간 handoff에 사용한다.
+- top-level delegation은 handle을 즉시 반환하고 결과를 나중에 전달할 수 있지만 소유
+  session reset이나 Hermes process restart를 견디는 durable execution은 아니다.
 - 지시 충돌은 모델이 알아서 우선순위를 추론하게 두지 않는다. 정체성은 `SOUL.md`,
   project 규칙은 `.hermes.md` 또는 `AGENTS.md`, 사용자 취향은 `USER.md`, 현재 task는
   prompt나 Kanban body에 둔다.
@@ -65,6 +70,10 @@ topic: Hermes Agent 운영 가이드
   대기한다는 점을 확인했다.
 - Discord의 기본 `group_sessions_per_user: true`, server mention 요구, auto-thread
   동작을 확인했다.
-- 모델 예시는 공식 Nous Portal·Configuring Models 문서의 2026년 catalog를 사용하되
-  영구 순위로 표현하지 않기로 했다.
+- Kanban의 `request-review`, `request-changes` 흐름과 agent tool·human CLI 표면을
+  확인했다.
+- live model catalog가 picker에서 갱신되고 장애 시 cache 또는 설치본 snapshot으로
+  fallback하는 동작을 확인했다.
+- 모델 예시는 current catalog와 Configuring Models 문서에서 최소한만 사용하고, 영구
+  순위 대신 acceptance suite와 작업 tier를 본문 중심으로 삼았다.
 - 코드 실행 예제는 없고, shell·YAML 예제는 문법과 공식 명령 reference를 대조했다.

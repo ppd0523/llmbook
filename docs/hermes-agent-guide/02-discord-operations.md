@@ -1,47 +1,65 @@
 # Discord에서 안전하게 지시하기
 
-Discord는 편리하지만 message가 언제 새 turn이 되고 언제 실행 중 agent를 중단하는지
-모르면 작업을 잃기 쉽다. 가장 안전한 기본 운영법은 “작업 하나당 thread 하나,
-후속 작업은 `/queue`, 실행 중 보정은 `/steer`”다.
+Discord는 편리하지만 메시지가 언제 새 실행 차례(turn)가 되고 언제 실행 중인 작업의
+방향을 바꾸는지 모르면 의도하지 않은 결과가 생기기 쉽다. 가장 안전한 기본 운영법은
+“작업 하나당 스레드 하나, 후속 작업은 `/queue`, 실행 중 보정은 `/steer`”다.
 
 ## 먼저 알아둘 Discord 용어
 
-Discord 화면의 위치와 Hermes의 대화 상태는 같은 개념이 아니다. 먼저 Discord에서
-사용하는 장소와 동작을 구분한다. 이 장에서 `channel`은 별도 설명이 없으면 text
-channel을 뜻한다.
+Discord 화면의 위치와 Hermes의 대화 상태는 같은 개념이 아니다. 이 장에서 채널은 별도
+설명이 없으면 텍스트 채널을 뜻한다.
 
-| 용어 | Discord에서 뜻하는 것 | Hermes가 기본적으로 다루는 방식 |
-|---|---|---|
-| server | 사람, bot, channel을 담는 하나의 공동 공간이다. Discord API에서는 guild라고도 부른다. | server 전체를 하나의 대화로 사용하지 않는다. DM·channel·thread와 사용자 정보를 조합해 session을 구분한다. |
-| bot | server에 초대된 Hermes의 Discord 계정이다. | message를 받으면 접근 권한과 mention 조건을 확인한 뒤 Hermes agent를 실행한다. |
-| DM | server channel을 거치지 않고 사용자와 bot이 직접 주고받는 private chat이다. Direct Message의 약자다. | 모든 message에 응답한다. `@Hermes`라고 부를 필요가 없으며 DM용 session을 사용한다. |
-| server channel | server 안에 있는 `#general`, `#research` 같은 대화 공간이다. 여러 사용자가 함께 볼 수 있다. | 기본적으로 Hermes를 직접 mention한 message에만 응답한다. |
-| regular text channel | DM, thread, forum post가 아닌 보통의 server text channel이다. Hermes 공식 문서의 “regular channel”은 별도의 Discord 기능 이름이 아니라 이런 일반 `#채널`을 뜻한다. | 기본 설정에서는 Hermes를 mention하면 그 작업을 위한 새 thread를 자동 생성한다. |
-| thread | channel의 특정 message에서 갈라져 나온 하위 대화방이다. 원래 channel을 parent channel이라고 부른다. | parent channel과 분리된 session history를 사용하고 같은 thread 안에서 답한다. |
-| mention | message에 `@Hermes`를 넣어 bot을 직접 부르는 동작이다. | server channel에서 “이 message를 처리하라”는 기본 호출 조건이다. DM에서는 필요 없다. |
-| free-response channel | Hermes 설정으로 mention 없이도 응답하도록 지정한 server channel이다. Discord 자체의 채널 종류가 아니다. | 모든 허용된 사용자의 message에 inline으로 답하며 기본 auto-thread 생성을 건너뛴다. |
-| shared channel | 여러 사용자가 함께 말하는 channel을 설명하는 일반 표현이다. Discord의 별도 channel 종류는 아니다. | 기본적으로 같은 channel 안에서도 사용자별 session history를 분리한다. |
-| slash command | `/status`, `/queue`처럼 `/`로 시작하는 bot 명령이다. | 일반 자연어 요청과 달리 session 조회·전환·중단 같은 정해진 제어 동작을 실행한다. |
+### 장소를 나타내는 말
 
-### mention은 무엇을 하는가
+- **서버(server)**: 사람, 봇, 채널을 담는 공동 공간이다. Discord API와 일부 문서에서는
+  길드(guild)라고도 한다. Hermes는 서버 전체를 하나의 대화로 묶지 않는다.
+- **서버 채널(server channel)**: 서버 안의 `#general`, `#research` 같은 공개 또는
+  권한 제한 대화 공간이다. 기본 설정에서는 Hermes를 멘션해야 응답한다.
+- **일반 텍스트 채널(regular text channel)**: DM·스레드·포럼 게시물이 아닌 보통의
+  `#채널`이다. “regular channel”은 Discord 화면에 표시되는 별도 채널 종류가 아니라
+  Hermes 공식 문서가 일반 채널을 가리킬 때 쓰는 표현이다.
+- **DM(Direct Message)**: 서버 채널을 거치지 않고 사용자와 봇이 직접 주고받는 비공개
+  대화다. Hermes는 DM의 모든 허용된 메시지에 응답하므로 멘션이 필요 없다.
+- **스레드(thread)**: 채널의 특정 메시지에서 갈라져 나온 하위 대화방이다. 원래 채널을
+  상위 채널(parent channel)이라고 한다. Hermes는 스레드의 대화 이력을 상위 채널과
+  분리한다.
 
-server channel에서 다음 message를 보냈다고 하자.
+### 동작과 운영 설정을 나타내는 말
+
+- **봇(bot)**: 서버에 초대된 Hermes의 Discord 계정이다. 메시지를 받으면 사용자 권한과
+  멘션 조건을 검사한 뒤 Hermes 에이전트를 실행한다.
+- **멘션(mention)**: 메시지에 `@Hermes`를 넣어 봇을 직접 부르는 동작이다. 일반 서버
+  채널에서는 기본 호출 신호이고 DM에서는 필요 없다.
+- **자유 응답 채널(free-response channel)**: 멘션 없이도 응답하도록 Hermes 설정에
+  등록한 서버 채널이다. Discord 자체의 채널 종류가 아니다. Hermes는 이 채널에서 새
+  스레드를 만들지 않고 채널에 바로 답한다.
+- **공유 채널(shared channel)**: 여러 사용자가 함께 말하는 채널을 가리키는 일반
+  표현이다. Discord의 별도 채널 종류가 아니다. Hermes는 기본적으로 같은 채널에서도
+  사용자별 세션 이력을 분리한다.
+- **슬래시 명령(slash command)**: `/status`, `/queue`처럼 `/`로 시작하는 제어 명령이다.
+  자연어 작업 요청과 달리 세션 조회·전환·중단처럼 정해진 동작을 실행한다. 사용할 수
+  있는 명령은 사용자의 관리자·일반 사용자 권한에 따라 달라질 수 있다.
+
+### 멘션은 무엇을 하는가
+
+서버 채널에서 다음 메시지를 보냈다고 하자.
 
 ```text
 @Hermes 이 repository의 인증 오류를 조사해 줘.
 ```
 
 `@Hermes`는 단순히 이름을 표시하는 장식이 아니다. 기본
-`discord.require_mention: true` 설정에서는 Hermes가 이 message를 처리하게 만드는
-호출 신호다. `@Alice`처럼 다른 사용자만 mention하고 Hermes는 mention하지 않으면
+`discord.require_mention: true` 설정에서는 Hermes가 이 메시지를 처리하게 만드는
+호출 신호다. `@Alice`처럼 다른 사용자만 멘션하고 Hermes는 멘션하지 않으면
 Hermes는 기본적으로 끼어들지 않는다.
 
-mention하지 않은 channel message가 항상 완전히 사라지는 것은 아니다. 기본
-history backfill이 켜져 있으면, 나중에 Hermes를 mention했을 때 Hermes의 마지막
-응답 이후에 쌓인 최근 channel message 일부가 참고 맥락으로 함께 전달될 수 있다.
-그러나 그 message만으로 Hermes가 먼저 실행되지는 않는다.
+멘션하지 않은 채널 메시지가 항상 참고 대상에서 사라지는 것은 아니다. 기본 이력
+보충(history backfill)이 켜져 있으면, 나중에 Hermes를 멘션했을 때 Hermes의 마지막
+응답 이후에 쌓인 최근 메시지 일부가 참고 맥락으로 함께 전달될 수 있다. 그러나 그
+메시지만으로 Hermes가 먼저 실행되지는 않으며, DM과 자유 응답 채널에는 이 보충이
+적용되지 않는다.
 
-### regular channel과 thread의 차이
+### 일반 채널과 스레드의 차이
 
 예를 들어 `#research`가 regular text channel이라고 하자.
 
@@ -53,25 +71,23 @@ Server: My Team
       └─ 시장 조사 thread    ← 해당 작업의 하위 대화방
 ```
 
-기본 `discord.auto_thread: true`에서는 regular channel에서 Hermes를 mention한
-message마다 새 thread를 만든다. Hermes의 답변과 이후 작업 대화는 그 thread 안에서
-이어진다. 이 구조는 `#research`의 main timeline을 어지럽히지 않고 작업별 session
-history를 분리한다.
+기본 `discord.auto_thread: true`에서는 일반 채널에서 Hermes를 멘션한 메시지마다 새
+스레드를 만든다. Hermes의 답변과 이후 작업 대화는 그 스레드 안에서 이어진다. 이
+구조는 `#research`의 주 대화를 어지럽히지 않고 작업별 세션 이력을 분리한다.
 
-free-response channel에서는 동작이 다르다. mention 없이 대화하는 가벼운 bot 전용
-channel로 취급하므로 Hermes가 새 thread를 만들지 않고 channel에 바로 답한다.
+자유 응답 채널에서는 동작이 다르다. 멘션 없이 대화하는 가벼운 봇 전용 채널로
+취급하므로 Hermes가 새 스레드를 만들지 않고 채널에 바로 답한다.
 
-## Discord 위치가 Hermes session으로 바뀌는 방식
+## Discord 위치가 Hermes 세션으로 바뀌는 방식
 
-session은 Discord 용어가 아니라 Hermes가 conversation history와 실행 중 agent를
-구분하는 내부 단위다. 같은 화면에 보이는 message라도 서로 다른 session에 들어갈 수
-있다.
+세션(session)은 Discord 용어가 아니라 Hermes가 대화 이력과 실행 중 에이전트를
+구분하는 내부 단위다. 같은 화면에 보이는 메시지도 서로 다른 세션에 들어갈 수 있다.
 
 기본 동작은 다음과 같다.
 
-- DM은 DM용 session을 사용한다.
-- server의 각 thread는 parent channel과 분리된 session 영역을 사용한다.
-- regular channel에서는 같은 channel에 있더라도 기본적으로 사용자별 session을
+- DM은 DM용 세션을 사용한다.
+- 서버의 각 스레드는 상위 채널과 분리된 세션 영역을 사용한다.
+- 일반 채널에서는 같은 채널에 있더라도 기본적으로 사용자별 세션을
   사용한다.
 - Hermes가 이미 참여한 thread에서는 기본 `thread_require_mention: false`에 따라
   이후 message에 매번 mention하지 않아도 계속 응답한다.
@@ -87,9 +103,9 @@ session은 Discord 용어가 아니라 Hermes가 conversation history와 실행 
 └─ Bob   → Hermes session: #research + Bob
 ```
 
-반면 `group_sessions_per_user: false`로 바꾸면 channel 또는 thread의 참가자들이 하나의
-history와 하나의 실행 slot을 공유한다. 이때 Alice의 긴 작업 중 Bob이 후속 message를
-보내면 같은 agent 실행을 interrupt하거나 뒤에 queue될 수 있다.
+반면 `group_sessions_per_user: false`로 바꾸면 채널 또는 스레드의 참가자들이 하나의
+이력과 하나의 실행 자리를 공유한다. 이때 Alice의 긴 작업 중 Bob이 후속 메시지를
+보내면 같은 에이전트 실행의 방향을 바꾸거나 뒤에 대기할 수 있다.
 
 따라서 서로 다른 목적의 작업을 같은 thread에 계속 쌓지 않는다. 기존 history가 도움이
 되지 않는 새 목적이라면 새 thread를 만들거나 `/new meaningful-name`을 사용한다.
@@ -107,17 +123,19 @@ Discord routing의 상세 동작은
 [Discord 공식 가이드](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord/)에서
 확인할 수 있다.
 
-## 실행 중 message가 하는 일
+## 실행 중 메시지가 하는 일
 
-기본 busy-input mode는 `interrupt`다. agent가 tool을 사용하는 동안 평문을 보내면 현재
-operation을 멈추고 새 message를 처리할 수 있다. 실행 중 command가 종료되고 남은
-tool call이 취소될 수 있으므로, 단순한 추가 설명도 평문으로 보내지 않는 편이 안전하다.
+바쁜 세션의 입력 처리 방식(busy-input mode)은 기본값이 `interrupt`다. 이 이름 때문에
+실행 중인 도구를 즉시 강제 종료한다고 오해하기 쉽지만, Hermes는 현재 도구가 안전하게
+끝난 다음 이미 나온 응답과 도구 결과를 남기고 새 메시지를 반영해 생성을 다시 시작한다.
+진행 중인 계획이 바뀔 수 있으므로 단순한 후속 설명도 의도에 맞는 명령으로 보내는 편이
+안전하다.
 
 | 의도 | 사용할 명령 | 결과 |
 |---|---|---|
 | 현재 일이 끝난 뒤 다음 요청 실행 | `/queue <prompt>` 또는 `/q <prompt>` | 다음 turn까지 대기 |
 | 현재 일을 멈추지 않고 방향 보정 | `/steer <prompt>` | 다음 tool call 뒤 현재 run에 주입 |
-| 현재 일을 취소 | `/stop` | agent와 background process 중단 |
+| 현재 일을 취소 | `/stop` | 현재 세션이 소유한 실행과 background process 중단 |
 | 독립 작업을 동시에 실행 | `/background <prompt>` | 별도 session에서 실행 후 결과 전송 |
 
 예:
@@ -137,7 +155,7 @@ display:
   busy_input_mode: queue  # queue | steer | interrupt
 ```
 
-공유 server나 mobile 중심 운영에는 `queue`가 보수적인 기본값이다. 즉시 대화하며 방향을
+공유 서버나 mobile 중심 운영에는 `queue`가 보수적인 기본값이다. 즉시 대화하며 방향을
 자주 바꾸는 개인 개발 환경에는 `steer`가 편리하다.
 
 ## `/background`에 모든 맥락을 다시 적는다
@@ -228,6 +246,13 @@ source 기준, 완료 조건을 쓴다. destructive action이 아닌 작은 구�
 - attachment는 authorized user가 올린 것만 처리하되, secret이나 private data는
   task prompt에 직접 붙이지 않는다.
 - progress가 너무 많으면 `display.tool_progress`를 `new` 또는 `off`로 낮춘다.
+
+## 2장 확인 문제
+
+- 같은 `#research` 채널에서 Alice와 Bob이 Hermes를 불렀을 때 기본적으로 대화 이력을
+  공유하는가?
+- 실행 중 제약을 바로 추가할 때 `/queue`가 아니라 `/steer`를 쓰는 이유는 무엇인가?
+- 자유 응답 채널과 일반 텍스트 채널은 새 스레드 생성 방식이 어떻게 다른가?
 
 [← 1장](./01-mental-model.md) · [목차](./index.md) ·
 [3장: 프로필·기억·지시를 분리하기 →](./03-profiles-and-instructions.md)

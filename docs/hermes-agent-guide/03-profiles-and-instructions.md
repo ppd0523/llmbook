@@ -1,8 +1,8 @@
 # 프로필·기억·지시를 분리하기
 
-profile은 장기간 유지할 agent의 역할과 상태를 나누는 단위다. coding assistant와
-personal assistant가 서로 다른 key, model, memory, skill, Discord bot을 가져야 한다면
-profile을 나눈다. 단순히 대화 주제만 바꾸려면 새 session으로 충분하다.
+프로필(profile)은 장기간 유지할 에이전트의 역할과 상태를 나누는 단위다. 코딩
+도우미와 개인 도우미가 서로 다른 키, 모델, 기억, 스킬, Discord 봇을 가져야 한다면
+프로필을 나눈다. 단순히 대화 주제만 바꾸려면 새 세션으로 충분하다.
 
 ## profile을 만들 기준
 
@@ -48,6 +48,10 @@ hermes profile create researcher --clone-from coder
 clone 뒤에는 복사된 bot token과 권한을 그대로 쓰지 말고 새 역할에 맞게 검토한다.
 각 profile gateway는 고유한 Discord bot token을 사용해야 한다. 같은 token을 두
 profile에 넣으면 Hermes의 token lock이 두 번째 gateway를 막는다.
+
+하나의 프로필을 두 에이전트 프로세스가 동시에 쓰게 해서도 안 된다. 둘 다 같은 기억과
+상태 파일을 자동으로 갱신하므로 설정과 정체성이 서로 섞일 수 있다. 공유해야 할 사실은
+같은 프로필을 재사용하지 말고 Kanban handoff나 외부 저장소로 전달한다.
 
 ```console
 hermes profile list
@@ -126,8 +130,19 @@ memory는 session 시작 시 system prompt에 snapshot으로 들어간다. sessi
 
 ## 지시가 충돌할 때
 
-충돌을 발견하면 더 강한 문구를 덧붙이는 방식으로 해결하지 않는다. 다음 순서로
-정리한다.
+충돌을 발견하면 더 강한 문구를 덧붙이거나 “가장 최근 지시가 무조건 우선”이라고
+가정하지 않는다. 먼저 충돌의 종류를 나눈다.
+
+- **권한 충돌**: prompt가 안전 차단, 도구 제한, 실제 파일 권한을 요구하면 실행할 수
+  없다. 가능한 대안을 보고한다.
+- **범위 충돌**: project 규칙과 이번 작업 예외가 부딪히면 예외의 유효 범위와 종료
+  시점을 현재 prompt에 명시한다.
+- **원본 충돌**: 같은 장기 규칙이 여러 파일에서 다르면 한 파일만 진실의 원본으로
+  남기고 나머지를 제거하거나 링크로 바꾼다.
+- **위험 충돌**: 한 지시는 실행을 요구하고 다른 지시는 삭제·전송·배포 전 승인을
+  요구한다면 실행하지 말고 사용자 확인을 기다린다.
+
+그다음 다음 순서로 정리한다.
 
 1. 현재 작업을 멈추면 손실이 큰지 확인하고 필요하면 `/queue`로 정정 사항을 보낸다.
 2. 충돌한 두 지시의 실제 위치를 찾는다. `SOUL.md`, context file, memory, session
@@ -164,6 +179,12 @@ Hermes 자체의 safety block, tool restriction, 실제 filesystem 권한은 pro
 
 [Profiles 공식 문서](https://hermes-agent.nousresearch.com/docs/user-guide/profiles/)의
 경고처럼 profile은 상태 경계이지 security boundary가 아니다.
+
+## 3장 확인 문제
+
+- 같은 역할에서 대화 주제만 바뀔 때 새 프로필보다 새 세션이 적합한 이유는 무엇인가?
+- 장기 사용자 취향, 저장소 규칙, 이번 작업의 예외는 각각 어디에 두어야 하는가?
+- prompt에서 “sandbox를 무시하라”고 지시하면 실제 권한 제한을 넘을 수 있는가?
 
 [← 2장](./02-discord-operations.md) · [목차](./index.md) ·
 [4장: 작업을 실행하고 큐잉하기 →](./04-task-execution-and-queues.md)

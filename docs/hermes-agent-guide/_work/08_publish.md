@@ -1,9 +1,9 @@
 ---
 title: 최종 산출물 구성과 출판 검수
-version: 1.0
+version: 1.2
 status: complete
 owner: agent
-updated: 2026-07-30
+updated: 2026-08-11
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -38,4 +38,6 @@ topic: Hermes Agent 운영 가이드
 판단한다.
 
 2026-07-31에 Discord 용어와 session 설명을 보강한 버전 1.1도 같은 strict build로
-다시 검증해 성공했다.
+다시 검증해 성공했다. 버전 1.2는 2026-08-11 퇴고와 공식 문서 재검증을 반영했다.
+MkDocs Material 9.7.6과 MkDocs 1.6.1로 strict build를 다시 실행해 성공했으며, 내부
+상대 링크와 게시 구조를 함께 확인했다.

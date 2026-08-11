@@ -1,9 +1,9 @@
 ---
 title: 출판 전 최종 원고
-version: 1.0
+version: 1.2
 status: complete
 owner: agent
-updated: 2026-07-30
+updated: 2026-08-11
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -16,9 +16,14 @@ topic: Hermes Agent 운영 가이드
 
 최종 원고는 다음 기준을 만족한다.
 
-- 2026-07-30에 확인한 Hermes 공식 문서를 기준으로 한다.
+- 2026-08-11에 다시 확인한 Hermes 공식 문서를 기준으로 한다.
 - 초심자가 먼저 알아야 할 execution unit과 Discord interrupt 동작을 앞부분에 둔다.
 - profile, context, queue, multi-agent, model, security를 독립된 장으로 설명한다.
 - 모든 명령 예제는 official CLI·slash command reference와 대조했다.
 - 특정 model을 영구적인 최선으로 단정하지 않고 task 기준과 live picker를 함께 안내한다.
+- Discord 용어를 모르는 독자도 DM, regular channel, thread, mention과 Hermes session의
+  관계를 설명할 수 있게 한다.
+- 비동기 실행과 내구성 실행을 구분하고, Kanban review·handoff가 관찰 가능하게 남도록
+  안내한다.
+- 각 핵심 장의 확인 문제와 첫날 연습으로 학습 결과를 점검한다.
 - 내부 작업 메모와 미검증 표시는 게시 chapter에 포함하지 않는다.

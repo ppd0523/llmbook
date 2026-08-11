@@ -1,21 +1,22 @@
 ---
 title: Hermes Agent 실전 운영 가이드
-version: 1.1
-updated: 2026-07-31
+version: 1.2
+updated: 2026-08-11
 ---
 
 # Hermes Agent 실전 운영 가이드
 
-Hermes Agent는 대화만 하는 bot이 아니다. 파일과 terminal을 다루고, web과 browser를
-사용하며, 기억·예약 작업·하위 agent·여러 역할의 작업 queue를 운영할 수 있는
-개인용 agent runtime이다. 강력한 만큼 “어느 대화가 어떤 상태를 공유하는가”와
-“지금 보낸 메시지가 실행 중인 작업을 중단하는가”를 먼저 알아야 안전하게 쓸 수 있다.
+Hermes Agent는 대화만 하는 봇(bot)이 아니다. 파일과 터미널을 다루고, 웹과 브라우저를
+사용하며, 기억·예약 작업·하위 에이전트·여러 역할의 작업 큐를 운영할 수 있는 개인용
+에이전트 실행 환경이다. 강력한 만큼 “어느 대화가 어떤 상태를 공유하는가”와 “지금
+보낸 메시지가 실행 중인 작업에 어떤 영향을 주는가”를 먼저 알아야 안전하게 쓸 수 있다.
 
 이 가이드는 Hermes를 Discord에서 주로 지시하는 초심자를 대상으로 한다. 설치 화면을
-나열하기보다 실제 운영에서 중요한 session, profile, workspace, queue, provider,
-model의 경계를 설명한다.
+나열하기보다 실제 운영에서 중요한 세션(session), 프로필(profile), 작업 공간
+(workspace), 큐(queue), 제공자(provider), 모델(model)의 경계를 설명한다. 명령어와
+설정 키는 검색하기 쉽도록 원문 표기를 유지한다.
 
-내용은 2026-07-30의 [Hermes Agent 공식 문서](https://hermes-agent.nousresearch.com/docs/)를
+내용은 2026-08-11의 [Hermes Agent 공식 문서](https://hermes-agent.nousresearch.com/docs/)를
 기준으로 확인했다. Hermes는 빠르게 바뀌므로 설치된 버전의 `/help`, `/model`,
 `hermes --help`와 공식 문서가 이 가이드보다 우선한다.
 
@@ -29,14 +30,22 @@ model의 경계를 설명한다.
 - main·auxiliary·delegation·fallback model을 품질, 속도, 비용에 맞게 배치한다.
 - Discord 접근 권한과 command approval을 최소 권한으로 설정한다.
 
-## 먼저 기억할 다섯 문장
+## 먼저 기억할 여섯 문장
 
 1. 새 목적의 일은 새 Discord thread 또는 `/new` session에서 시작한다.
-2. agent가 일하는 중 평문을 보내면 기본적으로 현재 실행이 중단될 수 있으므로
+2. agent가 일하는 중 평문을 보내면 기본적으로 현재 계획의 방향이 바뀔 수 있으므로
    `/queue` 또는 `/steer`를 쓴다.
 3. profile은 기억과 설정을 나누지만 filesystem을 격리하는 sandbox는 아니다.
 4. 잠깐 병렬로 조사할 때는 delegation, 재시작을 견디는 역할 간 작업은 Kanban을 쓴다.
 5. model 이름보다 작업의 실패 비용, tool-use 정확도, latency, token cost를 먼저 본다.
+6. 삭제·배포·외부 전송은 “초안 작성”과 “실행”을 나누고 실행 전에 승인받는다.
+
+## 막막할 때 쓰는 기본 경로
+
+처음에는 프로필 하나와 Discord 채널 하나로 시작한다. 일반 채널에서 `@Hermes`로 새
+작업을 부르면 기본 설정이 작업용 스레드를 만들고, 그 안에서 대화를 이어 간다. 실행 중
+제약을 보태려면 `/steer`, 끝난 뒤 할 일을 예약하려면 `/queue`를 쓴다. 재시작 뒤에도
+남아야 하는 일만 Kanban으로 옮긴다. 이 흐름을 익힌 뒤 역할별 프로필과 모델을 나눈다.
 
 ## 읽는 순서
 

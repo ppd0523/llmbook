@@ -1,9 +1,9 @@
 # 보안·비용·신뢰성 운영
 
-Discord에 연결한 Hermes는 authorized user의 말에 따라 terminal과 file tool을 실행할
-수 있다. 일반 chat bot의 권한 모델로 운영하면 안 된다. 누가 말할 수 있는지, 어떤
-command가 승인 대상인지, 어느 filesystem과 network에 접근하는지, 얼마까지 지출할지를
-각각 제한한다.
+Discord에 연결한 Hermes는 허용된 사용자의 말에 따라 터미널과 파일 도구를 실행할 수
+있다. 일반 대화 봇의 권한 모델로 운영하면 안 된다. 누가 말할 수 있는지, 어떤 명령이
+승인 대상인지, 어느 파일 시스템과 네트워크에 접근하는지, 얼마까지 지출할지를 각각
+제한한다.
 
 ## Discord 접근은 fail-closed로 시작한다
 
@@ -29,14 +29,19 @@ user에게 model switch, destructive session reset, admin integration command가
 
 ```yaml
 approvals:
-  mode: smart       # smart | manual | off
+  mode: smart
   timeout: 300
   cron_mode: deny
+  destructive_slash_confirm: true
 ```
 
 - `smart`: 일반 운영의 기본값
 - `manual`: 위험 pattern마다 사람이 판단해야 하는 고위험 환경
 - `off`: safety prompt를 끄므로 격리된 disposable environment에서만 검토
+
+`destructive_slash_confirm: true`는 `/clear`, `/new`, `/reset`, `/undo`처럼 대화 상태를
+버리는 명령에도 확인을 요구한다. 새 세션 시작을 반복한다고 “Always approve”로 바꾸기
+전에, 잃을 수 있는 대화와 background child가 없는지 확인한다.
 
 “Always approve”를 습관적으로 누르면 allowlist가 넓어진다. `hermes config edit`와
 `hermes approvals suggest`의 read-only proposal로 누적 규칙을 주기적으로 검토한다.
@@ -49,6 +54,9 @@ profile은 sandbox가 아니다. 또한 Hermes의 protected-path와 write-safe-r
 주로 `write_file`과 `patch`에 적용된다. local terminal command는 같은 OS user 권한으로
 동작할 수 있으므로 untrusted prompt나 repository를 강하게 격리하려면 container·remote
 backend가 필요하다.
+
+파일 수정 결과에는 assistant의 완료 문장보다 file-mutation verifier footer와 실제
+diff를 우선 신뢰한다. 모델이 성공했다고 말해도 write guard가 수정을 차단했을 수 있다.
 
 운영 경계는 다음 순서로 강해진다.
 
@@ -152,6 +160,12 @@ review한다.
 전체 security boundary는
 [Security 공식 문서](https://hermes-agent.nousresearch.com/docs/user-guide/security/)에서
 확인한다.
+
+## 7장 확인 문제
+
+- `HERMES_WRITE_SAFE_ROOT`를 설정하면 terminal 명령까지 같은 범위로 강제되는가?
+- DM으로 온 요청은 서버 채널 요청보다 자동으로 더 신뢰할 수 있는가?
+- 외부 전송이 포함된 업무를 draft task와 publish task로 나누는 이유는 무엇인가?
 
 [← 6장](./06-provider-and-model-selection.md) · [목차](./index.md) ·
 [8장: 운영 레시피와 문제 해결 →](./08-recipes-and-troubleshooting.md)

@@ -19,9 +19,25 @@ orchestrator profile
   └─ writer profile
 ```
 
-각 bot이 Discord에서 서로에게 mention을 보내 대화하게 만들면 message loop, 중복 실행,
-context 손실, 비용 폭증을 통제하기 어렵다. agent 간 protocol은 Discord transcript보다
-Kanban task, comment, dependency, result metadata처럼 구조화된 상태로 만든다.
+각 봇이 Discord에서 서로를 멘션하며 대화하게 만들면 메시지 반복, 중복 실행, 맥락
+손실, 비용 폭증을 통제하기 어렵다. Hermes 공식 운영 방식에서도 여러 자동 응답 봇이
+서로를 호출하는 구조는 지원하지 않는다. `DISCORD_ALLOW_BOTS`는 기본값 `none`을
+유지하고, 에이전트 간 전달은 Discord 대화보다 Kanban task, comment, dependency,
+result metadata처럼 구조화된 상태로 만든다.
+
+## 한 번에 늘리지 않는다
+
+다중 에이전트는 다음 순서로 단계적으로 도입한다.
+
+1. 프로필 하나와 작업별 세션으로 운영하며 반복되는 역할을 찾는다.
+2. 작업 실행자와 독립 검토자처럼 권한·기억·모델이 실제로 달라야 하는 역할 하나를
+   추가한다.
+3. 두 프로필의 handoff를 Kanban task 한 종류로 표준화한다.
+4. 충돌률, 재시도, 비용, 사람이 고친 시간을 측정한다.
+5. 병목이 확인될 때만 researcher나 writer 같은 specialist를 더한다.
+
+프로필 수가 처리량을 자동으로 늘리지는 않는다. 같은 저장소와 테스트 환경을 공유하면
+동시 실행 수보다 자원 소유권을 먼저 정해야 한다.
 
 ## 역할은 겹치지 않게 설계한다
 
@@ -195,6 +211,14 @@ profile의 memory와 session은 분리되지만 Kanban board는 의도적으로 
 board의 task body, comment, workspace path를 모든 profile이 볼 수 있다고 가정한다.
 서로 다른 고객이나 security domain을 강하게 나눠야 한다면 tenant label만 믿지 말고
 별도 OS account, host, container 또는 board와 credential boundary를 설계한다.
+
+## 5장 확인 문제
+
+- 여러 Hermes 봇이 Discord에서 서로를 멘션하게 하는 방식이 기본 협업 구조로 적합하지
+  않은 이유는 무엇인가?
+- 두 coder가 같은 저장소를 수정해야 할 때 프로필만 나누면 충돌이 해결되는가?
+- 다음 에이전트가 원문 대화를 다시 읽지 않아도 되려면 handoff에 어떤 증거를 남겨야
+  하는가?
 
 [← 4장](./04-task-execution-and-queues.md) · [목차](./index.md) ·
 [6장: 작업에 맞는 provider와 model 고르기 →](./06-provider-and-model-selection.md)

@@ -1,9 +1,9 @@
 ---
 title: 수정 기록
-version: 1.0
+version: 1.2
 status: complete
 owner: agent
-updated: 2026-07-30
+updated: 2026-08-11
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -22,3 +22,15 @@ topic: Hermes Agent 운영 가이드
 - 2026-07-31: Discord 초심자를 위해 server, bot, DM, server channel, regular text
   channel, thread, mention, free-response channel, shared channel, slash command의 정의와
   Hermes routing·session 동작을 2장 앞부분에 추가했다.
+- 2026-08-11: Discord 용어를 장소와 동작으로 나눠 넓은 표를 제거하고, regular
+  channel이 별도 Discord UI 유형이 아님을 명확히 했다.
+- interrupt를 running tool의 강제 종료로 오해할 수 있는 문장을 tool-result 경계의
+  redirect 동작으로 바로잡았다.
+- top-level delegation의 비동기 결과 전달과 session·process 수명에 묶인 한계를
+  분리해 설명하고 `/goal` 절을 추가했다.
+- Kanban review 요청·수정 요청 흐름과 Discord bot-to-bot topology 비지원 경고를
+  추가했다.
+- model 장을 고정 후보 목록에서 provider 제약 → slot → task tier → acceptance suite →
+  적용 시점과 fallback 순서로 재작성했다.
+- 핵심 장마다 확인 문제를 넣고 8장에 read-only 첫날 연습을 추가했다.
+- 한글 설명을 우선하고 command·config key·검색에 필요한 원문 용어는 유지했다.

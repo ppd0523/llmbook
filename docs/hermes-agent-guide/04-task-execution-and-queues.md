@@ -1,9 +1,9 @@
 # 작업을 실행하고 큐잉하기
 
-Hermes에서 “queue에 넣는다”는 말은 세 가지를 뜻할 수 있다. `/queue`는 같은 session의
-다음 turn, `/background`는 별도 비동기 session, Kanban은 여러 profile이 공유하는
-durable work queue다. 여기에 delegation과 cron까지 구분해야 작업이 중간에 사라지지
-않는다.
+Hermes에서 “큐에 넣는다”는 말은 세 가지를 뜻할 수 있다. `/queue`는 같은 세션의 다음
+차례, `/background`는 별도 비동기 세션, Kanban은 여러 프로필이 공유하는 내구성 작업
+큐다. 여기에 위임(delegation), 지속 목표, cron까지 구분해야 작업의 수명과 결과
+전달 방식을 예측할 수 있다.
 
 ## 선택표
 
@@ -12,7 +12,7 @@ durable work queue다. 여기에 delegation과 cron까지 구분해야 작업이
 | 현재 답변 뒤 바로 이어서 할 일인가? | `/queue` |
 | 현재 실행을 취소하지 않고 보정할 내용인가? | `/steer` |
 | main chat과 독립적으로 한 번 실행하면 되는가? | `/background` |
-| 부모가 결과를 받아 같은 turn의 판단에 써야 하는 짧은 subtask인가? | delegation |
+| 요청한 대화가 결과를 받아 종합할 짧은 subtask인가? | delegation |
 | 완료까지 여러 turn을 자동 반복해야 하는 한 목표인가? | `/goal` |
 | restart 후에도 남고 역할 간 전달·comment·retry가 필요한가? | Kanban |
 | 정해진 시각이나 주기로 다시 실행해야 하는가? | cron |
@@ -58,10 +58,10 @@ history를 받지 않는다. prompt를 self-contained하게 작성한다. 결과
 각 subagent에게 회사명, 확인 날짜, 필요한 표의 열을 모두 전달해.
 ```
 
-delegated child는 부모의 conversation을 모른다. 전달받은 goal과 context만 사용하므로
-path, 오류, 완료 조건을 명시해야 한다. child는 부모의 enabled toolset을 물려받지만
-권한을 스스로 확대하지 못하며, user에게 clarification을 요청하거나 shared memory를
-쓰는 등의 일부 동작은 제한된다.
+위임된 하위 에이전트는 부모의 대화를 모른다. 전달받은 `goal`과 `context`만 사용하므로
+경로, 오류, 완료 조건을 명시해야 한다. 하위 에이전트는 부모의 활성 도구 모음을
+물려받지만 권한을 스스로 확대하지 못하며, 사용자에게 질문하거나 공유 기억에 쓰는
+등의 일부 동작은 제한된다.
 
 delegation은 다음 조건에서 좋다.
 
@@ -70,10 +70,29 @@ delegation은 다음 조건에서 좋다.
 - fresh perspective가 필요하다.
 - 최종 summary만 부모가 받아 종합하면 된다.
 
-restart를 견뎌야 하거나, 사람이 중간 comment를 달거나, named specialist가 이어서
+최상위 `delegate_task`는 즉시 handle을 돌려주고 완료 결과를 나중에 원래 대화로
+보낼 수 있다. 일반 후속 메시지는 진행 중인 child를 취소하지 않지만 `/stop`, 소유
+세션의 종료·초기화, Hermes process 재시작은 진행 중 실행을 취소하거나 상태를 알 수
+없게 만들 수 있다. 즉, “비동기”이지만 “재시작을 견디는 내구성 작업”은 아니다.
+
+재시작을 견뎌야 하거나, 사람이 중간 comment를 달거나, 이름 있는 specialist가 이어서
 작업해야 하면 Kanban으로 올린다. 자세한 제약은
 [Subagent Delegation](https://hermes-agent.nousresearch.com/docs/user-guide/features/delegation)을
 참조한다.
+
+## `/goal`: 한 목표를 여러 차례 자동 계속하기
+
+```text
+/goal 인증 오류를 재현하고 최소 수정과 regression test까지 완료해.
+```
+
+`/goal`은 한 세션에서 완료 조건을 향해 여러 차례 자동으로 계속할 때 쓴다. 각 차례가
+끝날 때 보조 모델이 목표 완료 여부를 판단하고, 미완료라면 다음 차례를 시작한다.
+`/goal status`, `/goal pause`, `/goal resume`, `/goal clear`로 상태를 제어한다.
+
+지속 목표는 내구성 작업 큐가 아니다. 다른 프로필에 넘길 일, 사람이 검토해야 할 일,
+재시작 뒤에도 감사 이력과 재시도가 남아야 할 일은 Kanban task로 만든다. 목표 문장에는
+“완료”를 판정할 수 있는 테스트·파일·보고서 같은 증거를 반드시 넣는다.
 
 ## Kanban: durable multi-agent work queue
 
@@ -125,6 +144,17 @@ worker가 완료할 때는 다음 profile이 다시 조사하지 않도록 struc
 - 실패하면 어떻게 retry·unblock하는가
 - 어떤 risk를 의도적으로 남겼는가
 
+검토가 필요한 task는 구현자가 바로 최종 완료로 닫지 않고 review를 요청할 수 있다.
+
+```console
+hermes kanban request-review t_abcd --reviewer reviewer \
+  --summary "Implementation complete; tests pass."
+```
+
+reviewer는 승인하면 complete하고, 수정이 필요하면 `request-changes`로 요구사항을
+구체적으로 돌려보낸다. 이렇게 하면 “구현 완료”와 “검토 승인”이 같은 상태로 섞이지
+않는다.
+
 task 간 선후 관계는 parent link로 표현한다. child는 모든 parent가 done이 된 뒤
 `ready`가 된다.
 
@@ -163,6 +193,14 @@ unattended task의 destructive command는 기본 `approvals.cron_mode: deny`에�
   수정한 뒤 retry한다.
 - 단순히 느리다는 이유로 같은 task를 중복 생성하지 않는다. automation에서는
   idempotency key를 사용한다.
+
+## 4장 확인 문제
+
+- `/background`와 delegation은 모두 비동기로 보일 수 있는데, 각각 누가 결과를
+  종합하는가?
+- 실행 중인 작업에 제약을 추가하는 일과 다음 작업을 예약하는 일은 어떤 명령으로
+  구분하는가?
+- 재시작 뒤에도 작업 본문·의존성·검토 이력이 남아야 한다면 무엇을 써야 하는가?
 
 [← 3장](./03-profiles-and-instructions.md) · [목차](./index.md) ·
 [5장: 여러 에이전트를 함께 운영하기 →](./05-multi-agent-operations.md)

@@ -1,9 +1,9 @@
 # Hermes를 이해하는 운영 모델
 
-Hermes를 잘 쓰려면 먼저 “agent 하나”를 하나의 대화창으로 생각하지 않아야 한다.
-사용자가 Discord·CLI·dashboard에서 메시지를 보내면 gateway가 적절한 session을 찾고,
-agent core가 model과 tool을 사용해 일한다. profile은 이 실행에 사용할 장기 설정과
-상태를 고른다.
+Hermes를 잘 쓰려면 먼저 “에이전트 하나”를 하나의 대화창으로 생각하지 않아야 한다.
+사용자가 Discord·명령줄(CLI)·대시보드에서 메시지를 보내면 게이트웨이(gateway)가
+적절한 세션을 찾고, 에이전트가 모델과 도구(tool)를 사용해 일한다. 프로필은 이 실행에
+사용할 장기 설정과 상태를 고른다.
 
 ```text
 Discord / CLI / Dashboard
@@ -41,6 +41,19 @@ toolset, operating system, terminal backend에 따라 실제 도구가 달라진
 [Tools & Toolsets](https://hermes-agent.nousresearch.com/docs/user-guide/features/tools/)에
 정리되어 있다.
 
+## 먼저 세 질문으로 범위를 정한다
+
+새 요청을 보내기 전에 다음 세 가지만 결정해도 대부분의 운영 실수를 피할 수 있다.
+
+1. **누가 하는가?** 장기 역할과 권한이 다르면 프로필을 나눈다.
+2. **어떤 맥락을 쓰는가?** 이전 대화가 필요하면 기존 세션, 필요 없으면 새 스레드나
+   새 세션을 쓴다.
+3. **얼마나 오래 남아야 하는가?** 현재 대화 안에서 끝나면 일반 실행이나 위임,
+   재시작 뒤에도 남아야 하면 Kanban이나 cron을 쓴다.
+
+프로필은 “누가”, 세션은 “어떤 대화 맥락”, 작업 공간은 “어디서”, 실행 방식은
+“얼마나 오래”를 결정한다.
+
 ## 상태를 나누는 네 단위
 
 Hermes 운영에서 가장 자주 섞이는 개념은 profile, session, workspace, sandbox다.
@@ -64,16 +77,17 @@ terminal backend와 filesystem 정책을 별도로 사용한다.
 
 | 실행 방식 | 상태 지속성 | 현재 대화 맥락 | 적합한 일 |
 |---|---|---|---|
-| foreground turn | 현재 session | 전부 사용 | 지금 바로 끝낼 일반 작업 |
+| 전경 실행(foreground turn) | 현재 session | 전부 사용 | 지금 바로 끝낼 일반 작업 |
 | `/background` | 별도 background session | 전달한 prompt만 사용 | 주 대화를 막지 않을 독립 작업 |
-| delegation | 현재 process 안의 child | goal·context만 사용 | 짧은 조사·review 병렬화 |
+| delegation | 현재 session에 소유된 child | goal·context만 사용 | 짧은 조사·review 병렬화 |
 | `/goal` | 여러 turn 자동 계속 | 같은 goal session | 완료 조건까지 반복할 한 작업 |
 | Kanban | SQLite board에 지속 | task body·comment·handoff | 역할 간 전달, 재시도, 재시작 |
 | cron | schedule에 지속 | job prompt·skill·workdir | 정기 실행과 알림 |
 
-이 표의 핵심은 “병렬”과 “지속”이 다르다는 점이다. delegation은 병렬이지만 실행
-process가 사라지면 이어서 실행하는 durable queue가 아니다. Kanban은 약간 더 무겁지만
-task와 handoff가 남고 다른 profile이 다시 맡을 수 있다.
+이 표의 핵심은 “병렬”과 “지속”이 다르다는 점이다. delegation은 비동기로 결과를
+돌려줄 수 있지만 소유 세션이 닫히거나 Hermes process가 재시작되면 진행 중 실행을
+복구하지 못한다. Kanban은 조금 더 무겁지만 task와 handoff가 남고 다른 profile이 다시
+맡을 수 있다.
 
 ## 처음 점검할 명령
 
@@ -106,5 +120,11 @@ Discord에서는 다음 명령으로 현재 대화와 비용을 확인한다.
   closing summary에 포함시킨다.
 - 변경 작업에는 범위와 금지사항을 주고, 외부 전송·배포·삭제는 사전 승인을 요구한다.
 - 긴 작업은 중간 채팅을 많이 보내기보다 상태 명령과 durable task board로 관찰한다.
+
+## 1장 확인 문제
+
+- 같은 프로필의 새 스레드와 새 프로필은 무엇을 다르게 분리하는가?
+- 병렬 실행이 가능하다는 사실만으로 재시작 뒤 복구까지 보장되는가?
+- `terminal.cwd`를 지정한 것이 파일 시스템 격리와 같지 않은 이유는 무엇인가?
 
 [← 목차](./index.md) · [2장: Discord에서 안전하게 지시하기 →](./02-discord-operations.md)
