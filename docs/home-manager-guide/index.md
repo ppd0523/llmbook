@@ -1,7 +1,7 @@
 ---
 title: NixOS에서 standalone Home Manager 운영하기
 version: 1.0
-updated: 2026-07-23
+updated: 2026-08-11
 baseline: NixOS 26.05, Home Manager 26.05
 ---
 
@@ -14,6 +14,11 @@ NixOS와 Home Manager 설치를 마친 사용자가 사용자 환경을 직접 �
 본문은 기존 예제와 같은 Flake 기반 standalone 방식을 사용한다. NixOS 설정은
 `nixos-rebuild`, 사용자 설정은 `home-manager`가 각각 담당한다. Home Manager를
 NixOS 모듈로 통합하는 방식은 차이를 판단할 수 있을 정도로만 비교한다.
+
+이 문서에서 `wsl`과 `nixos`는 예제 Flake의 output 이름이다. 자신의
+`nixosConfigurations`와 `homeConfigurations` 이름이 다르면, 모든 명령에서 그 이름으로
+바꿔야 한다. Flake 기능은 현재도 experimental이므로, 인터넷 예제보다 현재
+`flake.lock`에 고정된 Nix와 Home Manager release의 옵션을 우선한다.
 
 ## 이 가이드에서 만드는 것
 
@@ -57,6 +62,24 @@ SSH 개인 키, API 토큰 같은 비밀정보를 저장하는 방법은 이 가
 $ cd ~/.config/nixos
 ```
 
+## 첫 변경의 안전한 순서
+
+한 파일을 고쳤다면 곧바로 `switch`하지 말고, 변경 원본과 build 결과를 분리해서
+확인한다.
+
+```console
+$ git diff
+$ git status --short
+$ git add modules/home/변경한-파일.nix
+$ home-manager build --flake .#nixos
+$ home-manager switch --flake .#nixos
+```
+
+새 `.nix` 파일이나 dotfile은 Git에 추가해야 local Flake 평가 source에 들어간다.
+기존 추적 파일만 수정했다면 staging은 build의 필수 조건이 아니지만, commit 전에는
+반드시 변경 범위를 다시 검토한다. `build`가 성공해도 activation에서 기존 파일 충돌이
+발생할 수 있으므로, 실제 전환 뒤에는 바꾼 기능을 확인한다.
+
 ## 읽는 순서
 
 1. [Home Manager의 역할과 경계](./01-mental-model.md)
@@ -75,6 +98,10 @@ release branch를 함께 갱신하지만, `home.stateVersion`은 릴리스 번�
 
 Home Manager 공식 문서도 stable Nixpkgs와 대응하는 Home Manager release를 사용하고,
 기존 home의 `stateVersion`은 마이그레이션을 검토하기 전까지 유지하도록 안내한다.
+
+`nix flake update`는 기본적으로 lock의 모든 input을 갱신한다. 평소에는
+`nix flake update nixpkgs home-manager`처럼 변경 대상을 좁히고, `flake.lock` diff와
+양쪽 build를 확인한 뒤에 commit한다.
 
 ## 공식 참고 자료
 

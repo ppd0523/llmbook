@@ -52,7 +52,9 @@ Flake의 `nixpkgs` input을 따르게 한다. stable 구성에서는 Nixpkgs `ni
 Home Manager `release-26.05`처럼 대응하는 release를 사용한다.
 
 실제 commit은 URL 문자열만으로 정해지지 않는다. `flake.lock`에 기록된 revision이
-평가에 사용된다.
+평가에 사용된다. `follows`는 같은 Nixpkgs source를 쓰게 하지만, release 조합 자체의
+호환성을 보장하지는 않는다. stable release끼리를 맞추고, lock을 갱신할 때 두 계층을
+함께 build한다.
 
 ## 2.3 homeConfigurations output
 
@@ -217,7 +219,7 @@ $ home-manager switch --flake .#alice
 ## 2.8 변경 파일을 Git에 추가해야 하는 이유
 
 Git 저장소를 Flake 경로로 평가하면 추적되지 않은 새 파일이 source에 포함되지 않는다.
-새 모듈을 만들고 `imports`에 추가했다면 build 전에 상태를 확인한다.
+새 모듈을 만들고 `imports`에 추가했다면 build 전에 staging 상태를 확인한다.
 
 ```console
 $ git status --short
@@ -226,7 +228,10 @@ $ home-manager build --flake .#nixos
 ```
 
 기존 추적 파일의 수정은 dirty tree로 평가할 수 있지만, 새 파일은 먼저 index에
-추가해야 한다. commit은 build 검증 뒤에 해도 된다.
+추가해야 한다. commit은 build 검증 뒤에 해도 된다. 이 규칙은 Git 저장소에 있는 local
+Flake에 적용된다. 다른 `path:` source나 Git이 아닌 디렉터리를 평가할 때는 source를
+포함하는 방식이 달라질 수 있으므로, 이 가이드의 예제처럼 Git 저장소를 기준으로
+작업하는 편이 가장 예측 가능하다.
 
 ## 요약
 

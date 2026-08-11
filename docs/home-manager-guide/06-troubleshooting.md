@@ -45,6 +45,16 @@ $ home-manager generations
 - `home-manager build`: activation 없이 평가와 build 재현
 - `home-manager generations`: 현재와 이전 사용자 generation 확인
 
+오류 메시지의 원인이 바로 드러나지 않을 때만 trace를 추가한다.
+
+```console
+$ home-manager build --flake .#nixos --show-trace
+```
+
+`--show-trace`는 모듈 평가 경로를 길게 출력하므로, 먼저 일반 build의 첫 오류와 해당
+파일 줄을 확인한 뒤 사용한다. package build 로그가 필요한 경우에는 `-L`도 함께
+사용할 수 있다.
+
 ## 6.3 output을 찾지 못함
 
 증상:
@@ -229,6 +239,11 @@ users.users.${username}.shell = pkgs.zsh;
 ```
 
 Starship과 direnv의 zsh integration은 Home Manager에서 활성화한다.
+
+Home Manager가 관리하지 않는 shell을 새로 열었다면 `home.sessionVariables`와
+`home.sessionPath`가 보이지 않을 수 있다. 이 경우 Home Manager가 제공하는
+`hm-session-vars.sh`를 그 shell의 시작 파일에서 한 번 불러오는 방식을 검토한다.
+zsh를 `programs.zsh`로 관리한다면 같은 파일을 수동으로 다시 source하지 않는다.
 
 ## 6.10 환경 변수가 보이지 않음
 

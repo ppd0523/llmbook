@@ -253,6 +253,7 @@ home.sessionVariables = {
 ```
 
 같은 값을 Nix에서 조립해야 한다면 `let` binding이나 이미 계산된 Nix 값을 사용한다.
+동일한 option 안의 다른 값을 참조할 때는 `config.home.sessionVariables`를 써도 된다.
 
 ```nix
 let
@@ -280,7 +281,9 @@ home.sessionPath = [
 ```
 
 `$HOME`은 생성된 shell 코드에서 확장된다. `~`는 같은 방식으로 확장되지 않을 수
-있으므로 HOME 기반 경로를 사용한다.
+있으므로 HOME 기반 경로를 사용한다. `home.sessionPath`에 넣은 경로는 `PATH` 앞에
+추가된다. 시스템 패키지와 같은 이름의 실행 파일을 넣는다면, 어떤 실행 파일이 먼저
+선택되는지 `command -v <명령>`으로 확인한다.
 
 새 session 변수와 PATH는 현재 실행 중인 shell에 자동으로 역주입되지 않는다.
 `switch` 뒤 새 로그인 shell을 시작하거나 WSL 세션을 다시 연다.

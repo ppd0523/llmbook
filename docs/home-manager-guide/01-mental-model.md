@@ -35,6 +35,11 @@ Git의 flake.nix와 Home Manager 모듈
 이 흐름 덕분에 구성 원본은 Git으로 검토하고, 생성 결과는 Nix Store에서 재사용하며,
 현재 사용자 환경은 generation 단위로 전환할 수 있다.
 
+여기서 generation은 Git commit과 다른 복구 단위다. Git commit은 선언 원본의 이력이고,
+generation은 그 선언을 평가해 만든 활성화 가능한 결과다. 따라서 긴급 상황에서는
+generation을 먼저 롤백해 현재 환경을 복구하고, 이어서 Git 원본을 고쳐 다음 전환이
+같은 문제를 다시 만들지 않게 한다.
+
 ## 1.2 세 가지 소유권 계층
 
 현재 프로젝트는 다음 경계를 사용한다.
@@ -103,6 +108,10 @@ Nix Store의 파일은 읽기 전용이다. 프로그램이 직접 수정해야 
 패키지와 Home Manager 소스는 Flake input과 lock이 정한다. 이미 활성화한 home의
 `stateVersion`을 새 릴리스마다 올리면 호환성을 지켜 주던 이전 기본값이 바뀔 수 있다.
 
+새로 만드는 구성은 사용하는 Home Manager release에 맞는 값을 정하지만, 기존 구성은
+release branch를 올렸다는 이유만으로 바꾸지 않는다. 값 변경이 필요한지는 release note의
+state-version 변경과 실제 데이터 이동 절차를 확인한 뒤 판단한다.
+
 ## 1.6 무엇을 어디에 둘지 판단하는 규칙
 
 새 설정을 추가할 때 다음 순서로 판단한다.
@@ -123,5 +132,6 @@ Nix Store의 파일은 읽기 전용이다. 프로그램이 직접 수정해야 
 - NixOS는 시스템, Home Manager는 사용자, 각 프로젝트는 프로젝트 상태를 소유한다.
 - Nix Store의 선언 결과와 프로그램이 쓰는 상태를 분리한다.
 - 패키지 release, `flake.lock`, `home.stateVersion`은 서로 다른 버전 축이다.
+- generation 롤백은 현재 환경을, Git 수정은 다음 전환의 선언을 바로잡는다.
 
 [목차](./index.md) · [2장: Flake와 모듈 구조 읽기 →](./02-configuration-structure.md)

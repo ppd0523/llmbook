@@ -37,6 +37,10 @@ $ home-manager build --flake .#nixos
 현재 사용자 환경을 활성화하지 않는다. 문법 오류, 없는 옵션, package build 실패를
 현재 환경을 바꾸기 전에 찾을 수 있다.
 
+기본적으로 현재 디렉터리에 `result` 링크가 남을 수 있다. 이는 build 결과를 가리키는
+확인용 링크이며 현재 사용자 환경이 아니다. Git 저장소에 추가하지 말고, 다음 build에서
+갱신되는 것을 감안해 작업 트리 상태를 확인한다.
+
 성공한 뒤 전환한다.
 
 ```console
@@ -135,7 +139,8 @@ $ home-manager switch --rollback
 ```
 
 이 명령은 직전 Home Manager generation을 선택해 활성화한다. NixOS 시스템은 바뀌지
-않는다.
+않는다. 이 옵션은 Home Manager 25.11에서 추가되었으므로, 더 오래된 lock을 사용하는
+구성은 해당 release의 rollback 절차를 확인한다.
 
 시스템 변경만 되돌리려면 별도의 NixOS rollback을 사용한다.
 
@@ -176,7 +181,7 @@ $ git commit
 
 ```console
 $ cd ~/.config/nixos
-$ nix flake update
+$ nix flake update nixpkgs home-manager
 $ git diff -- flake.lock
 $ nix fmt
 $ sudo nixos-rebuild build --flake .#wsl
@@ -188,7 +193,9 @@ $ git commit -m "Update Nix inputs"
 ```
 
 `home-manager switch` 자체는 Flake input을 자동으로 최신화하지 않는다. lock을
-갱신하지 않으면 같은 source revision을 계속 사용한다.
+갱신하지 않으면 같은 source revision을 계속 사용한다. 모든 input을 의도적으로
+갱신할 때만 인자 없이 `nix flake update`를 실행한다. input 이름을 지정하면 review할
+lock diff의 범위를 줄일 수 있다.
 
 ## 5.9 release 업그레이드
 

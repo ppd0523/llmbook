@@ -112,8 +112,11 @@ xdg.configFile."example-app" = {
 };
 ```
 
-재귀 링크는 일부 하위 파일을 다른 선언과 조합할 때 유용하지만, 겹치는 target의
-우선순위가 직관적이지 않을 수 있다. 작은 구성에서는 파일 단위 선언이 가장 명확하다.
+재귀 링크는 일부 하위 파일을 다른 선언과 조합할 때 유용하지만, 겹치는 target은
+피하는 편이 안전하다. 정확히 같은 target을 두 번 선언하면 오류가 난다. 반면 재귀
+링크가 제공하는 `example-app/config.toml`과 일반 파일 선언이 겹치면, Home Manager는
+기본적으로 재귀 링크 쪽을 유지하고 일반 파일 선언을 무시한다. 의도한 설정이 조용히
+적용되지 않을 수 있으므로, 작은 구성에서는 파일 단위 선언이 가장 명확하다.
 
 ## 4.6 out-of-store link
 
@@ -144,6 +147,11 @@ in
 - generation만으로 파일 내용을 완전히 복원할 수 없다.
 - 저장소 clone 위치를 바꾸면 링크 경로도 바꿔야 한다.
 - 프로그램이 수정한 내용이 Git 작업 트리에 바로 나타난다.
+
+out-of-store link는 live path의 변경을 즉시 보게 할 뿐, Home Manager가 그 파일을
+쓰기 가능하게 만드는 옵션은 아니다. 대상 프로그램이 링크 자체가 아니라 원본 작업
+트리에 쓸 권한을 이미 가져야 한다. 일반 `source`와 out-of-store link를 같은 target에
+섞어 선언하지 않는다.
 
 정적이고 generation과 함께 롤백해야 하는 설정은 일반 `source`를 사용한다.
 out-of-store link는 쓰기 가능성이 실제로 필요한 파일에만 제한한다.
@@ -197,7 +205,9 @@ standalone Home Manager는 한 번의 전환에서 기존 파일에 확장자를
 $ home-manager switch -b hm-backup --flake .#nixos
 ```
 
-이미 같은 `.hm-backup` 파일이 있으면 activation은 다시 중단된다. 이 옵션을 평상시
+이미 같은 `.hm-backup` 파일이 있으면 activation은 다시 중단된다. 이 옵션은 관리되지
+않은 일반 파일과 디렉터리를 옮기는 용도다. 충돌 target이 기존 symbolic link라면 원본을
+확인한 뒤 직접 옮기거나, 정말 버려도 되는 target에만 `force`를 사용한다. `-b`를 평상시
 모든 `switch`에 자동으로 붙이기보다 초기 마이그레이션에서 검토 후 사용한다.
 
 ## 4.9 force를 기본값으로 쓰지 않는다
