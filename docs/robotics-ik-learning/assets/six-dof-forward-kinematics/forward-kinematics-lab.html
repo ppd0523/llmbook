@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>6R 순기구학 실습</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #101d30;
+      --panel-2: #15243a;
+      --line: #2a3d58;
+      --text: #edf5ff;
+      --muted: #9fb0c6;
+      --cyan: #62d9ff;
+      --amber: #ffc857;
+      --red: #ff7b7b;
+      --green: #69db7c;
+      --blue: #74a9ff;
+      --violet: #b197fc;
+      --focus: #fff3bf;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 80% 0%, rgba(98, 217, 255, .14), transparent 38rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+
+    button:focus-visible, input:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    header {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 32px 24px 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--cyan);
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3.1rem);
+      line-height: 1.15;
+      letter-spacing: -.035em;
+    }
+
+    header > p:last-child {
+      max-width: 820px;
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(280px, 370px) minmax(540px, 1fr);
+      gap: 18px;
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 0 24px 42px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(16, 29, 48, .95);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .22);
+    }
+
+    aside {
+      align-self: start;
+      padding: 20px;
+    }
+
+    h2, h3 { margin-top: 0; }
+    h2 { font-size: 1.15rem; }
+
+    h3 {
+      margin-bottom: 10px;
+      color: #dceaff;
+      font-size: .95rem;
+    }
+
+    .control-group {
+      margin-top: 20px;
+      padding-top: 17px;
+      border-top: 1px solid var(--line);
+    }
+
+    .range-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 11px 0 4px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .value {
+      color: var(--text);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 0;
+      accent-color: var(--cyan);
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    button {
+      min-height: 43px;
+      border: 1px solid #365373;
+      border-radius: 10px;
+      background: #182b44;
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px 10px;
+      font-weight: 750;
+    }
+
+    button:hover { background: #203957; }
+    button[aria-pressed="true"] { border-color: var(--cyan); background: #17364c; }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .stage { overflow: hidden; }
+
+    .canvas-wrap {
+      position: relative;
+      min-height: 520px;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        #091525;
+      background-size: 28px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 520px;
+    }
+
+    .legend {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 14px;
+      max-width: calc(100% - 28px);
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(8, 17, 31, .84);
+      color: var(--muted);
+      font-size: .78rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .key::before {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background: var(--key);
+      content: "";
+    }
+
+    .readout { padding: 18px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-2);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .stat strong {
+      display: block;
+      overflow-wrap: anywhere;
+      margin-top: 4px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: .94rem;
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .matrix-box {
+      min-width: 0;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0a1627;
+    }
+
+    .matrix-box h3 { margin-bottom: 8px; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 3px 6px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: clamp(.68rem, 1.25vw, .84rem);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .matrix span {
+      min-width: 0;
+      padding: 3px 2px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .matrix span:nth-child(4n) { color: var(--amber); }
+
+    .observation {
+      margin: 14px 0 0;
+      padding: 11px 13px;
+      border-left: 3px solid var(--cyan);
+      background: rgba(98, 217, 255, .07);
+      color: #dceaff;
+    }
+
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+      aside { order: 2; }
+      .stage { order: 1; }
+    }
+
+    @media (max-width: 620px) {
+      header { padding: 24px 16px 14px; }
+      main { padding: 0 12px 28px; }
+      .canvas-wrap { min-height: 410px; }
+      canvas { height: 410px; }
+      .stats, .matrix-grid { grid-template-columns: 1fr; }
+      .preset-grid { grid-template-columns: 1fr; }
+      .matrix { font-size: .75rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Forward kinematics lab</p>
+    <h1>6R 변환 체인을 관절별로 따라가기</h1>
+    <p>여섯 관절을 움직이고 누적 변환 단계를 바꾸며 손목 중심, TCP, 좌표축과 행렬의 위치 열이 일치하는지 확인하세요.</p>
+  </header>
+
+  <main>
+    <aside class="panel" aria-label="로봇 관절과 링크 설정">
+      <h2>관절 설정</h2>
+      <div id="joint-controls"></div>
+
+      <div class="control-group">
+        <h3>링크 길이</h3>
+        <div id="length-controls"></div>
+      </div>
+
+      <div class="control-group">
+        <h3>누적 변환</h3>
+        <label class="range-label" for="stage-step">
+          <span>표시할 좌표계</span>
+          <output class="value" id="stage-value" for="stage-step">프레임 6</output>
+        </label>
+        <input id="stage-step" type="range" min="0" max="6" step="1" value="6">
+        <p class="hint">선택한 프레임의 x·y·z축과 <span class="value">⁰Tᵢ</span>를 표시합니다.</p>
+      </div>
+
+      <div class="control-group">
+        <h3>프리셋</h3>
+        <div class="preset-grid">
+          <button type="button" data-preset="home">홈</button>
+          <button type="button" data-preset="worked" aria-pressed="true">Worked Example</button>
+          <button type="button" data-preset="arm">팔 자세</button>
+          <button type="button" data-preset="wrist">같은 팔+손목 회전</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel stage" aria-label="6R 로봇 시각화와 행렬 결과">
+      <div class="canvas-wrap">
+        <canvas id="robot-canvas" role="img" aria-label="6R 직렬 로봇 팔의 현재 자세"></canvas>
+        <div class="legend" aria-hidden="true">
+          <span class="key" style="--key:var(--cyan)">링크</span>
+          <span class="key" style="--key:var(--violet)">손목 중심</span>
+          <span class="key" style="--key:var(--amber)">TCP</span>
+          <span class="key" style="--key:var(--red)">x축</span>
+          <span class="key" style="--key:var(--green)">y축</span>
+          <span class="key" style="--key:var(--blue)">z축</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="stats">
+          <div class="stat">
+            <span>손목 중심 ⁰p₆</span>
+            <strong id="wrist-position">(0, 0, 0)</strong>
+          </div>
+          <div class="stat">
+            <span>도구 중심점 ⁰pTCP</span>
+            <strong id="tcp-position">(0, 0, 0)</strong>
+          </div>
+          <div class="stat">
+            <span>TCP 회전행렬 검사</span>
+            <strong id="rotation-check">오차 0 · det 1</strong>
+          </div>
+        </div>
+
+        <div class="matrix-grid">
+          <div class="matrix-box">
+            <h3 id="selected-title">선택한 누적 변환 ⁰T₆</h3>
+            <div class="matrix" id="selected-matrix" aria-label="선택한 누적 변환행렬"></div>
+          </div>
+          <div class="matrix-box">
+            <h3>최종 TCP 변환 ⁰TTCP</h3>
+            <div class="matrix" id="tcp-matrix" aria-label="최종 TCP 변환행렬"></div>
+          </div>
+        </div>
+
+        <p class="observation" id="observation" aria-live="polite">프레임 6의 원점은 손목 중심입니다. TCP는 그 x축으로 도구 길이만큼 떨어져 있습니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const jointSpec = [
+        ["q1", "q₁ · base yaw", -180, 180, 90],
+        ["q2", "q₂ · shoulder pitch", -120, 120, 0],
+        ["q3", "q₃ · elbow pitch", -150, 150, 90],
+        ["q4", "q₄ · wrist roll", -180, 180, 0],
+        ["q5", "q₅ · wrist pitch", -120, 120, 0],
+        ["q6", "q₆ · tool roll", -180, 180, 0]
+      ];
+
+      const lengthSpec = [
+        ["h", "h · 어깨 높이", 0, 4, 2],
+        ["l2", "L₂ · 위팔", .5, 5, 3],
+        ["l3", "L₃ · 아래팔", .5, 5, 2],
+        ["lt", "Lₜ · 도구", 0, 3, 1]
+      ];
+
+      const presets = {
+        home: { q: [0, 0, 0, 0, 0, 0], lengths: [2, 3, 2, 1] },
+        worked: { q: [90, 0, 90, 0, 0, 0], lengths: [2, 3, 2, 1] },
+        arm: { q: [35, -30, 70, 0, 0, 0], lengths: [2, 3, 2, 1] },
+        wrist: { q: [35, -30, 70, 60, 45, -30], lengths: [2, 3, 2, 1] }
+      };
+
+      const jointHost = document.getElementById("joint-controls");
+      const lengthHost = document.getElementById("length-controls");
+      const stageInput = document.getElementById("stage-step");
+      const stageValue = document.getElementById("stage-value");
+      const canvas = document.getElementById("robot-canvas");
+      const ctx = canvas.getContext("2d");
+
+      function addRange(host, id, label, min, max, value, step, unit) {
+        const wrapper = document.createElement("div");
+        const labelEl = document.createElement("label");
+        labelEl.className = "range-label";
+        labelEl.htmlFor = id;
+        const name = document.createElement("span");
+        name.textContent = label;
+        const output = document.createElement("output");
+        output.className = "value";
+        output.id = `${id}-value`;
+        output.htmlFor = id;
+        output.textContent = `${value}${unit}`;
+        labelEl.append(name, output);
+        const input = document.createElement("input");
+        input.type = "range";
+        input.id = id;
+        input.min = min;
+        input.max = max;
+        input.step = step;
+        input.value = value;
+        input.dataset.unit = unit;
+        wrapper.append(labelEl, input);
+        host.append(wrapper);
+      }
+
+      jointSpec.forEach(([id, label, min, max, value]) => addRange(jointHost, id, label, min, max, value, 1, "°"));
+      lengthSpec.forEach(([id, label, min, max, value]) => addRange(lengthHost, id, label, min, max, value, .1, ""));
+
+      const inputs = [...document.querySelectorAll('input[type="range"]')];
+      const deg = value => value * Math.PI / 180;
+
+      function identity() {
+        return [
+          [1, 0, 0, 0],
+          [0, 1, 0, 0],
+          [0, 0, 1, 0],
+          [0, 0, 0, 1]
+        ];
+      }
+
+      function multiply(a, b) {
+        return a.map((row, r) => b[0].map((_, c) =>
+          row.reduce((sum, value, k) => sum + value * b[k][c], 0)
+        ));
+      }
+
+      function rotX(angle) {
+        const c = Math.cos(angle), s = Math.sin(angle);
+        return [[1,0,0,0],[0,c,-s,0],[0,s,c,0],[0,0,0,1]];
+      }
+
+      function rotY(angle) {
+        const c = Math.cos(angle), s = Math.sin(angle);
+        return [[c,0,s,0],[0,1,0,0],[-s,0,c,0],[0,0,0,1]];
+      }
+
+      function rotZ(angle) {
+        const c = Math.cos(angle), s = Math.sin(angle);
+        return [[c,-s,0,0],[s,c,0,0],[0,0,1,0],[0,0,0,1]];
+      }
+
+      function transX(distance) {
+        const t = identity();
+        t[0][3] = distance;
+        return t;
+      }
+
+      function transZ(distance) {
+        const t = identity();
+        t[2][3] = distance;
+        return t;
+      }
+
+      function value(id) {
+        return Number(document.getElementById(id).value);
+      }
+
+      function position(t) {
+        return [t[0][3], t[1][3], t[2][3]];
+      }
+
+      function chain() {
+        const q = [1,2,3,4,5,6].map(i => deg(value(`q${i}`)));
+        const h = value("h"), l2 = value("l2"), l3 = value("l3"), lt = value("lt");
+        const frames = [identity()];
+        frames.push(multiply(multiply(frames[0], rotZ(q[0])), transZ(h)));
+        frames.push(multiply(multiply(frames[1], rotY(q[1])), transX(l2)));
+        frames.push(multiply(multiply(frames[2], rotY(q[2])), transX(l3)));
+        frames.push(multiply(frames[3], rotX(q[3])));
+        frames.push(multiply(frames[4], rotY(q[4])));
+        frames.push(multiply(frames[5], rotX(q[5])));
+        const tcp = multiply(frames[6], transX(lt));
+        return { frames, tcp, q, lengths: { h, l2, l3, lt } };
+      }
+
+      function clean(number) {
+        return Math.abs(number) < 5e-10 ? 0 : number;
+      }
+
+      function fixed(number, digits = 3) {
+        const n = clean(number);
+        return Number.isInteger(n) ? String(n) : n.toFixed(digits).replace(/0+$/, "").replace(/\.$/, "");
+      }
+
+      function vectorText(vector) {
+        return `(${vector.map(v => fixed(v)).join(", ")})`;
+      }
+
+      function renderMatrix(host, matrix) {
+        host.replaceChildren();
+        matrix.flat().forEach(number => {
+          const cell = document.createElement("span");
+          cell.textContent = fixed(number);
+          host.append(cell);
+        });
+      }
+
+      function rotationMetrics(t) {
+        const r = t.slice(0, 3).map(row => row.slice(0, 3));
+        let error = 0;
+        for (let i = 0; i < 3; i += 1) {
+          for (let j = 0; j < 3; j += 1) {
+            let dot = 0;
+            for (let k = 0; k < 3; k += 1) dot += r[k][i] * r[k][j];
+            error = Math.max(error, Math.abs(dot - (i === j ? 1 : 0)));
+          }
+        }
+        const det =
+          r[0][0] * (r[1][1] * r[2][2] - r[1][2] * r[2][1]) -
+          r[0][1] * (r[1][0] * r[2][2] - r[1][2] * r[2][0]) +
+          r[0][2] * (r[1][0] * r[2][1] - r[1][1] * r[2][0]);
+        return { error, det };
+      }
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.max(1, Math.round(rect.width * ratio));
+        const height = Math.max(1, Math.round(rect.height * ratio));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        return { width: rect.width, height: rect.height };
+      }
+
+      function rawProject(point) {
+        return [0.866 * (point[0] - point[1]), .45 * (point[0] + point[1]) - point[2]];
+      }
+
+      function makeProjector(points, width, height) {
+        const projected = points.map(rawProject);
+        const xs = projected.map(p => p[0]);
+        const ys = projected.map(p => p[1]);
+        let minX = Math.min(...xs), maxX = Math.max(...xs);
+        let minY = Math.min(...ys), maxY = Math.max(...ys);
+        if (maxX - minX < 1) { minX -= .5; maxX += .5; }
+        if (maxY - minY < 1) { minY -= .5; maxY += .5; }
+        const padding = width < 500 ? 42 : 62;
+        const scale = Math.min((width - 2 * padding) / (maxX - minX), (height - 2 * padding) / (maxY - minY));
+        const offsetX = (width - scale * (minX + maxX)) / 2;
+        const offsetY = (height - scale * (minY + maxY)) / 2;
+        return point => {
+          const p = rawProject(point);
+          return [offsetX + p[0] * scale, offsetY + p[1] * scale];
+        };
+      }
+
+      function drawLine(project, from, to, color, width = 1) {
+        const a = project(from), b = project(to);
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        ctx.lineTo(b[0], b[1]);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.stroke();
+      }
+
+      function drawPoint(project, point, color, radius, label) {
+        const p = project(point);
+        ctx.beginPath();
+        ctx.arc(p[0], p[1], radius, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = "#07111f";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        if (label) {
+          ctx.fillStyle = "#edf5ff";
+          ctx.font = "600 12px system-ui";
+          ctx.fillText(label, p[0] + 9, p[1] - 9);
+        }
+      }
+
+      function axisEnd(t, axis, length) {
+        const p = position(t);
+        return [
+          p[0] + t[0][axis] * length,
+          p[1] + t[1][axis] * length,
+          p[2] + t[2][axis] * length
+        ];
+      }
+
+      function drawFrame(project, t, length, colors) {
+        const p = position(t);
+        [0, 1, 2].forEach(axis => drawLine(project, p, axisEnd(t, axis, length), colors[axis], 3));
+      }
+
+      function drawScene(model) {
+        const size = resizeCanvas();
+        ctx.clearRect(0, 0, size.width, size.height);
+        const rootStyle = getComputedStyle(document.documentElement);
+        const colors = {
+          cyan: rootStyle.getPropertyValue("--cyan").trim(),
+          amber: rootStyle.getPropertyValue("--amber").trim(),
+          violet: rootStyle.getPropertyValue("--violet").trim(),
+          red: rootStyle.getPropertyValue("--red").trim(),
+          green: rootStyle.getPropertyValue("--green").trim(),
+          blue: rootStyle.getPropertyValue("--blue").trim(),
+          line: rootStyle.getPropertyValue("--line").trim(),
+          muted: rootStyle.getPropertyValue("--muted").trim()
+        };
+
+        const framePositions = model.frames.map(position);
+        const tcpPosition = position(model.tcp);
+        const reach = Math.max(4, Math.ceil(model.lengths.l2 + model.lengths.l3 + model.lengths.lt));
+        const bounds = [
+          ...framePositions,
+          tcpPosition,
+          [-reach, -reach, 0], [reach, -reach, 0], [-reach, reach, 0], [reach, reach, 0],
+          [0, 0, model.lengths.h + model.lengths.l2 + model.lengths.l3]
+        ];
+        const project = makeProjector(bounds, size.width, size.height);
+
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        for (let i = -reach; i <= reach; i += 1) {
+          drawLine(project, [-reach, i, 0], [reach, i, 0], colors.line, 1);
+          drawLine(project, [i, -reach, 0], [i, reach, 0], colors.line, 1);
+        }
+
+        drawFrame(project, model.frames[0], 1.25, [colors.red, colors.green, colors.blue]);
+
+        const linkPoints = [framePositions[0], framePositions[1], framePositions[2], framePositions[3], tcpPosition];
+        for (let i = 0; i < linkPoints.length - 1; i += 1) {
+          drawLine(project, linkPoints[i], linkPoints[i + 1], colors.cyan, i === 3 ? 5 : 8);
+        }
+
+        drawPoint(project, framePositions[0], colors.muted, 6, "0");
+        drawPoint(project, framePositions[1], colors.cyan, 7, "어깨");
+        drawPoint(project, framePositions[2], colors.cyan, 7, "팔꿈치");
+        drawPoint(project, framePositions[3], colors.violet, 8, "손목");
+        drawPoint(project, tcpPosition, colors.amber, 8, "TCP");
+
+        const selected = Number(stageInput.value);
+        drawFrame(project, model.frames[selected], Math.max(.7, reach * .09), [colors.red, colors.green, colors.blue]);
+      }
+
+      function setPreset(name) {
+        const preset = presets[name];
+        preset.q.forEach((number, i) => { document.getElementById(`q${i + 1}`).value = number; });
+        preset.lengths.forEach((number, i) => { document.getElementById(lengthSpec[i][0]).value = number; });
+        document.querySelectorAll("[data-preset]").forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.preset === name));
+        });
+        update();
+      }
+
+      function updateOutputs(model) {
+        inputs.forEach(input => {
+          const output = document.getElementById(`${input.id}-value`);
+          if (output) output.textContent = `${fixed(Number(input.value), 1)}${input.dataset.unit || ""}`;
+        });
+
+        const selected = Number(stageInput.value);
+        stageValue.textContent = `프레임 ${selected}`;
+        document.getElementById("selected-title").textContent = `선택한 누적 변환 ⁰T${selected}`;
+        document.getElementById("wrist-position").textContent = vectorText(position(model.frames[6]));
+        document.getElementById("tcp-position").textContent = vectorText(position(model.tcp));
+        const metrics = rotationMetrics(model.tcp);
+        document.getElementById("rotation-check").textContent = `오차 ${metrics.error.toExponential(1)} · det ${fixed(metrics.det)}`;
+        renderMatrix(document.getElementById("selected-matrix"), model.frames[selected]);
+        renderMatrix(document.getElementById("tcp-matrix"), model.tcp);
+
+        const observation = document.getElementById("observation");
+        const wristSingular = Math.abs(Math.sin(deg(Number(document.getElementById("q5").value)))) < 1e-8;
+        if (selected <= 3) {
+          observation.textContent = `프레임 ${selected}의 위치 열은 해당 링크 끝의 원점입니다. 단계를 올리며 어느 관절부터 위치와 방위가 바뀌는지 확인하세요.`;
+        } else if (model.lengths.lt === 0) {
+          observation.textContent = wristSingular
+            ? "도구 길이가 0이므로 TCP와 손목 중심이 같습니다. q₅=0°에서는 q₄축과 q₆축이 나란한 손목 특이 자세지만 FK 행렬은 정상적으로 계산됩니다."
+            : "도구 길이가 0이므로 TCP와 손목 중심이 같습니다. 손목각은 TCP 위치를 바꾸지 않고 방위만 바꿉니다.";
+        } else if (wristSingular) {
+          observation.textContent = "q₅=0°에서는 q₄축과 q₆축이 나란한 손목 특이 자세입니다. FK 행렬은 유효하며, TCP는 손목 중심에서 떨어져 있습니다.";
+        } else {
+          observation.textContent = "q₄~q₆의 축은 손목 중심에서 만나므로 그 점은 유지됩니다. 그러나 TCP는 떨어져 있어 손목 방위에 따라 위치도 달라질 수 있습니다.";
+        }
+
+        const wrist = vectorText(position(model.frames[6]));
+        const tcp = vectorText(position(model.tcp));
+        canvas.setAttribute("aria-label", `6R 로봇 팔. 손목 중심 ${wrist}, 도구 중심점 ${tcp}, 선택한 좌표계 프레임 ${selected}.`);
+      }
+
+      function update() {
+        const model = chain();
+        updateOutputs(model);
+        drawScene(model);
+      }
+
+      inputs.forEach(input => input.addEventListener("input", () => {
+        document.querySelectorAll("[data-preset]").forEach(button => button.setAttribute("aria-pressed", "false"));
+        update();
+      }));
+      document.querySelectorAll("[data-preset]").forEach(button => button.addEventListener("click", () => setPreset(button.dataset.preset)));
+      window.addEventListener("resize", update);
+      if ("ResizeObserver" in window) new ResizeObserver(update).observe(canvas.parentElement);
+
+      update();
+    })();
+  </script>
+</body>
+</html>
