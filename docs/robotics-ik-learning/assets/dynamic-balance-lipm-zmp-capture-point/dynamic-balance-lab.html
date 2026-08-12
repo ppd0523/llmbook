@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>동적 균형 실험 — LIPM, CoP와 캡처 포인트</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #0e1b2d;
+      --panel-2: #13243a;
+      --line: #29415f;
+      --text: #edf6ff;
+      --muted: #a9bed3;
+      --cyan: #58d7ff;
+      --mint: #5ce1a3;
+      --yellow: #ffd166;
+      --violet: #c8a7ff;
+      --red: #ff7b8b;
+      --radius: 18px;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% 5%, rgba(88, 215, 255, .12), transparent 28rem),
+        radial-gradient(circle at 90% 15%, rgba(200, 167, 255, .09), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+    button, input[type="range"] { cursor: pointer; }
+
+    .page {
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(260px, .6fr);
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero-copy, .formula-card, .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(19, 36, 58, .96), rgba(9, 24, 41, .96));
+      box-shadow: var(--shadow);
+    }
+
+    .hero-copy { padding: clamp(24px, 4vw, 46px); }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--cyan);
+      font-size: .79rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4.4rem);
+      line-height: 1.06;
+      letter-spacing: -.055em;
+    }
+    .lead {
+      max-width: 850px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.6vw, 1.18rem);
+    }
+
+    .formula-card {
+      padding: 26px;
+      display: grid;
+      align-content: center;
+      gap: 16px;
+    }
+    .formula {
+      padding: 15px 16px;
+      border: 1px solid rgba(88, 215, 255, .25);
+      border-radius: 14px;
+      background: rgba(3, 14, 27, .5);
+      font-family: "Cambria Math", Georgia, serif;
+      font-size: clamp(1.12rem, 2.3vw, 1.55rem);
+      text-align: center;
+    }
+    .formula-note { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .preset-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(14, 27, 45, .82);
+    }
+
+    button {
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid #385476;
+      border-radius: 11px;
+      background: #152a45;
+      color: var(--text);
+      font-weight: 750;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+    button:hover { transform: translateY(-1px); border-color: var(--cyan); }
+    button:focus-visible, input:focus-visible { outline: 3px solid rgba(88, 215, 255, .45); outline-offset: 2px; }
+    button.active { background: var(--cyan); border-color: var(--cyan); color: #031321; }
+    button.primary { background: var(--mint); border-color: var(--mint); color: #031b15; }
+    button.warn { background: #3b2e19; border-color: #7c6233; color: #ffe7b0; }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: minmax(290px, 360px) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .panel { padding: 20px; }
+    .panel h2 { margin: 0 0 4px; font-size: 1.15rem; }
+    .panel-intro { margin: 0 0 20px; color: var(--muted); font-size: .9rem; }
+
+    .control { padding: 15px 0; border-top: 1px solid rgba(41, 65, 95, .68); }
+    .control:first-of-type { border-top: 0; padding-top: 4px; }
+    .control-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .control label { font-weight: 720; }
+    output { color: var(--cyan); font-variant-numeric: tabular-nums; font-weight: 800; }
+    input[type="range"] { width: 100%; accent-color: var(--cyan); }
+    .range-hints { display: flex; justify-content: space-between; color: #7f99b4; font-size: .74rem; }
+
+    .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 18px; }
+    .button-grid .wide { grid-column: 1 / -1; }
+
+    .workspace { display: grid; gap: 20px; min-width: 0; }
+    .canvas-wrap {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(#0a1a2d, #081523);
+    }
+    canvas { display: block; width: 100%; height: auto; }
+    #scene { aspect-ratio: 16 / 8.5; min-height: 330px; }
+    #history { aspect-ratio: 16 / 5.5; min-height: 220px; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      border-radius: 3px;
+      background: var(--swatch);
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .metric {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(9, 24, 41, .9);
+    }
+    .metric-label { color: var(--muted); font-size: .74rem; }
+    .metric-value { margin-top: 4px; font-size: 1.05rem; font-weight: 820; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .good { color: var(--mint); }
+    .bad { color: var(--red); }
+    .attention { color: var(--yellow); }
+
+    .decision {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      margin-top: 10px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--mint);
+      border-radius: 13px;
+      background: rgba(6, 19, 33, .7);
+    }
+    .decision.bad-state { border-left-color: var(--red); }
+    .decision-icon { font-size: 1.25rem; }
+    .decision strong { display: block; margin-bottom: 2px; }
+    .decision p { margin: 0; color: var(--muted); font-size: .88rem; }
+
+    .explain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .explain-card {
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(14, 27, 45, .72);
+    }
+    .explain-card h3 { margin: 0 0 6px; font-size: .98rem; }
+    .explain-card p { margin: 0; color: var(--muted); font-size: .86rem; }
+
+    .notice {
+      margin-top: 20px;
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 209, 102, .35);
+      border-radius: 15px;
+      background: rgba(71, 51, 15, .28);
+      color: #ffe9b2;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .lab-grid { grid-template-columns: 1fr; }
+      .controls { order: 2; }
+      .workspace { order: 1; }
+      .status-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 650px) {
+      .page { width: min(100% - 20px, 1440px); padding-top: 14px; }
+      .hero-copy, .formula-card, .panel { padding: 16px; }
+      .explain-grid { grid-template-columns: 1fr; }
+      .status-grid { grid-template-columns: 1fr 1fr; }
+      #scene { min-height: 300px; aspect-ratio: 10 / 9; }
+      #history { min-height: 230px; aspect-ratio: 10 / 8; }
+    }
+    @media (max-width: 390px) {
+      .status-grid, .button-grid { grid-template-columns: 1fr; }
+      .button-grid .wide { grid-column: auto; }
+      .preset-bar button { flex: 1 1 130px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Chapter 06 · Interactive Lab</p>
+        <h1>같은 위치, 다른 속도</h1>
+        <p class="lead">CoM의 수직 투영만 보면 놓치는 것이 있습니다. 속도를 바꾸어 캡처 포인트가 어떻게 움직이는지, 현재 발의 지지 구간만으로 멈출 수 있는지 직접 확인해 보세요.</p>
+      </div>
+      <aside class="formula-card" aria-label="핵심 수식">
+        <div class="formula">ẍ = (g / h)(x − p)</div>
+        <div class="formula">ξ = x + ẋ√(h / g)</div>
+        <p class="formula-note"><strong>x</strong> CoM 수평 위치 · <strong>p</strong> 실제 CoP · <strong>h</strong> CoM 높이 · <strong>ξ</strong> 캡처 포인트</p>
+      </aside>
+    </section>
+
+    <nav class="preset-bar" aria-label="실험 프리셋">
+      <button type="button" data-preset="still" class="active">정지</button>
+      <button type="button" data-preset="recover">발 안에서 회복</button>
+      <button type="button" data-preset="step">한 걸음 필요</button>
+      <button type="button" data-preset="fast">같은 위치·빠른 속도</button>
+    </nav>
+
+    <section class="lab-grid">
+      <aside class="panel controls">
+        <h2>상태와 접촉 조건</h2>
+        <p class="panel-intro">오른쪽이 + 방향입니다. 수치는 모두 SI 단위입니다.</p>
+
+        <div class="control">
+          <div class="control-head"><label for="x-input">CoM 위치 x</label><output id="x-output">0.000 m</output></div>
+          <input id="x-input" type="range" min="-0.35" max="0.35" step="0.005" value="0">
+          <div class="range-hints"><span>−0.35 m</span><span>+0.35 m</span></div>
+        </div>
+
+        <div class="control">
+          <div class="control-head"><label for="v-input">CoM 속도 ẋ</label><output id="v-output">0.000 m/s</output></div>
+          <input id="v-input" type="range" min="-1" max="1" step="0.01" value="0">
+          <div class="range-hints"><span>−1.00 m/s</span><span>+1.00 m/s</span></div>
+        </div>
+
+        <div class="control">
+          <div class="control-head"><label for="h-input">CoM 높이 h</label><output id="h-output">0.80 m</output></div>
+          <input id="h-input" type="range" min="0.45" max="1.20" step="0.01" value="0.8">
+          <div class="range-hints"><span>0.45 m</span><span>1.20 m</span></div>
+        </div>
+
+        <div class="control">
+          <div class="control-head"><label for="center-input">지지 구간 중심</label><output id="center-output">0.000 m</output></div>
+          <input id="center-input" type="range" min="-0.8" max="0.8" step="0.005" value="0">
+          <div class="range-hints"><span>왼쪽</span><span>오른쪽</span></div>
+        </div>
+
+        <div class="control">
+          <div class="control-head"><label for="half-input">지지 구간 반너비</label><output id="half-output">0.10 m</output></div>
+          <input id="half-input" type="range" min="0.05" max="0.20" step="0.005" value="0.1">
+          <div class="range-hints"><span>좁은 발</span><span>넓은 발</span></div>
+        </div>
+
+        <div class="control">
+          <div class="control-head"><label for="p-input">요구 CoP p<sub>req</sub></label><output id="p-output">0.000 m</output></div>
+          <input id="p-input" type="range" min="-1" max="1" step="0.005" value="0">
+          <div class="range-hints"><span>지지 구간 밖도 선택 가능</span><span>실현 가능성 확인</span></div>
+        </div>
+
+        <div class="button-grid">
+          <button type="button" id="step-short">0.02초 진행</button>
+          <button type="button" id="step-long">1초 진행</button>
+          <button type="button" id="cop-to-cp" class="warn">요구 CoP = 현재 CP</button>
+          <button type="button" id="foot-to-cp" class="primary">CP로 발 옮기기</button>
+          <button type="button" id="reset" class="wide">이 상태로 되돌리기</button>
+        </div>
+      </aside>
+
+      <div class="workspace">
+        <section class="panel">
+          <h2>1D LIPM 장면</h2>
+          <p class="panel-intro">요구 CoP가 지지 구간 안이면 실제 CoP로 사용합니다. 밖이면 현재 발에서 실현할 수 없으므로 시간 진행을 멈춥니다.</p>
+          <div class="canvas-wrap">
+            <canvas id="scene" width="1000" height="530" role="img" aria-label="CoM, 지지 구간, CoP, 캡처 포인트를 표시한 LIPM 장면"></canvas>
+          </div>
+          <div class="legend" aria-label="범례">
+            <span style="--swatch: var(--cyan)">CoM</span>
+            <span style="--swatch: var(--mint)">지지 구간</span>
+            <span style="--swatch: var(--yellow)">요구 CoP</span>
+            <span style="--swatch: var(--violet)">캡처 포인트</span>
+          </div>
+        </section>
+
+        <section class="status-grid" aria-live="polite">
+          <div class="metric"><div class="metric-label">캡처 포인트 ξ</div><div class="metric-value" id="cp-metric">0.000 m</div></div>
+          <div class="metric"><div class="metric-label">요구 CoP가 뜻하는 ẍ</div><div class="metric-value" id="a-metric">0.000 m/s²</div></div>
+          <div class="metric"><div class="metric-label">LIPM 시정수 √(h/g)</div><div class="metric-value" id="tc-metric">0.286 s</div></div>
+          <div class="metric"><div class="metric-label">시뮬레이션 시간</div><div class="metric-value" id="time-metric">0.00 s</div></div>
+        </section>
+
+        <section class="panel">
+          <h2>동적 판단</h2>
+          <div class="decision" id="cop-decision">
+            <div class="decision-icon">●</div>
+            <div><strong id="cop-title">요구 CoP 실현 가능</strong><p id="cop-text">요구 CoP가 현재 지지 구간 안에 있습니다.</p></div>
+          </div>
+          <div class="decision" id="cp-decision">
+            <div class="decision-icon">◆</div>
+            <div><strong id="cp-title">현재 발에서 정지 가능</strong><p id="cp-text">캡처 포인트가 지지 구간 안에 있습니다.</p></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>시간에 따른 위치</h2>
+          <p class="panel-intro">점선 띠는 지지 구간, 파란 선은 CoM, 보라 선은 캡처 포인트입니다.</p>
+          <div class="canvas-wrap">
+            <canvas id="history" width="1000" height="340" role="img" aria-label="시간에 따른 CoM과 캡처 포인트 위치 그래프"></canvas>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="explain-grid">
+      <article class="explain-card"><h3>CoM 투영은 현재 그림</h3><p>x가 지지 구간 안인지는 자세를 정적으로 본 결과입니다. 속도 정보가 없으므로 멈출 수 있는지는 말해 주지 않습니다.</p></article>
+      <article class="explain-card"><h3>CP는 위치 + 속도</h3><p>ξ = x + ẋ√(h/g)는 움직이는 방향으로 속도 보정 거리를 더합니다. 같은 x에서도 ẋ가 다르면 ξ가 달라집니다.</p></article>
+      <article class="explain-card"><h3>새 발은 새 지지 구간</h3><p>CP가 현재 지지 구간 밖이면, 그 점을 포함하도록 다음 발을 옮기는 것이 한 걸음 회복의 가장 단순한 그림입니다.</p></article>
+    </section>
+
+    <aside class="notice"><strong>모형의 경계:</strong> 이 실험은 점질량, 일정한 CoM 높이, 평평한 바닥, 1D 운동, 작은 각운동량 변화를 가정한 LIPM 계산 도구입니다. 실제 휴머노이드의 안정성이나 제어 성능을 보장하지 않으며 PID·PD·토크 제어를 구현하지 않습니다.</aside>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var g = 9.81;
+      var inputs = {
+        x: document.getElementById("x-input"),
+        v: document.getElementById("v-input"),
+        h: document.getElementById("h-input"),
+        center: document.getElementById("center-input"),
+        half: document.getElementById("half-input"),
+        p: document.getElementById("p-input")
+      };
+      var outputs = {
+        x: document.getElementById("x-output"),
+        v: document.getElementById("v-output"),
+        h: document.getElementById("h-output"),
+        center: document.getElementById("center-output"),
+        half: document.getElementById("half-output"),
+        p: document.getElementById("p-output")
+      };
+
+      var state = { x: 0, v: 0, h: .8, center: 0, half: .1, p: 0, time: 0 };
+      var seed = Object.assign({}, state);
+      var history = [];
+      var lastMessage = "";
+
+      var presets = {
+        still:   { x: 0,    v: 0,   h: .8, center: 0, half: .1, p: 0 },
+        recover: { x: 0,    v: .20, h: .8, center: 0, half: .1, p: .055 },
+        step:    { x: .02,  v: .35, h: .8, center: 0, half: .1, p: .08 },
+        fast:    { x: 0,    v: .50, h: .8, center: 0, half: .1, p: .10 }
+      };
+
+      function number(value) { return Number(value); }
+      function clamp(value, low, high) { return Math.max(low, Math.min(high, value)); }
+      function signed(value, digits) { return (value >= 0 ? "+" : "") + value.toFixed(digits); }
+      function derived() {
+        var omega = Math.sqrt(g / state.h);
+        var tc = 1 / omega;
+        var cp = state.x + state.v / omega;
+        var a = omega * omega * (state.x - state.p);
+        var low = state.center - state.half;
+        var high = state.center + state.half;
+        return {
+          omega: omega, tc: tc, cp: cp, a: a, low: low, high: high,
+          copInside: state.p >= low - 1e-9 && state.p <= high + 1e-9,
+          cpInside: cp >= low - 1e-9 && cp <= high + 1e-9,
+          xInside: state.x >= low - 1e-9 && state.x <= high + 1e-9
+        };
+      }
+
+      function setInputsFromState() {
+        inputs.x.value = clamp(state.x, number(inputs.x.min), number(inputs.x.max));
+        inputs.v.value = clamp(state.v, number(inputs.v.min), number(inputs.v.max));
+        inputs.h.value = state.h;
+        inputs.center.value = clamp(state.center, number(inputs.center.min), number(inputs.center.max));
+        inputs.half.value = state.half;
+        inputs.p.value = clamp(state.p, number(inputs.p.min), number(inputs.p.max));
+      }
+
+      function record(reset) {
+        var d = derived();
+        if (reset) history = [];
+        history.push({ t: state.time, x: state.x, cp: d.cp, low: d.low, high: d.high });
+        if (history.length > 650) history.shift();
+      }
+
+      function usePreset(name) {
+        var p = presets[name];
+        state = Object.assign({ time: 0 }, p);
+        seed = Object.assign({}, state);
+        lastMessage = "";
+        setInputsFromState();
+        record(true);
+        document.querySelectorAll("[data-preset]").forEach(function (button) {
+          button.classList.toggle("active", button.getAttribute("data-preset") === name);
+        });
+        render();
+      }
+
+      function readManualState() {
+        state.x = number(inputs.x.value);
+        state.v = number(inputs.v.value);
+        state.h = number(inputs.h.value);
+        state.center = number(inputs.center.value);
+        state.half = number(inputs.half.value);
+        state.p = number(inputs.p.value);
+        state.time = 0;
+        seed = Object.assign({}, state);
+        lastMessage = "";
+        record(true);
+        document.querySelectorAll("[data-preset]").forEach(function (button) { button.classList.remove("active"); });
+        render();
+      }
+
+      function advance(duration) {
+        var before = derived();
+        if (!before.copInside) {
+          lastMessage = "요구 CoP가 지지 구간 밖이어서 시간을 진행하지 않았습니다.";
+          render();
+          return;
+        }
+        lastMessage = "";
+        var count = Math.ceil(duration / .0002);
+        var dt = duration / count;
+        var stride = Math.max(1, Math.floor(count / 80));
+        for (var i = 0; i < count; i += 1) {
+          var omega = Math.sqrt(g / state.h);
+          var a = omega * omega * (state.x - state.p);
+          state.v += dt * a;
+          state.x += dt * state.v;
+          state.time += dt;
+          if (i % stride === 0 || i === count - 1) record(false);
+          if (Math.abs(state.x) > 4 || Math.abs(state.v) > 12) {
+            lastMessage = "상태가 빠르게 발산해 계산을 일찍 멈췄습니다.";
+            break;
+          }
+        }
+        setInputsFromState();
+        render();
+      }
+
+      function copToCp() {
+        state.p = clamp(derived().cp, number(inputs.p.min), number(inputs.p.max));
+        inputs.p.value = state.p;
+        lastMessage = derived().copInside ? "요구 CoP를 현재 CP에 놓았습니다." : "CP가 지지 구간 밖이라 현재 발에서는 이 요구 CoP를 만들 수 없습니다.";
+        record(false);
+        render();
+      }
+
+      function footToCp() {
+        var cp = derived().cp;
+        var minCenter = number(inputs.center.min);
+        var maxCenter = number(inputs.center.max);
+        if (cp < minCenter || cp > maxCenter) {
+          lastMessage = "CP가 실험 화면 범위를 벗어나 발 위치를 옮기지 못했습니다. 속도를 낮춘 뒤 다시 시도하세요.";
+          render();
+          return;
+        }
+        state.center = cp;
+        state.p = cp;
+        state.time = 0;
+        seed = Object.assign({}, state);
+        setInputsFromState();
+        lastMessage = "새 지지 구간의 중심과 CoP를 CP로 옮겼습니다.";
+        record(true);
+        render();
+      }
+
+      function reset() {
+        state = Object.assign({}, seed);
+        state.time = 0;
+        lastMessage = "저장된 시작 상태로 되돌렸습니다.";
+        setInputsFromState();
+        record(true);
+        render();
+      }
+
+      function setupCanvas(canvas) {
+        var rect = canvas.getBoundingClientRect();
+        var ratio = Math.min(window.devicePixelRatio || 1, 2);
+        var width = Math.max(320, Math.round(rect.width));
+        var height = Math.max(220, Math.round(rect.height));
+        if (canvas.width !== width * ratio || canvas.height !== height * ratio) {
+          canvas.width = width * ratio;
+          canvas.height = height * ratio;
+        }
+        var context = canvas.getContext("2d");
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        return { ctx: context, w: width, h: height };
+      }
+
+      function drawArrow(ctx, x1, y1, x2, y2, color) {
+        var angle = Math.atan2(y2 - y1, x2 - x1);
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - 12 * Math.cos(angle - .45), y2 - 12 * Math.sin(angle - .45));
+        ctx.lineTo(x2 - 12 * Math.cos(angle + .45), y2 - 12 * Math.sin(angle + .45));
+        ctx.closePath(); ctx.fill();
+      }
+
+      function drawScene() {
+        var canvas = document.getElementById("scene");
+        var box = setupCanvas(canvas);
+        var ctx = box.ctx, w = box.w, h = box.h;
+        var d = derived();
+        ctx.clearRect(0, 0, w, h);
+
+        var pad = Math.max(40, w * .06);
+        var extent = Math.max(.35, Math.abs(state.x), Math.abs(d.cp), Math.abs(state.p), Math.abs(d.low), Math.abs(d.high)) + .12;
+        extent = Math.min(Math.max(extent, .45), 1.25);
+        var scale = (w - 2 * pad) / (2 * extent);
+        var px = function (value) { return w / 2 + value * scale; };
+        var ground = h * .78;
+        var comY = Math.max(64, ground - (state.h / 1.2) * h * .55);
+
+        ctx.strokeStyle = "rgba(125, 158, 190, .12)";
+        ctx.lineWidth = 1;
+        for (var tick = Math.ceil(-extent * 10) / 10; tick <= extent; tick += .1) {
+          var gx = px(tick);
+          ctx.beginPath(); ctx.moveTo(gx, 30); ctx.lineTo(gx, ground + 30); ctx.stroke();
+        }
+
+        ctx.strokeStyle = "#607b99"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(pad / 2, ground); ctx.lineTo(w - pad / 2, ground); ctx.stroke();
+
+        ctx.fillStyle = "rgba(92, 225, 163, .30)";
+        ctx.strokeStyle = "#5ce1a3"; ctx.lineWidth = 3;
+        ctx.fillRect(px(d.low), ground - 11, px(d.high) - px(d.low), 22);
+        ctx.strokeRect(px(d.low), ground - 11, px(d.high) - px(d.low), 22);
+
+        ctx.strokeStyle = d.copInside ? "#ffd166" : "#ff7b8b"; ctx.lineWidth = 3;
+        if (!d.copInside) ctx.setLineDash([7, 6]);
+        ctx.beginPath(); ctx.moveTo(px(state.p), ground); ctx.lineTo(px(state.x), comY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.setLineDash([6, 6]);
+        ctx.strokeStyle = "rgba(88, 215, 255, .65)"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(px(state.x), comY + 15); ctx.lineTo(px(state.x), ground); ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = "#58d7ff";
+        ctx.beginPath(); ctx.arc(px(state.x), comY, Math.max(10, Math.min(16, w / 48)), 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = "#dff8ff"; ctx.lineWidth = 2; ctx.stroke();
+
+        var velocityPixels = clamp(state.v * scale * .55, -110, 110);
+        if (Math.abs(velocityPixels) > 5) drawArrow(ctx, px(state.x), comY - 31, px(state.x) + velocityPixels, comY - 31, "#58d7ff");
+
+        ctx.fillStyle = d.copInside ? "#ffd166" : "#ff7b8b";
+        ctx.beginPath();
+        ctx.moveTo(px(state.p), ground - 18); ctx.lineTo(px(state.p) - 9, ground - 2); ctx.lineTo(px(state.p) + 9, ground - 2); ctx.closePath(); ctx.fill();
+
+        ctx.save();
+        ctx.translate(px(d.cp), ground - 31); ctx.rotate(Math.PI / 4);
+        ctx.fillStyle = "#c8a7ff"; ctx.strokeStyle = "#f0e6ff"; ctx.lineWidth = 2;
+        ctx.fillRect(-9, -9, 18, 18); ctx.strokeRect(-9, -9, 18, 18); ctx.restore();
+
+        ctx.font = "700 13px system-ui"; ctx.textAlign = "center";
+        ctx.fillStyle = "#dbeaff"; ctx.fillText("CoM", px(state.x), comY + 37);
+        ctx.fillStyle = d.copInside ? "#ffd166" : "#ff7b8b"; ctx.fillText((d.copInside ? "CoP " : "요구 p ") + signed(state.p, 3), px(state.p), ground + 42);
+        ctx.fillStyle = "#d9c6ff"; ctx.fillText("CP " + signed(d.cp, 3), px(d.cp), ground - 55);
+
+        ctx.textAlign = "left"; ctx.fillStyle = "#9db4cc"; ctx.font = "12px system-ui";
+        ctx.fillText("− 왼쪽", 18, ground + 68); ctx.textAlign = "right"; ctx.fillText("오른쪽 +", w - 18, ground + 68);
+        canvas.setAttribute("aria-label", "CoM " + state.x.toFixed(3) + "미터, 속도 " + state.v.toFixed(3) + "미터 매초, 캡처 포인트 " + d.cp.toFixed(3) + "미터, 지지 구간 " + d.low.toFixed(3) + "에서 " + d.high.toFixed(3) + "미터");
+      }
+
+      function drawHistory() {
+        var canvas = document.getElementById("history");
+        var box = setupCanvas(canvas);
+        var ctx = box.ctx, w = box.w, h = box.h;
+        ctx.clearRect(0, 0, w, h);
+        var left = 52, right = 18, top = 24, bottom = 38;
+        var plotW = w - left - right, plotH = h - top - bottom;
+        var tMax = Math.max(1, history.length ? history[history.length - 1].t : 0);
+        var values = [];
+        history.forEach(function (item) { values.push(item.x, item.cp, item.low, item.high); });
+        if (!values.length) values = [-.2, .2];
+        var absMax = Math.max(.15, Math.max.apply(null, values.map(function (value) { return Math.abs(value); })) * 1.18);
+        var tx = function (t) { return left + (t / tMax) * plotW; };
+        var py = function (value) { return top + plotH / 2 - value / absMax * plotH / 2; };
+
+        ctx.strokeStyle = "rgba(125, 158, 190, .18)"; ctx.lineWidth = 1;
+        [-1, -.5, 0, .5, 1].forEach(function (part) {
+          var y = top + (part + 1) / 2 * plotH;
+          ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(w - right, y); ctx.stroke();
+        });
+        ctx.fillStyle = "rgba(92, 225, 163, .13)";
+        if (history.length) {
+          ctx.beginPath();
+          history.forEach(function (item, index) { var xx = tx(item.t), yy = py(item.high); if (!index) ctx.moveTo(xx, yy); else ctx.lineTo(xx, yy); });
+          for (var i = history.length - 1; i >= 0; i -= 1) ctx.lineTo(tx(history[i].t), py(history[i].low));
+          ctx.closePath(); ctx.fill();
+        }
+
+        function line(key, color) {
+          if (!history.length) return;
+          ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.beginPath();
+          history.forEach(function (item, index) { if (!index) ctx.moveTo(tx(item.t), py(item[key])); else ctx.lineTo(tx(item.t), py(item[key])); });
+          ctx.stroke();
+        }
+        line("x", "#58d7ff"); line("cp", "#c8a7ff");
+
+        ctx.fillStyle = "#9db4cc"; ctx.font = "12px system-ui";
+        ctx.textAlign = "right"; ctx.fillText(absMax.toFixed(2) + " m", left - 8, top + 4); ctx.fillText("0", left - 8, top + plotH / 2 + 4); ctx.fillText("−" + absMax.toFixed(2), left - 8, top + plotH + 4);
+        ctx.textAlign = "left"; ctx.fillText("0 s", left, h - 12); ctx.textAlign = "right"; ctx.fillText(tMax.toFixed(2) + " s", w - right, h - 12);
+      }
+
+      function renderStatus() {
+        var d = derived();
+        outputs.x.value = state.x.toFixed(3) + " m";
+        outputs.v.value = state.v.toFixed(3) + " m/s";
+        outputs.h.value = state.h.toFixed(2) + " m";
+        outputs.center.value = state.center.toFixed(3) + " m";
+        outputs.half.value = state.half.toFixed(3) + " m";
+        outputs.p.value = state.p.toFixed(3) + " m";
+        document.getElementById("cp-metric").textContent = signed(d.cp, 3) + " m";
+        document.getElementById("a-metric").textContent = signed(d.a, 3) + " m/s²";
+        document.getElementById("tc-metric").textContent = d.tc.toFixed(3) + " s";
+        document.getElementById("time-metric").textContent = state.time.toFixed(2) + " s";
+
+        var copDecision = document.getElementById("cop-decision");
+        copDecision.classList.toggle("bad-state", !d.copInside);
+        document.getElementById("cop-title").textContent = d.copInside ? "요구 CoP 실현 가능" : "요구 CoP 실현 불가능";
+        document.getElementById("cop-text").textContent = d.copInside
+          ? "요구 CoP가 지지 구간 [" + d.low.toFixed(3) + ", " + d.high.toFixed(3) + "] m 안에 있습니다."
+          : "요구 CoP가 지지 구간 밖입니다. 현재 발의 압력 분포만으로는 만들 수 없습니다.";
+
+        var cpDecision = document.getElementById("cp-decision");
+        cpDecision.classList.toggle("bad-state", !d.cpInside);
+        document.getElementById("cp-title").textContent = d.cpInside ? "현재 발에서 정지 가능" : "새 지지 구간이 필요";
+        var staticNote = d.xInside ? "CoM 투영은 지지 구간 안" : "CoM 투영도 지지 구간 밖";
+        document.getElementById("cp-text").textContent = (d.cpInside
+          ? "CP가 지지 구간 안입니다. LIPM에서는 그 점에 CoP를 둘 수 있으면 멈출 수 있습니다. "
+          : "CP가 지지 구간 밖입니다. LIPM에서는 현재 발만으로 그 점에 CoP를 둘 수 없습니다. ") + staticNote + "입니다." + (lastMessage ? " " + lastMessage : "");
+      }
+
+      function render() {
+        renderStatus();
+        drawScene();
+        drawHistory();
+      }
+
+      Object.keys(inputs).forEach(function (key) { inputs[key].addEventListener("input", readManualState); });
+      document.querySelectorAll("[data-preset]").forEach(function (button) {
+        button.addEventListener("click", function () { usePreset(button.getAttribute("data-preset")); });
+      });
+      document.getElementById("step-short").addEventListener("click", function () { advance(.02); });
+      document.getElementById("step-long").addEventListener("click", function () { advance(1); });
+      document.getElementById("cop-to-cp").addEventListener("click", copToCp);
+      document.getElementById("foot-to-cp").addEventListener("click", footToCp);
+      document.getElementById("reset").addEventListener("click", reset);
+      window.addEventListener("resize", render);
+
+      usePreset("still");
+    }());
+  </script>
+</body>
+</html>
