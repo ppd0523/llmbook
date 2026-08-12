@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2R 자코비안·수치 IK 실습</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #0d1b2d;
+      --panel-2: #10243a;
+      --line: #29415f;
+      --text: #eef6ff;
+      --muted: #a7bad0;
+      --cyan: #54d8ff;
+      --violet: #b99aff;
+      --amber: #ffc665;
+      --green: #6fe3aa;
+      --red: #ff7f8a;
+      --blue: #7aa7ff;
+      --shadow: 0 18px 50px rgba(0, 0, 0, .26);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(84, 216, 255, .13), transparent 31rem),
+        radial-gradient(circle at 88% 92%, rgba(185, 154, 255, .12), transparent 34rem),
+        var(--bg);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+      line-height: 1.55;
+    }
+
+    header {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--cyan);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 8px; font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.18; }
+    h2 { margin-bottom: 18px; font-size: 1.1rem; }
+    h3 { margin-bottom: 10px; font-size: .96rem; }
+    header p:last-child { max-width: 780px; margin-bottom: 0; color: var(--muted); }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 38px;
+      display: grid;
+      grid-template-columns: minmax(270px, 330px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(155deg, rgba(16, 36, 58, .96), rgba(9, 24, 41, .96));
+      box-shadow: var(--shadow);
+    }
+
+    aside { padding: 20px; }
+
+    .control-group + .control-group {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .range-wrap + .range-wrap { margin-top: 13px; }
+
+    .range-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    output, .numeric { color: var(--text); font-variant-numeric: tabular-nums; }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+    }
+
+    select {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--text);
+      background: #09182a;
+      font: inherit;
+    }
+
+    .hint {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .button-row, .preset-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .button-row { grid-template-columns: repeat(3, 1fr); }
+    .preset-grid { grid-template-columns: repeat(2, 1fr); }
+
+    button {
+      min-height: 40px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--text);
+      background: #132943;
+      font: inherit;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: var(--cyan); }
+    button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid rgba(84, 216, 255, .42); outline-offset: 2px; }
+    button.primary { color: #03202d; border-color: var(--cyan); background: var(--cyan); }
+    button[aria-pressed="true"] { color: #150b2c; border-color: var(--violet); background: var(--violet); }
+
+    .stage { overflow: hidden; }
+
+    .canvas-wrap {
+      position: relative;
+      min-height: 520px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(rgba(41, 65, 95, .13) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(41, 65, 95, .13) 1px, transparent 1px),
+        rgba(5, 15, 27, .7);
+      background-size: 32px 32px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 520px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .legend {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 12px;
+      max-width: calc(100% - 28px);
+      padding: 8px 10px;
+      border: 1px solid rgba(41, 65, 95, .85);
+      border-radius: 10px;
+      background: rgba(7, 17, 31, .84);
+      color: var(--muted);
+      font-size: .72rem;
+      pointer-events: none;
+    }
+
+    .key::before {
+      content: "";
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 5px;
+      border-radius: 50%;
+      background: var(--key);
+    }
+
+    .readout { padding: 18px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(16, 36, 58, .72);
+    }
+
+    .stat span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    .stat strong {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: .98rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .matrix-box {
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(8, 24, 42, .72);
+    }
+
+    .matrix-box h3 { color: var(--muted); font-size: .78rem; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px 12px;
+      padding: 3px 10px;
+      border-left: 2px solid var(--muted);
+      border-right: 2px solid var(--muted);
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: .86rem;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+
+    .observation {
+      margin: 10px 0 0;
+      padding: 12px 14px;
+      border-left: 3px solid var(--amber);
+      color: var(--muted);
+      background: rgba(255, 198, 101, .07);
+      font-size: .86rem;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+      aside { order: 2; }
+      .stage { order: 1; }
+    }
+
+    @media (max-width: 620px) {
+      header, main { width: min(100% - 20px, 1180px); }
+      header { padding-top: 24px; }
+      .canvas-wrap { min-height: 390px; }
+      canvas { height: 390px; }
+      .stats, .matrix-grid { grid-template-columns: 1fr; }
+      .button-row { grid-template-columns: 1fr; }
+      .legend { font-size: .66rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Jacobian & numerical IK lab</p>
+    <h1>작은 관절 업데이트를 반복해 목표점에 접근하기</h1>
+    <p>길이 1인 두 링크의 자코비안 열, 목표 오차와 실제 반복 경로를 함께 비교하세요. 캔버스를 누르면 목표점이 바뀝니다.</p>
+  </header>
+
+  <main>
+    <aside class="panel" aria-label="수치 역기구학 설정">
+      <h2>초기 자세와 목표</h2>
+
+      <div class="range-wrap">
+        <label class="range-label" for="q1"><span>q₁ · 어깨</span><output id="q1-value" for="q1">0°</output></label>
+        <input id="q1" type="range" min="-180" max="180" step="0.1" value="0">
+      </div>
+      <div class="range-wrap">
+        <label class="range-label" for="q2"><span>q₂ · 팔꿈치</span><output id="q2-value" for="q2">90°</output></label>
+        <input id="q2" type="range" min="-180" max="180" step="0.1" value="90">
+      </div>
+      <div class="range-wrap">
+        <label class="range-label" for="target-x"><span>목표 x</span><output id="target-x-value" for="target-x">0.90</output></label>
+        <input id="target-x" type="range" min="-2.4" max="2.4" step="0.01" value="0.9">
+      </div>
+      <div class="range-wrap">
+        <label class="range-label" for="target-y"><span>목표 y</span><output id="target-y-value" for="target-y">1.10</output></label>
+        <input id="target-y" type="range" min="-2.4" max="2.4" step="0.01" value="1.1">
+      </div>
+
+      <div class="control-group">
+        <h3>업데이트 방법</h3>
+        <label class="range-label" for="method"><span>알고리즘</span></label>
+        <select id="method">
+          <option value="dls">감쇠 최소제곱 DLS</option>
+          <option value="transpose">자코비안 전치</option>
+        </select>
+
+        <div class="range-wrap">
+          <label class="range-label" for="eta"><span>스텝 크기 η</span><output id="eta-value" for="eta">0.80</output></label>
+          <input id="eta" type="range" min="0.05" max="1" step="0.05" value="0.8">
+        </div>
+        <div class="range-wrap">
+          <label class="range-label" for="lambda"><span>감쇠값 λ</span><output id="lambda-value" for="lambda">0.10</output></label>
+          <input id="lambda" type="range" min="0.01" max="0.6" step="0.01" value="0.1">
+        </div>
+        <div class="range-wrap">
+          <label class="range-label" for="max-step"><span>최대 관절 스텝</span><output id="max-step-value" for="max-step">12°</output></label>
+          <input id="max-step" type="range" min="1" max="30" step="1" value="12">
+        </div>
+        <p class="hint">DLS만 λ를 사용합니다. 모든 내부 각도와 업데이트는 rad 기준입니다.</p>
+      </div>
+
+      <div class="control-group">
+        <h3>반복 실행</h3>
+        <div class="button-row">
+          <button class="primary" type="button" id="step">한 단계</button>
+          <button type="button" id="run">30단계</button>
+          <button type="button" id="reset">초기화</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h3>프리셋</h3>
+        <div class="preset-grid">
+          <button type="button" data-preset="regular" aria-pressed="true">정상 자세</button>
+          <button type="button" data-preset="near">특이 근처</button>
+          <button type="button" data-preset="singular">완전 신장</button>
+          <button type="button" data-preset="unreachable">도달 불가</button>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel stage" aria-label="2R 수치 역기구학 시각화와 계산 결과">
+      <div class="canvas-wrap">
+        <canvas id="ik-canvas" role="img" aria-label="2R 팔의 현재 자세, 목표점, 자코비안 열과 반복 경로"></canvas>
+        <div class="legend" aria-hidden="true">
+          <span class="key" style="--key:var(--cyan)">링크</span>
+          <span class="key" style="--key:var(--amber)">목표</span>
+          <span class="key" style="--key:var(--red)">오차</span>
+          <span class="key" style="--key:var(--green)">0.35J₁</span>
+          <span class="key" style="--key:var(--violet)">0.35J₂</span>
+          <span class="key" style="--key:var(--blue)">반복 경로</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div class="stats">
+          <div class="stat"><span>현재 끝점 p</span><strong id="position">(1.000, 1.000)</strong></div>
+          <div class="stat"><span>오차 ‖e‖</span><strong id="error">0.1414</strong></div>
+          <div class="stat"><span>det J</span><strong id="determinant">1.0000</strong></div>
+          <div class="stat"><span>반복 횟수</span><strong id="iteration">0</strong></div>
+          <div class="stat"><span>Δq</span><strong id="delta-q">(0°, 0°)</strong></div>
+          <div class="stat"><span>상태</span><strong id="status">준비</strong></div>
+        </div>
+
+        <div class="matrix-grid">
+          <div class="matrix-box">
+            <h3>현재 위치 자코비안 J · m/rad</h3>
+            <div class="matrix" id="jacobian" aria-label="현재 2 곱하기 2 위치 자코비안"></div>
+          </div>
+          <div class="matrix-box">
+            <h3>직전 단계 열: JΔq | e · m</h3>
+            <div class="matrix" id="prediction" aria-label="직전 단계의 첫째 열은 예측 위치 변화, 둘째 열은 업데이트 전 오차"></div>
+          </div>
+        </div>
+
+        <p class="observation" id="observation" aria-live="polite">자코비안 두 열이 서로 다른 방향이므로 현재 자세에서 x·y 방향의 작은 움직임을 조합할 수 있습니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const ids = ["q1", "q2", "target-x", "target-y", "eta", "lambda", "max-step"];
+      const inputs = ids.map(id => document.getElementById(id));
+      const methodInput = document.getElementById("method");
+      const canvas = document.getElementById("ik-canvas");
+      const ctx = canvas.getContext("2d");
+      const l1 = 1, l2 = 1;
+      const tolerance = 0.005;
+      const maxIterations = 300;
+
+      const presets = {
+        regular: { q: [0, 90], target: [0.9, 1.1], method: "dls", eta: .8, lambda: .1, maxStep: 12 },
+        near: { q: [0, 2], target: [1.75, .45], method: "dls", eta: .8, lambda: .12, maxStep: 10 },
+        singular: { q: [0, 0], target: [1.99, .1], method: "dls", eta: 1, lambda: .1, maxStep: 12 },
+        unreachable: { q: [25, -35], target: [2.3, .45], method: "dls", eta: .8, lambda: .15, maxStep: 10 }
+      };
+
+      let iteration = 0;
+      let statusText = "준비";
+      let lastDelta = [0, 0];
+      let lastPrediction = [0, 0];
+      let lastError = [0, 0];
+      let path = [];
+      let activePreset = "regular";
+      let seed = null;
+
+      const deg = rad => rad * 180 / Math.PI;
+      const rad = degree => degree * Math.PI / 180;
+      const value = id => Number(document.getElementById(id).value);
+      const norm = vector => Math.hypot(...vector);
+      const clamp = (number, min, max) => Math.max(min, Math.min(max, number));
+
+      function wrapRad(angle) {
+        let wrapped = (angle + Math.PI) % (2 * Math.PI);
+        if (wrapped < 0) wrapped += 2 * Math.PI;
+        return wrapped - Math.PI;
+      }
+
+      function currentQ() { return [rad(value("q1")), rad(value("q2"))]; }
+      function target() { return [value("target-x"), value("target-y")]; }
+
+      function fk(q) {
+        const elbow = [l1 * Math.cos(q[0]), l1 * Math.sin(q[0])];
+        const tip = [
+          elbow[0] + l2 * Math.cos(q[0] + q[1]),
+          elbow[1] + l2 * Math.sin(q[0] + q[1])
+        ];
+        return { elbow, tip };
+      }
+
+      function jacobian(q) {
+        const s1 = Math.sin(q[0]), c1 = Math.cos(q[0]);
+        const s12 = Math.sin(q[0] + q[1]), c12 = Math.cos(q[0] + q[1]);
+        return [
+          [-l1 * s1 - l2 * s12, -l2 * s12],
+          [l1 * c1 + l2 * c12, l2 * c12]
+        ];
+      }
+
+      function multiply2(matrix, vector) {
+        return [
+          matrix[0][0] * vector[0] + matrix[0][1] * vector[1],
+          matrix[1][0] * vector[0] + matrix[1][1] * vector[1]
+        ];
+      }
+
+      function transposeUpdate(j, error, eta) {
+        return [
+          eta * (j[0][0] * error[0] + j[1][0] * error[1]),
+          eta * (j[0][1] * error[0] + j[1][1] * error[1])
+        ];
+      }
+
+      function dlsUpdate(j, error, eta, lambda) {
+        const a = j[0][0] ** 2 + j[0][1] ** 2 + lambda ** 2;
+        const b = j[0][0] * j[1][0] + j[0][1] * j[1][1];
+        const d = j[1][0] ** 2 + j[1][1] ** 2 + lambda ** 2;
+        const determinant = a * d - b * b;
+        const y = [
+          (d * error[0] - b * error[1]) / determinant,
+          (-b * error[0] + a * error[1]) / determinant
+        ];
+        return [
+          eta * (j[0][0] * y[0] + j[1][0] * y[1]),
+          eta * (j[0][1] * y[0] + j[1][1] * y[1])
+        ];
+      }
+
+      function limitedDelta(delta) {
+        const limit = rad(value("max-step"));
+        const size = norm(delta);
+        if (!Number.isFinite(size)) return [NaN, NaN];
+        if (size <= limit || size === 0) return delta;
+        return delta.map(component => component * limit / size);
+      }
+
+      function state() {
+        const q = currentQ();
+        const pose = fk(q);
+        const goal = target();
+        const error = [goal[0] - pose.tip[0], goal[1] - pose.tip[1]];
+        const j = jacobian(q);
+        const det = j[0][0] * j[1][1] - j[0][1] * j[1][0];
+        return { q, pose, goal, error, j, det };
+      }
+
+      function oneStep() {
+        const before = state();
+        if (norm(before.error) < tolerance) {
+          statusText = "수렴";
+          render();
+          return false;
+        }
+        if (iteration >= maxIterations) {
+          statusText = "최대 반복";
+          render();
+          return false;
+        }
+
+        const eta = value("eta");
+        const raw = methodInput.value === "dls"
+          ? dlsUpdate(before.j, before.error, eta, value("lambda"))
+          : transposeUpdate(before.j, before.error, eta);
+        const delta = limitedDelta(raw);
+
+        if (!delta.every(Number.isFinite)) {
+          statusText = "수치 오류";
+          lastDelta = delta;
+          render();
+          return false;
+        }
+
+        lastDelta = delta;
+        lastPrediction = multiply2(before.j, delta);
+        lastError = [...before.error];
+        document.getElementById("q1").value = deg(wrapRad(before.q[0] + delta[0]));
+        document.getElementById("q2").value = deg(wrapRad(before.q[1] + delta[1]));
+        iteration += 1;
+
+        const after = state();
+        path.push([...after.pose.tip]);
+        if (norm(after.error) < tolerance) statusText = "수렴";
+        else if (norm(delta) < 1e-7) statusText = "정체";
+        else if (iteration >= maxIterations) statusText = "최대 반복";
+        else statusText = "진행 중";
+        render();
+        return statusText === "진행 중";
+      }
+
+      function runSteps(count) {
+        for (let i = 0; i < count; i += 1) {
+          if (!oneStep()) break;
+        }
+      }
+
+      function resetTrace(label = "준비") {
+        iteration = 0;
+        statusText = label;
+        lastDelta = [0, 0];
+        lastPrediction = [0, 0];
+        lastError = [0, 0];
+        path = [[...fk(currentQ()).tip]];
+      }
+
+      function captureSeed() {
+        seed = {
+          values: Object.fromEntries(ids.map(id => [id, document.getElementById(id).value])),
+          method: methodInput.value
+        };
+      }
+
+      function restoreSeed() {
+        if (!seed) captureSeed();
+        ids.forEach(id => { document.getElementById(id).value = seed.values[id]; });
+        methodInput.value = seed.method;
+        resetTrace("초기화");
+        render();
+      }
+
+      function applyPreset(name) {
+        const preset = presets[name];
+        document.getElementById("q1").value = preset.q[0];
+        document.getElementById("q2").value = preset.q[1];
+        document.getElementById("target-x").value = preset.target[0];
+        document.getElementById("target-y").value = preset.target[1];
+        document.getElementById("eta").value = preset.eta;
+        document.getElementById("lambda").value = preset.lambda;
+        document.getElementById("max-step").value = preset.maxStep;
+        methodInput.value = preset.method;
+        activePreset = name;
+        document.querySelectorAll("[data-preset]").forEach(button => {
+          button.setAttribute("aria-pressed", String(button.dataset.preset === name));
+        });
+        captureSeed();
+        resetTrace("준비");
+        render();
+      }
+
+      function clean(number) { return Math.abs(number) < 5e-10 ? 0 : number; }
+      function fixed(number, digits = 3) {
+        const n = clean(number);
+        if (!Number.isFinite(n)) return "오류";
+        return n.toFixed(digits).replace(/\.?0+$/, "");
+      }
+      function vectorText(vector, digits = 3) { return `(${vector.map(v => fixed(v, digits)).join(", ")})`; }
+
+      function renderMatrix(host, values) {
+        host.replaceChildren();
+        values.flat().forEach(number => {
+          const cell = document.createElement("span");
+          cell.textContent = fixed(number, 4);
+          host.append(cell);
+        });
+      }
+
+      function colors() {
+        const style = getComputedStyle(document.documentElement);
+        return {
+          bg: style.getPropertyValue("--bg").trim(),
+          line: style.getPropertyValue("--line").trim(),
+          text: style.getPropertyValue("--text").trim(),
+          muted: style.getPropertyValue("--muted").trim(),
+          cyan: style.getPropertyValue("--cyan").trim(),
+          violet: style.getPropertyValue("--violet").trim(),
+          amber: style.getPropertyValue("--amber").trim(),
+          green: style.getPropertyValue("--green").trim(),
+          red: style.getPropertyValue("--red").trim(),
+          blue: style.getPropertyValue("--blue").trim()
+        };
+      }
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.max(1, Math.round(rect.width * dpr));
+        const height = Math.max(1, Math.round(rect.height * dpr));
+        if (canvas.width !== width || canvas.height !== height) {
+          canvas.width = width;
+          canvas.height = height;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return rect;
+      }
+
+      function projector(rect) {
+        const padding = 34;
+        const world = 2.55;
+        const scale = Math.min((rect.width - padding * 2) / (world * 2), (rect.height - padding * 2) / (world * 2));
+        const origin = [rect.width / 2, rect.height / 2];
+        return {
+          toScreen: point => [origin[0] + point[0] * scale, origin[1] - point[1] * scale],
+          toWorld: point => [(point[0] - origin[0]) / scale, (origin[1] - point[1]) / scale],
+          scale,
+          origin
+        };
+      }
+
+      function line(project, a, b, color, width = 2, dash = []) {
+        const p = project.toScreen(a), q = project.toScreen(b);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.setLineDash(dash);
+        ctx.beginPath();
+        ctx.moveTo(p[0], p[1]);
+        ctx.lineTo(q[0], q[1]);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function arrow(project, start, vector, color, label) {
+        const end = [start[0] + vector[0], start[1] + vector[1]];
+        const a = project.toScreen(start), b = project.toScreen(end);
+        const angle = Math.atan2(b[1] - a[1], b[0] - a[0]);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        ctx.lineTo(b[0], b[1]);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(b[0], b[1]);
+        ctx.lineTo(b[0] - 10 * Math.cos(angle - .45), b[1] - 10 * Math.sin(angle - .45));
+        ctx.lineTo(b[0] - 10 * Math.cos(angle + .45), b[1] - 10 * Math.sin(angle + .45));
+        ctx.closePath();
+        ctx.fill();
+        ctx.font = "700 12px system-ui";
+        ctx.fillText(label, b[0] + 7, b[1] - 7);
+        ctx.restore();
+      }
+
+      function point(project, p, color, radius) {
+        const s = project.toScreen(p);
+        ctx.save();
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(s[0], s[1], radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function draw() {
+        const rect = resizeCanvas();
+        const c = colors();
+        const project = projector(rect);
+        const s = state();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        ctx.save();
+        ctx.strokeStyle = c.line;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, project.origin[1]);
+        ctx.lineTo(rect.width, project.origin[1]);
+        ctx.moveTo(project.origin[0], 0);
+        ctx.lineTo(project.origin[0], rect.height);
+        ctx.stroke();
+        ctx.fillStyle = c.muted;
+        ctx.font = "12px system-ui, sans-serif";
+        ctx.fillText("+x", rect.width - 26, project.origin[1] - 8);
+        ctx.fillText("+y", project.origin[0] + 8, 16);
+        ctx.setLineDash([5, 6]);
+        ctx.beginPath();
+        ctx.arc(project.origin[0], project.origin[1], 2 * project.scale, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        if (path.length > 1) {
+          ctx.save();
+          ctx.strokeStyle = c.blue;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          path.forEach((p, i) => {
+            const screen = project.toScreen(p);
+            if (i === 0) ctx.moveTo(screen[0], screen[1]);
+            else ctx.lineTo(screen[0], screen[1]);
+          });
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        line(project, [0, 0], s.pose.elbow, c.cyan, 8);
+        line(project, s.pose.elbow, s.pose.tip, c.cyan, 8);
+        point(project, [0, 0], c.muted, 6);
+        point(project, s.pose.elbow, c.cyan, 7);
+        point(project, s.pose.tip, c.text, 7);
+
+        const goal = project.toScreen(s.goal);
+        ctx.save();
+        ctx.strokeStyle = c.amber;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(goal[0], goal[1], 9, 0, Math.PI * 2);
+        ctx.moveTo(goal[0] - 13, goal[1]);
+        ctx.lineTo(goal[0] + 13, goal[1]);
+        ctx.moveTo(goal[0], goal[1] - 13);
+        ctx.lineTo(goal[0], goal[1] + 13);
+        ctx.stroke();
+        ctx.restore();
+
+        arrow(project, s.pose.tip, s.error, c.red, "e");
+        arrow(project, s.pose.tip, [.35 * s.j[0][0], .35 * s.j[1][0]], c.green, "J₁");
+        arrow(project, s.pose.tip, [.35 * s.j[0][1], .35 * s.j[1][1]], c.violet, "J₂");
+      }
+
+      function updateObservation(s) {
+        const host = document.getElementById("observation");
+        const targetRadius = norm(s.goal);
+        if (statusText === "수렴") {
+          host.textContent = "허용 오차 안에 들어왔습니다. 반복 경로는 매 단계에서 자코비안을 다시 계산한 결과입니다.";
+        } else if (targetRadius > l1 + l2 + 1e-9) {
+          host.textContent = "목표가 반지름 2의 작업공간 밖에 있습니다. 알고리즘은 계산을 계속할 수 있지만 오차를 0으로 만들 수 없습니다.";
+        } else if (Math.abs(s.det) < .05) {
+          host.textContent = "두 자코비안 열이 거의 나란한 특이점 근처입니다. λ와 최대 스텝을 바꾸며 Δq가 어떻게 제한되는지 비교하세요.";
+        } else if (statusText === "정체" || statusText === "최대 반복") {
+          host.textContent = "오차가 남은 채 반복이 멈췄습니다. 목표 도달성, 초기 자세, 감쇠값과 최대 스텝을 함께 확인하세요.";
+        } else {
+          host.textContent = "자코비안 두 열이 서로 다른 방향이므로 현재 자세에서 x·y 방향의 작은 움직임을 조합할 수 있습니다.";
+        }
+      }
+
+      function render() {
+        inputs.forEach(input => {
+          const output = document.getElementById(`${input.id}-value`);
+          if (!output) return;
+          if (input.id === "q1" || input.id === "q2" || input.id === "max-step") output.textContent = `${fixed(Number(input.value), 1)}°`;
+          else output.textContent = fixed(Number(input.value), 2);
+        });
+        document.getElementById("lambda").disabled = methodInput.value !== "dls";
+
+        const s = state();
+        document.getElementById("position").textContent = vectorText(s.pose.tip);
+        document.getElementById("error").textContent = fixed(norm(s.error), 4);
+        document.getElementById("determinant").textContent = fixed(s.det, 4);
+        document.getElementById("iteration").textContent = String(iteration);
+        document.getElementById("delta-q").textContent = `(${fixed(deg(lastDelta[0]), 2)}°, ${fixed(deg(lastDelta[1]), 2)}°)`;
+        document.getElementById("status").textContent = statusText;
+        renderMatrix(document.getElementById("jacobian"), s.j);
+        renderMatrix(document.getElementById("prediction"), [[lastPrediction[0], lastError[0]], [lastPrediction[1], lastError[1]]]);
+        updateObservation(s);
+        canvas.setAttribute("aria-label", `2R 팔. 현재 끝점 ${vectorText(s.pose.tip)}, 목표 ${vectorText(s.goal)}, 오차 ${fixed(norm(s.error), 4)}, 반복 ${iteration}, 상태 ${statusText}.`);
+        draw();
+      }
+
+      inputs.forEach(input => input.addEventListener("input", () => {
+        activePreset = "";
+        document.querySelectorAll("[data-preset]").forEach(button => button.setAttribute("aria-pressed", "false"));
+        captureSeed();
+        resetTrace("입력 변경");
+        render();
+      }));
+      methodInput.addEventListener("change", () => {
+        activePreset = "";
+        document.querySelectorAll("[data-preset]").forEach(button => button.setAttribute("aria-pressed", "false"));
+        captureSeed();
+        resetTrace("방법 변경");
+        render();
+      });
+      document.getElementById("step").addEventListener("click", oneStep);
+      document.getElementById("run").addEventListener("click", () => runSteps(30));
+      document.getElementById("reset").addEventListener("click", restoreSeed);
+      document.querySelectorAll("[data-preset]").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
+      canvas.addEventListener("pointerdown", event => {
+        const rect = canvas.getBoundingClientRect();
+        const project = projector(rect);
+        const world = project.toWorld([event.clientX - rect.left, event.clientY - rect.top]);
+        document.getElementById("target-x").value = clamp(world[0], -2.4, 2.4);
+        document.getElementById("target-y").value = clamp(world[1], -2.4, 2.4);
+        activePreset = "";
+        document.querySelectorAll("[data-preset]").forEach(button => button.setAttribute("aria-pressed", "false"));
+        captureSeed();
+        resetTrace("목표 변경");
+        render();
+      });
+      window.addEventListener("resize", render);
+
+      applyPreset("regular");
+    })();
+  </script>
+</body>
+</html>
