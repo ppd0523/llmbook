@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>휴머노이드 전신 IK 비교 실습</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: #0d1c2d;
+      --panel-2: #11243a;
+      --line: #29425b;
+      --text: #eef6ff;
+      --muted: #9fb2c7;
+      --cyan: #58d5f5;
+      --blue: #79a8ff;
+      --amber: #ffc45c;
+      --green: #62dda1;
+      --red: #ff7f91;
+      --violet: #b89cff;
+      --shadow: 0 18px 45px rgb(0 0 0 / 0.28);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgb(33 103 140 / 0.24), transparent 30rem),
+        radial-gradient(circle at 95% 15%, rgb(85 62 142 / 0.17), transparent 32rem),
+        var(--bg);
+      font-family: Inter, Pretendard, "Noto Sans KR", system-ui, sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+
+    header {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 32px 28px 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--cyan);
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(2rem, 4.6vw, 4.2rem);
+      line-height: 1.08;
+      letter-spacing: -.045em;
+    }
+
+    header > p:last-child {
+      max-width: 980px;
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1.03rem;
+      line-height: 1.7;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(270px, 330px) minmax(0, 1fr);
+      gap: 18px;
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 28px 36px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: linear-gradient(160deg, rgb(17 36 58 / .95), rgb(10 24 40 / .96));
+      box-shadow: var(--shadow);
+    }
+
+    aside {
+      align-self: start;
+      padding: 20px;
+    }
+
+    h2, h3 { margin-top: 0; }
+    aside h2 { font-size: 1.15rem; }
+    aside h3 {
+      margin: 24px 0 12px;
+      font-size: .96rem;
+      color: var(--text);
+    }
+
+    .control {
+      margin-top: 15px;
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    output { color: var(--text); font-variant-numeric: tabular-nums; }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 9px 0 0;
+      accent-color: var(--cyan);
+    }
+
+    select {
+      width: 100%;
+      margin-top: 7px;
+      padding: 10px 12px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #071625;
+    }
+
+    .hint {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+
+    .actions, .presets {
+      display: grid;
+      gap: 8px;
+    }
+
+    .actions { grid-template-columns: repeat(3, 1fr); }
+    .presets { grid-template-columns: repeat(2, 1fr); }
+
+    button {
+      min-height: 42px;
+      padding: 9px 10px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #122842;
+      cursor: pointer;
+      font-weight: 750;
+    }
+
+    button:hover { border-color: var(--cyan); }
+    button:focus-visible { outline: 3px solid rgb(88 213 245 / .38); outline-offset: 2px; }
+    button.primary { color: #04121d; background: var(--cyan); border-color: var(--cyan); }
+    button[aria-pressed="true"] { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); }
+
+    .comparison { min-width: 0; padding: 16px; }
+
+    .comparison-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 2px 2px 14px;
+    }
+
+    .comparison-head h2 { margin-bottom: 5px; font-size: 1.2rem; }
+    .comparison-head p { margin: 0; color: var(--muted); line-height: 1.55; }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 13px;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-right: 5px;
+      border-radius: 50%;
+      background: var(--swatch);
+    }
+
+    .boards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .board {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgb(5 17 31 / .62);
+    }
+
+    .board header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px 11px;
+    }
+
+    .board h3 { margin: 0; font-size: 1rem; }
+    .badge {
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .74rem;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 390px;
+      border-block: 1px solid var(--line);
+      background:
+        linear-gradient(rgb(36 65 88 / .17) 1px, transparent 1px),
+        linear-gradient(90deg, rgb(36 65 88 / .17) 1px, transparent 1px),
+        #071422;
+      background-size: 30px 30px;
+      touch-action: none;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      padding: 12px;
+    }
+
+    .metric {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--panel-2);
+    }
+
+    .metric span { display: block; color: var(--muted); font-size: .7rem; }
+    .metric strong {
+      display: block;
+      overflow: hidden;
+      margin-top: 4px;
+      font-size: .9rem;
+      font-variant-numeric: tabular-nums;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .observation {
+      min-height: 72px;
+      margin: 0 12px 12px;
+      padding: 11px 12px;
+      color: var(--muted);
+      border-left: 3px solid var(--amber);
+      background: rgb(255 196 92 / .07);
+      font-size: .82rem;
+      line-height: 1.55;
+    }
+
+    .footnote {
+      margin: 14px 2px 0;
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1080px) {
+      main { grid-template-columns: 1fr; }
+      aside { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 22px; }
+      aside > h2, aside > .hint, aside > .actions, aside > .presets, aside > h3 { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 760px) {
+      header { padding-inline: 16px; }
+      main { padding-inline: 14px; }
+      aside { display: block; }
+      .boards { grid-template-columns: 1fr; }
+      .comparison-head { display: block; }
+      .legend { margin-top: 12px; }
+      canvas { height: 360px; }
+    }
+
+    @media (max-width: 420px) {
+      .comparison { padding: 10px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="eyebrow">Humanoid whole-body IK lab</p>
+    <h1>같은 목표, 다른 규칙: 가중 해와 접촉 우선 해 비교</h1>
+    <p>평면 부유 골반과 두 다리를 같은 시작 자세에서 움직입니다. 두 그림 중 하나를 누르면 오른발 목표가 바뀝니다. 왼쪽은 모든 오차를 타협하고, 오른쪽은 지지발을 먼저 보존합니다.</p>
+  </header>
+
+  <main>
+    <aside class="panel" aria-label="전신 역기구학 실습 설정">
+      <h2>접촉과 과제 목표</h2>
+      <p class="hint">좌표의 x축 양의 방향은 오른쪽, y축 양의 방향은 위쪽입니다. 위치는 m, 관절 회전 스텝은 °로 표시합니다.</p>
+
+      <div class="control">
+        <label for="support-mode"><span>지지 상태</span></label>
+        <select id="support-mode">
+          <option value="single">왼발 단일 지지</option>
+          <option value="double">양발 이중 지지</option>
+        </select>
+      </div>
+
+      <div class="control">
+        <label for="target-x"><span>오른발 목표 x</span><output id="target-x-value" for="target-x">0.45 m</output></label>
+        <input id="target-x" type="range" min="-0.85" max="0.95" step="0.01" value="0.45">
+      </div>
+
+      <div class="control">
+        <label for="target-y"><span>오른발 목표 y</span><output id="target-y-value" for="target-y">0.18 m</output></label>
+        <input id="target-y" type="range" min="0" max="0.75" step="0.01" value="0.18">
+      </div>
+
+      <div class="control">
+        <label for="pelvis-x"><span>골반 목표 x</span><output id="pelvis-x-value" for="pelvis-x">0.05 m</output></label>
+        <input id="pelvis-x" type="range" min="-0.45" max="0.45" step="0.01" value="0.05">
+      </div>
+
+      <div class="control">
+        <label for="pelvis-y"><span>골반 목표 y</span><output id="pelvis-y-value" for="pelvis-y">1.04 m</output></label>
+        <input id="pelvis-y" type="range" min="0.72" max="1.22" step="0.01" value="1.04">
+      </div>
+
+      <h3>수치 설정</h3>
+
+      <div class="control">
+        <label for="support-weight"><span>가중 해의 접촉 가중치</span><output id="support-weight-value" for="support-weight">30</output></label>
+        <input id="support-weight" type="range" min="1" max="100" step="1" value="30">
+      </div>
+
+      <div class="control">
+        <label for="lambda"><span>가중 DLS 감쇠값 λ</span><output id="lambda-value" for="lambda">0.04</output></label>
+        <input id="lambda" type="range" min="0.005" max="0.2" step="0.005" value="0.04">
+      </div>
+
+      <div class="control">
+        <label for="max-step"><span>최대 관절 스텝</span><output id="max-step-value" for="max-step">5°</output></label>
+        <input id="max-step" type="range" min="1" max="12" step="1" value="5">
+      </div>
+
+      <p class="hint">두 방법은 같은 시작 자세와 목표를 사용합니다. 최대 관절 스텝은 회전관절에 적용되고, 베이스 이동은 한 단계에 0.035 m 이하로 자동 축소됩니다. 오른쪽 계층 해의 투영에는 작은 수치 감쇠가 들어가므로 이론적 엄격 우선순위의 근사입니다.</p>
+
+      <h3>반복 실행</h3>
+      <div class="actions">
+        <button class="primary" id="step" type="button">한 단계</button>
+        <button id="run" type="button">30단계</button>
+        <button id="reset" type="button">초기화</button>
+      </div>
+
+      <h3>비교 프리셋</h3>
+      <div class="presets">
+        <button type="button" data-preset="regular" aria-pressed="true">보통 한 걸음</button>
+        <button type="button" data-preset="conflict" aria-pressed="false">제한 충돌</button>
+        <button type="button" data-preset="double" aria-pressed="false">이중 지지</button>
+        <button type="button" data-preset="unreachable" aria-pressed="false">도달 불가</button>
+      </div>
+    </aside>
+
+    <section class="comparison panel" aria-label="가중 전신 IK와 우선순위 전신 IK 비교">
+      <div class="comparison-head">
+        <div>
+          <h2>동일한 목표를 두 규칙으로 풀기</h2>
+          <p>주황 표식은 과제 목표, 녹색 구간은 현재 지지 영역, 보라색 점은 질량중심입니다.</p>
+        </div>
+        <div class="legend" aria-label="그림 범례">
+          <span style="--swatch:var(--cyan)">로봇</span>
+          <span style="--swatch:var(--amber)">목표</span>
+          <span style="--swatch:var(--green)">지지 영역</span>
+          <span style="--swatch:var(--violet)">CoM</span>
+          <span style="--swatch:var(--red)">오차</span>
+        </div>
+      </div>
+
+      <div class="boards">
+        <article class="board">
+          <header>
+            <h3>가중 DLS</h3>
+            <span class="badge">오차 사이의 타협</span>
+          </header>
+          <canvas id="weighted-canvas" width="640" height="460" role="img" aria-label="가중 DLS 평면 휴머노이드"></canvas>
+          <div class="metrics">
+            <div class="metric"><span>왼발 접촉 오차</span><strong id="weighted-support">0 m</strong></div>
+            <div class="metric"><span>오른발 오차</span><strong id="weighted-swing">0 m</strong></div>
+            <div class="metric"><span>골반 오차</span><strong id="weighted-pelvis">0 m</strong></div>
+            <div class="metric"><span>CoM 투영</span><strong id="weighted-com">안쪽</strong></div>
+            <div class="metric"><span>반복·제한 감지</span><strong id="weighted-iteration">0 · 0</strong></div>
+            <div class="metric"><span>상태</span><strong id="weighted-status">준비</strong></div>
+          </div>
+          <p class="observation" id="weighted-observation" aria-live="polite">접촉 가중치를 유한하게 주므로 목표가 충돌하면 왼발 오차를 조금 허용할 수 있습니다.</p>
+        </article>
+
+        <article class="board">
+          <header>
+            <h3>접촉 우선 계층 IK</h3>
+            <span class="badge">접촉 → 동작 → 자세</span>
+          </header>
+          <canvas id="priority-canvas" width="640" height="460" role="img" aria-label="접촉 우선순위 평면 휴머노이드"></canvas>
+          <div class="metrics">
+            <div class="metric"><span>왼발 접촉 오차</span><strong id="priority-support">0 m</strong></div>
+            <div class="metric"><span>오른발 오차</span><strong id="priority-swing">0 m</strong></div>
+            <div class="metric"><span>골반 오차</span><strong id="priority-pelvis">0 m</strong></div>
+            <div class="metric"><span>CoM 투영</span><strong id="priority-com">안쪽</strong></div>
+            <div class="metric"><span>반복·제한 감지</span><strong id="priority-iteration">0 · 0</strong></div>
+            <div class="metric"><span>상태</span><strong id="priority-status">준비</strong></div>
+          </div>
+          <p class="observation" id="priority-observation" aria-live="polite">낮은 과제는 왼발 접촉의 영공간에서만 움직입니다. 관절 제한으로 충돌하면 낮은 과제 잔차를 남깁니다.</p>
+        </article>
+      </div>
+
+      <p class="footnote">이 실습은 정면을 단순화한 2D 기구학 모형입니다. 발 자세는 점 위치로만 표현하고, 업데이트 뒤 관절 제한을 반복해서 적용한 다음 접촉을 다시 보정합니다. 이 절차는 실제 3D 전신 IK의 방위·충돌·마찰·접촉력이나 제약을 풀이 안에서 처리하는 HQP 솔버를 대신하지 않습니다.</p>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const ids = ["target-x", "target-y", "pelvis-x", "pelvis-y", "support-weight", "lambda", "max-step"];
+      const inputs = ids.map(id => document.getElementById(id));
+      const modeInput = document.getElementById("support-mode");
+      const canvases = {
+        weighted: document.getElementById("weighted-canvas"),
+        priority: document.getElementById("priority-canvas")
+      };
+      const contexts = {
+        weighted: canvases.weighted.getContext("2d"),
+        priority: canvases.priority.getContext("2d")
+      };
+
+      const l1 = .55, l2 = .55, hipOffset = .16;
+      const baseY = 2 * l1 * Math.cos(12 * Math.PI / 180);
+      const defaultQ = [0, baseY, -12, 24, 12, -24].map((v, i) => i < 2 ? v : v * Math.PI / 180);
+      const maxIterations = 240;
+      const tolerance = { support: .004, foot: .012, pelvis: .015 };
+
+      const presets = {
+        regular: { mode: "single", q: defaultQ, target: [.45, .18], pelvis: [.05, 1.04], weight: 30, lambda: .04, maxStep: 5 },
+        conflict: { mode: "single", q: defaultQ, target: [.72, .42], pelvis: [.45, 1.12], weight: 6, lambda: .06, maxStep: 5 },
+        double: { mode: "double", q: defaultQ, target: [.16, 0], pelvis: [.42, 1.16], weight: 20, lambda: .04, maxStep: 4 },
+        unreachable: { mode: "single", q: defaultQ, target: [.93, .70], pelvis: [.10, 1.06], weight: 25, lambda: .06, maxStep: 5 }
+      };
+
+      let activePreset = "regular";
+      let seed = null;
+      let leftTarget = [-hipOffset, 0];
+      const robots = {
+        weighted: makeRobot(defaultQ),
+        priority: makeRobot(defaultQ)
+      };
+
+      function makeRobot(q) {
+        return { q: [...q], iteration: 0, status: "준비", limitHits: 0, path: [] };
+      }
+
+      const value = id => Number(document.getElementById(id).value);
+      const norm = vector => Math.hypot(...vector);
+      const clamp = (number, min, max) => Math.max(min, Math.min(max, number));
+      const rad = degree => degree * Math.PI / 180;
+      const fixed = (number, digits = 4) => Number.isFinite(number) ? Number(number).toFixed(digits).replace(/\.0+$/, "") : "—";
+      const zeros = length => Array(length).fill(0);
+      const identity = n => Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => Number(r === c)));
+      const transpose = matrix => matrix[0].map((_, c) => matrix.map(row => row[c]));
+      const matVec = (matrix, vector) => matrix.map(row => row.reduce((sum, item, i) => sum + item * vector[i], 0));
+      const matMul = (a, b) => a.map(row => b[0].map((_, c) => row.reduce((sum, item, i) => sum + item * b[i][c], 0)));
+      const addVec = (a, b) => a.map((item, i) => item + b[i]);
+      const subVec = (a, b) => a.map((item, i) => item - b[i]);
+      const addMat = (a, b) => a.map((row, r) => row.map((item, c) => item + b[r][c]));
+      const subMat = (a, b) => a.map((row, r) => row.map((item, c) => item - b[r][c]));
+      const scaleRows = (matrix, scale) => matrix.map(row => row.map(item => item * scale));
+      const stackRows = (...matrices) => matrices.flat();
+
+      function inverse(matrix) {
+        const n = matrix.length;
+        const work = matrix.map((row, r) => [...row, ...identity(n)[r]]);
+        for (let c = 0; c < n; c += 1) {
+          let pivot = c;
+          for (let r = c + 1; r < n; r += 1) if (Math.abs(work[r][c]) > Math.abs(work[pivot][c])) pivot = r;
+          if (Math.abs(work[pivot][c]) < 1e-12) throw new Error("singular matrix");
+          [work[c], work[pivot]] = [work[pivot], work[c]];
+          const divisor = work[c][c];
+          work[c] = work[c].map(item => item / divisor);
+          for (let r = 0; r < n; r += 1) {
+            if (r === c) continue;
+            const factor = work[r][c];
+            work[r] = work[r].map((item, i) => item - factor * work[c][i]);
+          }
+        }
+        return work.map(row => row.slice(n));
+      }
+
+      function pinvDls(j, lambda) {
+        if (!j.length) return [];
+        const jt = transpose(j);
+        const jjt = matMul(j, jt);
+        const regularized = jjt.map((row, r) => row.map((item, c) => item + (r === c ? lambda ** 2 : 0)));
+        return matMul(jt, inverse(regularized));
+      }
+
+      function dlsSolve(j, error, lambda) {
+        return matVec(pinvDls(j, lambda), error);
+      }
+
+      function leg(q, side) {
+        const hipIndex = side === "left" ? 2 : 4;
+        const kneeIndex = hipIndex + 1;
+        const sign = side === "left" ? -1 : 1;
+        const hip = [q[0] + sign * hipOffset, q[1]];
+        const h = q[hipIndex], k = q[kneeIndex];
+        const knee = [hip[0] + l1 * Math.sin(h), hip[1] - l1 * Math.cos(h)];
+        const foot = [knee[0] + l2 * Math.sin(h + k), knee[1] - l2 * Math.cos(h + k)];
+        return { hip, knee, foot, h, k };
+      }
+
+      function fk(q) {
+        return { pelvis: [q[0], q[1]], left: leg(q, "left"), right: leg(q, "right") };
+      }
+
+      function footJacobian(q, side) {
+        const result = [zeros(6), zeros(6)];
+        result[0][0] = 1;
+        result[1][1] = 1;
+        const hipIndex = side === "left" ? 2 : 4;
+        const kneeIndex = hipIndex + 1;
+        const h = q[hipIndex], k = q[kneeIndex];
+        result[0][hipIndex] = l1 * Math.cos(h) + l2 * Math.cos(h + k);
+        result[1][hipIndex] = l1 * Math.sin(h) + l2 * Math.sin(h + k);
+        result[0][kneeIndex] = l2 * Math.cos(h + k);
+        result[1][kneeIndex] = l2 * Math.sin(h + k);
+        return result;
+      }
+
+      function pelvisJacobian() {
+        return [[1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0]];
+      }
+
+      function postureJacobian() {
+        return [
+          [0, 0, 1, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0],
+          [0, 0, 0, 0, 1, 0],
+          [0, 0, 0, 0, 0, 1]
+        ];
+      }
+
+      function targets() {
+        return { right: [value("target-x"), value("target-y")], pelvis: [value("pelvis-x"), value("pelvis-y")] };
+      }
+
+      function taskData(q) {
+        const pose = fk(q);
+        const goal = targets();
+        return {
+          pose,
+          left: { j: footJacobian(q, "left"), e: subVec(leftTarget, pose.left.foot) },
+          right: { j: footJacobian(q, "right"), e: subVec(goal.right, pose.right.foot) },
+          pelvis: { j: pelvisJacobian(), e: subVec(goal.pelvis, pose.pelvis) },
+          posture: { j: postureJacobian(), e: seed.q.slice(2).map((item, i) => item - q[i + 2]) }
+        };
+      }
+
+      function weightedUpdate(data) {
+        const supportScale = Math.sqrt(value("support-weight"));
+        const postureScale = Math.sqrt(.0002);
+        const rows = [scaleRows(data.left.j, supportScale)];
+        const errors = [data.left.e.map(item => item * supportScale)];
+        if (modeInput.value === "double") {
+          rows.push(scaleRows(data.right.j, supportScale));
+          errors.push(data.right.e.map(item => item * supportScale));
+        } else {
+          rows.push(data.right.j);
+          errors.push(data.right.e);
+        }
+        rows.push(data.pelvis.j, scaleRows(data.posture.j, postureScale));
+        errors.push(data.pelvis.e, data.posture.e.map(item => item * postureScale));
+        return dlsSolve(stackRows(...rows), errors.flat(), value("lambda"));
+      }
+
+      function hierarchyUpdate(data) {
+        const levels = modeInput.value === "double"
+          ? [
+              { j: stackRows(data.left.j, data.right.j), e: [...data.left.e, ...data.right.e] },
+              data.pelvis,
+              data.posture
+            ]
+          : [
+              data.left,
+              { j: stackRows(data.right.j, data.pelvis.j), e: [...data.right.e, ...data.pelvis.e] },
+              data.posture
+            ];
+        let delta = zeros(6);
+        let nullspace = identity(6);
+        const lambdaProjection = 1e-4;
+        levels.forEach(level => {
+          const projected = matMul(level.j, nullspace);
+          const residual = subVec(level.e, matVec(level.j, delta));
+          const pinv = pinvDls(projected, lambdaProjection);
+          const local = matVec(pinv, residual);
+          delta = addVec(delta, matVec(nullspace, local));
+          nullspace = matMul(nullspace, subMat(identity(6), matMul(pinv, projected)));
+        });
+        return delta;
+      }
+
+      function limitStep(delta) {
+        const jointLimit = rad(value("max-step"));
+        const ratios = delta.map((item, i) => Math.abs(item) / (i < 2 ? .035 : jointLimit));
+        const scale = Math.min(1, 1 / Math.max(1, ...ratios));
+        return delta.map(item => item * scale);
+      }
+
+      function applyLimits(q) {
+        const limits = [[-.6, .6], [.66, 1.3], [rad(-70), rad(70)], [rad(-100), rad(100)], [rad(-70), rad(70)], [rad(-100), rad(100)]];
+        let hits = 0;
+        const limited = q.map((item, i) => {
+          const next = clamp(item, limits[i][0], limits[i][1]);
+          if (Math.abs(next - item) > 1e-10) hits += 1;
+          return next;
+        });
+        return { q: limited, hits };
+      }
+
+      function errorsFor(q) {
+        const data = taskData(q);
+        return { support: norm(data.left.e), right: norm(data.right.e), pelvis: norm(data.pelvis.e) };
+      }
+
+      function restoreContact(q) {
+        let corrected = [...q];
+        let hits = 0;
+        for (let pass = 0; pass < 3; pass += 1) {
+          const data = taskData(corrected);
+          const j = modeInput.value === "double" ? stackRows(data.left.j, data.right.j) : data.left.j;
+          const error = modeInput.value === "double" ? [...data.left.e, ...data.right.e] : data.left.e;
+          if (norm(error) < 1e-6) break;
+          const correction = limitStep(dlsSolve(j, error, 1e-4));
+          const result = applyLimits(addVec(corrected, correction));
+          corrected = result.q;
+          hits += result.hits;
+        }
+        return { q: corrected, hits };
+      }
+
+      function isConverged(errors) {
+        const rightTolerance = modeInput.value === "double" ? tolerance.support : tolerance.foot;
+        return errors.support < tolerance.support && errors.right < rightTolerance && errors.pelvis < tolerance.pelvis;
+      }
+
+      function oneStepRobot(kind) {
+        const robot = robots[kind];
+        if (robot.status === "수렴" || robot.status === "최대 반복" || robot.status === "수치 오류") return;
+        const before = taskData(robot.q);
+        if (isConverged(errorsFor(robot.q))) { robot.status = "수렴"; return; }
+        try {
+          const raw = kind === "weighted" ? weightedUpdate(before) : hierarchyUpdate(before);
+          if (!raw.every(Number.isFinite)) throw new Error("non-finite update");
+          const delta = limitStep(raw);
+          const result = applyLimits(addVec(robot.q, delta));
+          const contactResult = kind === "priority" ? restoreContact(result.q) : { q: result.q, hits: 0 };
+          robot.q = contactResult.q;
+          robot.limitHits += result.hits + contactResult.hits;
+          robot.iteration += 1;
+          robot.path.push([...fk(robot.q).right.foot]);
+          const afterErrors = errorsFor(robot.q);
+          if (isConverged(afterErrors)) robot.status = "수렴";
+          else if (norm(delta) < 1e-8) robot.status = "정체";
+          else if (robot.iteration >= maxIterations) robot.status = "최대 반복";
+          else robot.status = "진행 중";
+        } catch {
+          robot.status = "수치 오류";
+        }
+      }
+
+      function oneStep() {
+        oneStepRobot("weighted");
+        oneStepRobot("priority");
+        render();
+      }
+
+      function runSteps(count) {
+        for (let i = 0; i < count; i += 1) {
+          oneStepRobot("weighted");
+          oneStepRobot("priority");
+          if ([robots.weighted.status, robots.priority.status].every(status => ["수렴", "정체", "최대 반복", "수치 오류"].includes(status))) break;
+        }
+        render();
+      }
+
+      function captureSeed(q = seed?.q ?? defaultQ) {
+        seed = {
+          q: [...q],
+          mode: modeInput.value,
+          values: Object.fromEntries(ids.map(id => [id, document.getElementById(id).value]))
+        };
+        leftTarget = [...fk(seed.q).left.foot];
+      }
+
+      function resetRobots(label = "준비") {
+        Object.values(robots).forEach(robot => {
+          Object.assign(robot, makeRobot(seed.q));
+          robot.status = label;
+          robot.path = [[...fk(robot.q).right.foot]];
+        });
+      }
+
+      function restoreSeed() {
+        modeInput.value = seed.mode;
+        ids.forEach(id => { document.getElementById(id).value = seed.values[id]; });
+        leftTarget = [...fk(seed.q).left.foot];
+        resetRobots("초기화");
+        render();
+      }
+
+      function applyPreset(name) {
+        const preset = presets[name];
+        modeInput.value = preset.mode;
+        document.getElementById("target-x").value = preset.target[0];
+        document.getElementById("target-y").value = preset.target[1];
+        document.getElementById("pelvis-x").value = preset.pelvis[0];
+        document.getElementById("pelvis-y").value = preset.pelvis[1];
+        document.getElementById("support-weight").value = preset.weight;
+        document.getElementById("lambda").value = preset.lambda;
+        document.getElementById("max-step").value = preset.maxStep;
+        activePreset = name;
+        document.querySelectorAll("[data-preset]").forEach(button => button.setAttribute("aria-pressed", String(button.dataset.preset === name)));
+        captureSeed(preset.q);
+        resetRobots();
+        render();
+      }
+
+      function centerOfMass(q) {
+        const pose = fk(q);
+        const points = [
+          { m: 8, p: [q[0], q[1] + .24] },
+          { m: 4, p: [q[0], q[1]] },
+          { m: 2.5, p: [(pose.left.hip[0] + pose.left.knee[0]) / 2, (pose.left.hip[1] + pose.left.knee[1]) / 2] },
+          { m: 1.5, p: [(pose.left.knee[0] + pose.left.foot[0]) / 2, (pose.left.knee[1] + pose.left.foot[1]) / 2] },
+          { m: 2.5, p: [(pose.right.hip[0] + pose.right.knee[0]) / 2, (pose.right.hip[1] + pose.right.knee[1]) / 2] },
+          { m: 1.5, p: [(pose.right.knee[0] + pose.right.foot[0]) / 2, (pose.right.knee[1] + pose.right.foot[1]) / 2] }
+        ];
+        const mass = points.reduce((sum, item) => sum + item.m, 0);
+        return points.reduce((sum, item) => [sum[0] + item.m * item.p[0] / mass, sum[1] + item.m * item.p[1] / mass], [0, 0]);
+      }
+
+      function supportInterval() {
+        const halfFoot = .18;
+        const right = targets().right;
+        return modeInput.value === "double"
+          ? [Math.min(leftTarget[0], right[0]) - halfFoot, Math.max(leftTarget[0], right[0]) + halfFoot]
+          : [leftTarget[0] - halfFoot, leftTarget[0] + halfFoot];
+      }
+
+      function colors() {
+        const style = getComputedStyle(document.documentElement);
+        return ["text", "muted", "cyan", "amber", "green", "red", "violet", "blue", "line"].reduce((result, key) => {
+          result[key] = style.getPropertyValue(`--${key}`).trim();
+          return result;
+        }, {});
+      }
+
+      function resizeCanvas(canvas, ctx) {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const width = Math.round(rect.width * dpr), height = Math.round(rect.height * dpr);
+        if (canvas.width !== width || canvas.height !== height) { canvas.width = width; canvas.height = height; }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return rect;
+      }
+
+      function projector(rect) {
+        const bounds = { xmin: -1.05, xmax: 1.05, ymin: -.14, ymax: 1.46 };
+        const padding = 25;
+        const scale = Math.min((rect.width - 2 * padding) / (bounds.xmax - bounds.xmin), (rect.height - 2 * padding) / (bounds.ymax - bounds.ymin));
+        const ox = (rect.width - scale * (bounds.xmax - bounds.xmin)) / 2 - bounds.xmin * scale;
+        const oy = (rect.height - scale * (bounds.ymax - bounds.ymin)) / 2 + bounds.ymax * scale;
+        return {
+          scale,
+          toScreen: point => [ox + point[0] * scale, oy - point[1] * scale],
+          toWorld: point => [(point[0] - ox) / scale, (oy - point[1]) / scale]
+        };
+      }
+
+      function line(ctx, project, a, b, color, width = 4) {
+        const p = project.toScreen(a), q = project.toScreen(b);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(p[0], p[1]);
+        ctx.lineTo(q[0], q[1]);
+        ctx.stroke();
+      }
+
+      function point(ctx, project, p, color, radius = 5) {
+        const q = project.toScreen(p);
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(q[0], q[1], radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function targetMark(ctx, project, p, color) {
+        const q = project.toScreen(p);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(q[0], q[1], 8, 0, Math.PI * 2);
+        ctx.moveTo(q[0] - 12, q[1]); ctx.lineTo(q[0] + 12, q[1]);
+        ctx.moveTo(q[0], q[1] - 12); ctx.lineTo(q[0], q[1] + 12);
+        ctx.stroke();
+      }
+
+      function draw(kind) {
+        const canvas = canvases[kind], ctx = contexts[kind], robot = robots[kind];
+        const rect = resizeCanvas(canvas, ctx), project = projector(rect), c = colors();
+        const pose = fk(robot.q), goal = targets(), com = centerOfMass(robot.q), interval = supportInterval();
+        ctx.clearRect(0, 0, rect.width, rect.height);
+
+        const groundA = project.toScreen([-1.05, 0]), groundB = project.toScreen([1.05, 0]);
+        ctx.strokeStyle = c.line; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(groundA[0], groundA[1]); ctx.lineTo(groundB[0], groundB[1]); ctx.stroke();
+
+        const supportA = project.toScreen([interval[0], .02]), supportB = project.toScreen([interval[1], -.02]);
+        ctx.fillStyle = "rgb(98 221 161 / .18)";
+        ctx.fillRect(supportA[0], supportA[1], supportB[0] - supportA[0], supportB[1] - supportA[1]);
+
+        if (robot.path.length > 1) {
+          ctx.strokeStyle = c.blue; ctx.lineWidth = 1.8; ctx.beginPath();
+          robot.path.forEach((p, i) => { const s = project.toScreen(p); if (i === 0) ctx.moveTo(s[0], s[1]); else ctx.lineTo(s[0], s[1]); });
+          ctx.stroke();
+        }
+
+        targetMark(ctx, project, leftTarget, c.green);
+        targetMark(ctx, project, goal.right, c.amber);
+        targetMark(ctx, project, goal.pelvis, c.amber);
+
+        line(ctx, project, pose.left.hip, pose.left.knee, c.cyan, 7);
+        line(ctx, project, pose.left.knee, pose.left.foot, c.cyan, 7);
+        line(ctx, project, pose.right.hip, pose.right.knee, c.cyan, 7);
+        line(ctx, project, pose.right.knee, pose.right.foot, c.cyan, 7);
+        line(ctx, project, pose.left.hip, pose.right.hip, c.cyan, 8);
+        line(ctx, project, [robot.q[0], robot.q[1]], [robot.q[0], robot.q[1] + .35], c.cyan, 9);
+
+        [pose.left.hip, pose.left.knee, pose.left.foot, pose.right.hip, pose.right.knee, pose.right.foot].forEach(p => point(ctx, project, p, c.text, 4.5));
+        line(ctx, project, [pose.left.foot[0] - .1, pose.left.foot[1]], [pose.left.foot[0] + .1, pose.left.foot[1]], c.green, 5);
+        line(ctx, project, [pose.right.foot[0] - .1, pose.right.foot[1]], [pose.right.foot[0] + .1, pose.right.foot[1]], modeInput.value === "double" ? c.green : c.amber, 5);
+
+        const comScreen = project.toScreen(com), floor = project.toScreen([com[0], 0]);
+        ctx.setLineDash([5, 5]); ctx.strokeStyle = c.violet; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(comScreen[0], comScreen[1]); ctx.lineTo(floor[0], floor[1]); ctx.stroke(); ctx.setLineDash([]);
+        point(ctx, project, com, c.violet, 6);
+
+        const supportError = subVec(leftTarget, pose.left.foot);
+        const end = addVec(pose.left.foot, supportError);
+        line(ctx, project, pose.left.foot, end, c.red, 2);
+
+        ctx.fillStyle = c.muted; ctx.font = "12px system-ui, sans-serif";
+        const label = project.toScreen([-.99, 1.39]);
+        ctx.fillText(modeInput.value === "double" ? "양발 이중 지지" : "왼발 단일 지지", label[0], label[1]);
+        ctx.fillStyle = c.violet; ctx.fillText("CoM", comScreen[0] + 9, comScreen[1] - 7);
+
+        const errors = errorsFor(robot.q);
+        canvas.setAttribute("aria-label", `${kind === "weighted" ? "가중 DLS" : "접촉 우선 계층 IK"}. 왼발 접촉 오차 ${fixed(errors.support)}, 오른발 오차 ${fixed(errors.right)}, 골반 오차 ${fixed(errors.pelvis)}, 반복 ${robot.iteration}, 상태 ${robot.status}.`);
+      }
+
+      function observation(kind, errors, comInside) {
+        const robot = robots[kind];
+        if (robot.status === "수렴") return "설정한 허용 오차 안에 들어왔습니다. 초기화한 뒤 다른 프리셋과 접촉 상태를 비교하세요.";
+        if (modeInput.value === "double" && errors.pelvis > .04) return "두 발을 모두 고정해 남는 자유도가 줄었습니다. 발 접촉을 보존하면 골반 목표에 잔차가 남을 수 있습니다.";
+        if (robot.limitHits > 0) return kind === "weighted"
+          ? "관절 제한이 활성화됐습니다. 유한한 접촉 가중치는 골반·발 목표와 타협해 지지발 오차를 허용할 수 있습니다."
+          : "관절 제한이 활성화됐습니다. 높은 접촉을 먼저 복구하고 낮은 골반·스윙발 목표에 잔차를 남깁니다.";
+        if (!comInside) return "CoM 수직 투영이 표시된 지지 구간 밖입니다. 이는 정적 기하 경고이며 동적 안정성 판정은 아닙니다.";
+        return kind === "weighted"
+          ? "모든 과제를 한 목적함수에서 함께 줄입니다. 접촉 가중치를 1과 100으로 바꾸어 지지발 오차를 비교하세요."
+          : "낮은 과제는 접촉 영공간에서 계산됩니다. 오른발·골반 오차가 남아도 지지발 오차가 먼저 줄어드는지 보세요.";
+      }
+
+      function renderBoard(kind) {
+        const robot = robots[kind], errors = errorsFor(robot.q), com = centerOfMass(robot.q), interval = supportInterval();
+        const comInside = com[0] >= interval[0] && com[0] <= interval[1];
+        document.getElementById(`${kind}-support`).textContent = `${fixed(errors.support)} m`;
+        document.getElementById(`${kind}-swing`).textContent = `${fixed(errors.right)} m`;
+        document.getElementById(`${kind}-pelvis`).textContent = `${fixed(errors.pelvis)} m`;
+        document.getElementById(`${kind}-com`).textContent = `${comInside ? "안쪽" : "바깥"} · x=${fixed(com[0], 3)}`;
+        document.getElementById(`${kind}-iteration`).textContent = `${robot.iteration} · ${robot.limitHits}`;
+        document.getElementById(`${kind}-status`).textContent = robot.status;
+        document.getElementById(`${kind}-observation`).textContent = observation(kind, errors, comInside);
+        draw(kind);
+      }
+
+      function render() {
+        inputs.forEach(input => {
+          const output = document.getElementById(`${input.id}-value`);
+          if (!output) return;
+          if (input.id === "support-weight") output.textContent = String(Math.round(Number(input.value)));
+          else if (input.id === "max-step") output.textContent = `${fixed(Number(input.value), 0)}°`;
+          else if (input.id === "lambda") output.textContent = fixed(Number(input.value), 3);
+          else output.textContent = `${fixed(Number(input.value), 2)} m`;
+        });
+        renderBoard("weighted");
+        renderBoard("priority");
+      }
+
+      function manualChange(label) {
+        activePreset = "";
+        document.querySelectorAll("[data-preset]").forEach(button => button.setAttribute("aria-pressed", "false"));
+        captureSeed();
+        resetRobots(label);
+        render();
+      }
+
+      inputs.forEach(input => input.addEventListener("input", () => manualChange("입력 변경")));
+      modeInput.addEventListener("change", () => manualChange("지지 상태 변경"));
+      document.getElementById("step").addEventListener("click", oneStep);
+      document.getElementById("run").addEventListener("click", () => runSteps(30));
+      document.getElementById("reset").addEventListener("click", restoreSeed);
+      document.querySelectorAll("[data-preset]").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
+
+      Object.values(canvases).forEach(canvas => canvas.addEventListener("pointerdown", event => {
+        const rect = canvas.getBoundingClientRect();
+        const world = projector(rect).toWorld([event.clientX - rect.left, event.clientY - rect.top]);
+        document.getElementById("target-x").value = clamp(world[0], -.85, .95);
+        document.getElementById("target-y").value = clamp(world[1], 0, .75);
+        manualChange("오른발 목표 변경");
+      }));
+
+      window.addEventListener("resize", render);
+      applyPreset("regular");
+    })();
+  </script>
+</body>
+</html>
