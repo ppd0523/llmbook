@@ -202,4 +202,4 @@ WSL Linux file system의 `/home/<user>/projects`에서 같은 project를 비교�
 - [rustup component](https://rust-lang.github.io/rustup/concepts/components.html)
 - [CodeLLDB 공식 저장소](https://github.com/vadimcn/codelldb)
 
-[← 5장](./05-python.md) · [목차](./index.md) · [7장: 운영과 문제 해결 →](./07-troubleshooting.md)
+[← 5장](./05-python.md) · [목차](./index.md) · [7장: C++ →](./07-cpp.md)

@@ -167,7 +167,7 @@ $ mv ~/.cache/nvim.bak ~/.cache/nvim
 - 공식 Starter를 clone한 뒤 template의 `.git`만 제거한다.
 - 첫 실행의 성공 기준은 화면 모양이 아니라 health check와 failed plugin 0개다.
 - Optional provider warning과 실제로 사용할 기능의 error를 구분한다.
-- Backup은 네 언어 smoke test가 끝날 때까지 보존한다.
+- Backup은 다섯 언어 smoke test가 끝날 때까지 보존한다.
 
 ## 추가 읽을거리
 

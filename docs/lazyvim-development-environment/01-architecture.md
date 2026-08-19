@@ -92,12 +92,14 @@ adapter나 launch configuration이 없으면 breakpoint까지 실행이 도달�
 | 대상 | 소유자 | 예시 |
 |---|---|---|
 | Neovim plugin revision | LazyVim config 저장소 | `lazy-lock.json` |
-| 편집기용 external tool | Mason | `vtsls`, `debugpy`, `codelldb` |
+| 편집기용 external tool | Mason | `vtsls`, `debugpy`, `clangd`, `codelldb` |
 | Rust toolchain component | rustup과 프로젝트 toolchain | `rust-analyzer`, `rustfmt` |
+| C++ compiler와 build tool | system toolchain | `c++`, CMake, standard library header |
 | JavaScript·TypeScript dependency | Node project | `package.json`, package manager lockfile |
 | Python dependency와 interpreter | Python project | `.venv`, `pyproject.toml`, dependency lockfile |
 | Rust dependency | Cargo project | `Cargo.toml`, `Cargo.lock` |
-| formatter와 linter policy | 프로젝트 | `.prettierrc`, ESLint config, `pyproject.toml` |
+| C++ build와 compile option | CMake project | `CMakeLists.txt`, `compile_commands.json` |
+| formatter와 linter policy | 프로젝트 | `.prettierrc`, `pyproject.toml`, `.clang-format` 등 |
 
 Mason 중심 구성은 입문하기 쉽지만 Mason package version은 `lazy-lock.json`에 기록되지
 않는다. 조직 차원의 완전한 재현성이 필요하면 이후에 system package manager, Nix,
@@ -106,7 +108,7 @@ container 또는 project toolchain으로 external tool까지 고정할 수 있�
 
 ## 1.6 시작 전 확인
 
-2026-07-22 기준 LazyVim 공식 요구사항과 이 가이드의 도구를 다음처럼 확인한다.
+2026-08-19 기준 LazyVim 공식 요구사항과 이 가이드의 도구를 다음처럼 확인한다.
 
 ```console
 $ nvim --version | head -n 1
@@ -129,7 +131,7 @@ $ command -v gzip
 명령이 현재 Linux shell의 `PATH`에서 발견되는 것이다. `ripgrep`과 `fd`도 파일 검색의
 성능과 기능을 위해 권장한다.
 
-사용할 언어의 runtime도 확인한다.
+사용할 언어의 runtime과 toolchain도 확인한다.
 
 ```console
 $ node --version
@@ -137,6 +139,8 @@ $ npm --version
 $ python3 --version
 $ rustup --version
 $ cargo --version
+$ c++ --version
+$ cmake --version
 ```
 
 이 자료는 배포판 package manager나 WSL 자체의 설치 방법을 설명하지 않는다. 누락된
@@ -144,14 +148,16 @@ $ cargo --version
 
 ## 1.7 WSL에서 시작할 때만 확인할 것
 
-WSL shell에서 실행하는 Neovim, Node.js, Python은 Linux binary여야 한다. Windows의
-`PATH`가 WSL에 합쳐져 `.exe`가 먼저 선택되는 경우가 있으므로 경로를 확인한다.
+WSL shell에서 실행하는 Neovim, Node.js, Python, C++ toolchain은 Linux binary여야 한다.
+Windows의 `PATH`가 WSL에 합쳐져 `.exe`가 먼저 선택되는 경우가 있으므로 경로를 확인한다.
 
 ```console
-$ command -v nvim node python3 git
+$ command -v nvim node python3 c++ cmake git
 /usr/bin/nvim
 /home/dev/.local/bin/node
 /usr/bin/python3
+/usr/bin/c++
+/usr/bin/cmake
 /usr/bin/git
 ```
 

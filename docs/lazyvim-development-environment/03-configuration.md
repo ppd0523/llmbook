@@ -63,6 +63,7 @@ spec = {
 
   { import = "lazyvim.plugins.extras.lang.python" },
   { import = "lazyvim.plugins.extras.lang.rust" },
+  { import = "lazyvim.plugins.extras.lang.clangd" },
 
   { import = "plugins" },
 }
@@ -120,6 +121,7 @@ return {
     "mason-org/mason.nvim",
     opts = {
       ensure_installed = {
+        "clangd",
         "codelldb",
         "debugpy",
         "eslint-lsp",
@@ -145,8 +147,9 @@ return {
 Extras도 필요한 package 일부를 Mason에 요청한다. 목록을 다시 명시하는 작업은
 idempotent하며, 이 설정이 기대하는 외부 도구를 한 파일에서 검토할 수 있게 한다.
 
-Rust의 `rust-analyzer`와 `rustfmt`는 목록에 없다. 이 둘은 project가 선택한 Rust
-toolchain과 같은 version을 사용하도록 rustup component로 설치한다.
+clangd는 C와 C++의 language server이고 CodeLLDB는 Rust와 C++가 함께 사용하는 debug
+adapter다. Rust의 `rust-analyzer`와 `rustfmt`는 목록에 없다. 이 둘은 project가 선택한
+Rust toolchain과 같은 version을 사용하도록 rustup component로 설치한다.
 
 Python extra의 Ruff language server는 diagnostics와 code action을 제공한다.
 `ruff_format`을 conform.nvim에 별도로 지정하면 현재 buffer가 어떤 formatter를
@@ -180,6 +183,7 @@ Neovim에서 다음 순서로 확인한다.
 재시작한 뒤 `:Mason`을 열어 다음 package가 `installed`인지 확인한다.
 
 ```text
+clangd
 codelldb
 debugpy
 eslint-lsp
@@ -200,6 +204,7 @@ Neovim 안에서 실제 경로를 확인할 수 있다.
 :lua print(vim.fn.exepath("vtsls"))
 :lua print(vim.fn.exepath("pyright-langserver"))
 :lua print(vim.fn.exepath("ruff"))
+:lua print(vim.fn.exepath("clangd"))
 :lua print(vim.fn.exepath("debugpy-adapter"))
 :lua print(vim.fn.exepath("codelldb"))
 ```
@@ -245,6 +250,9 @@ Key가 기억나지 않으면 Space를 누른 뒤 which-key의 `code` 또는 `de
 | Rust | rustaceanvim | `rust-analyzer` | `Cargo.toml` |
 | Rust format | rust-analyzer formatting | `rustfmt` | Rust toolchain |
 | Rust debug | rustaceanvim과 nvim-dap | `codelldb` | Cargo target |
+| C++ 분석 | nvim-lspconfig와 clangd extra | `clangd` | `compile_commands.json` |
+| C++ format | clangd LSP formatting | `clangd`(내장 clang-format) | `.clang-format` |
+| C++ debug | nvim-dap | `codelldb` | Debug build의 executable target |
 
 ## 3.10 Git으로 관리
 
