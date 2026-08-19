@@ -7,7 +7,7 @@
 3. option의 type, default, 설명과 merge 규칙을 읽는다.
 4. `mkOption`, `mkIf`, `mkDefault` 같은 `mk...` helper의 역할을 구분한다.
 5. 하나의 module이 사용자용 option을 실제 package·service 설정으로 바꾸는 과정을
-   이해한다.
+   설명한다.
 6. `imports`, `config`, `pkgs`, `lib`를 읽고 흔한 충돌을 진단한다.
 
 ## 5.1 먼저 한 문장으로 구분한다
@@ -30,10 +30,10 @@
 services.openssh.enable = true;
 ```
 
-이 한 줄이 module이고 `services.openssh.enable`이 module인 것은 아니다. 이 한 줄을
-포함하는 파일 전체가 보통 하나의 module이며, 이 줄은 option에 `true`를 제공하는
-definition이다. 해당 option을 선언한 OpenSSH module은 최종 값을 읽고 package,
-systemd service, 설정 파일 같은 더 낮은 수준의 option을 정의한다.
+이 한 줄이나 `services.openssh.enable` 자체가 module인 것은 아니다. 이 줄을 포함하는
+파일 전체가 보통 하나의 module이며, 이 줄은 option에 `true`를 제공하는 definition이다.
+해당 option을 선언한 OpenSSH module은 최종 값을 읽고 package, systemd service,
+설정 파일 같은 더 낮은 수준의 option을 정의한다.
 
 다음처럼 생각하면 관계가 선명해진다.
 
@@ -269,6 +269,7 @@ definition merge는 module evaluator가 수행한다.
 ### 비슷해 보이는 함수의 차이
 
 ```nix
+{ config, lib, ... }:
 {
   options.services.example = {
     enable = lib.mkEnableOption "example service";
@@ -444,7 +445,7 @@ Type은 값이 맞는지 검사하는 역할과 여러 definition을 합치는 �
 | `lib.types.str` | 문자열 하나 | 서로 다르면 충돌 |
 | `lib.types.lines` | 문자열 | 줄바꿈으로 연결 |
 | `lib.types.listOf lib.types.package` | package 목록 | 목록을 순서대로 연결 |
-| `lib.types.attrsOf lib.types.str` | 문자열 값의 속성 집합 | 서로 다른 key를 합침 |
+| `lib.types.attrsOf lib.types.str` | 문자열 값의 속성 집합 | 다른 key는 병합하고 같은 key는 하위 type 규칙 적용 |
 | `lib.types.nullOr lib.types.port` | `null` 또는 port 번호 | 선택된 실제 type 규칙 적용 |
 | `lib.types.submodule { ... }` | 내부 option을 가진 속성 집합 | 하위 option별 검사·merge |
 

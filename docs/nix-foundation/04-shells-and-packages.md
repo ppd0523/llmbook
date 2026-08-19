@@ -4,7 +4,7 @@
 
 1. `nix search`로 package 후보를 찾고 검색 결과를 읽는다.
 2. `nix shell`과 `nix develop`이 만드는 환경의 차이를 설명한다.
-3. `nixpkgs#hello` 형태의 installable을 읽는다.
+3. `nixpkgs#hello` 형태의 명령 대상을 읽는다.
 4. `nix shell`, `nix develop`, `nix-shell`의 용도를 구분한다.
 5. 임시 도구와 영구 package를 올바른 계층에 둔다.
 
@@ -40,6 +40,9 @@ $ nix shell nixpkgs#git nixpkgs#ripgrep nixpkgs#jq
 
 ## 4.2 `nixpkgs#hello`를 두 부분으로 읽는다
 
+**installable**은 `nix` 명령이 build, run, shell의 대상으로 해석할 수 있는 값이다.
+`nixpkgs#hello`는 Flake reference와 output 속성을 결합한 installable이다.
+
 ```text
 nixpkgs # hello
 ────────   ─────
@@ -48,7 +51,7 @@ reference
 ```
 
 - `nixpkgs`는 보통 Flake registry에 등록된 Nixpkgs reference다.
-- `#hello`는 현재 시스템에서 `hello` package output을 찾게 한다.
+- `#hello`는 현재 시스템에서 `hello`라는 package output 속성을 찾게 한다.
 
 로컬 프로젝트도 같은 형태다.
 
@@ -372,6 +375,9 @@ Home Manager와 별개의 profile 관리 흐름이다.
 }
 ```
 
+이 예시는 `x86_64-linux`용이다. 다른 platform에서는 `system`을 실제 값으로 바꿔야
+하며, 7장에서는 현재 system을 확인한 뒤 파일에 반영한다.
+
 읽는 순서는 다음과 같다.
 
 1. `inputs.nixpkgs.url`: Nixpkgs 입력의 출처와 release 계열
@@ -389,8 +395,9 @@ $ nix develop
 
 Flake가 Git 저장소 안에 있으면 아직 Git index에 추가하지 않은 새 파일을 평가에서
 보지 못할 수 있다. “파일이 분명히 있는데 없다”는 오류가 나면 `git status`와
-`git add` 여부를 확인한다. 여기서 stage는 Flake source에 새 파일을 포함시키는
-확인 단계일 뿐, 변경을 원격 저장소에 보내거나 commit하는 동작은 아니다.
+`git add` 여부를 확인한다. 새 파일을 stage하면 Flake source에 포함되지만, 이미
+추적 중인 파일의 작업 트리 수정은 stage 전에도 평가된다. Stage는 변경을 원격
+저장소에 보내거나 commit하는 동작이 아니다.
 
 ## 4.9 `flake.lock`은 언제 바뀌는가
 
@@ -443,7 +450,7 @@ $ echo "$HOME"
 | package는 찾았는데 예상한 명령이 없다 | package 이름과 실행 파일 이름의 차이, package 문서 |
 | shell에서 host 명령이 선택된다 | `type -a <명령>`, `command -v <명령>`의 경로와 순서 |
 | `nix develop .#name`이 output을 못 찾는다 | `nix flake show`에 현재 system의 `devShells.name`이 있는지 |
-| 새 `flake.nix`를 못 찾거나 변경이 반영되지 않는다 | Git 저장소라면 `git status`와 Git index 포함 여부 |
+| 새 파일을 Flake가 못 찾는다 | Git 저장소라면 `git status`와 Git index 포함 여부 |
 | 다른 사람과 도구 revision이 다르다 | `flake.lock`이 존재하고 함께 커밋되었는지 |
 
 `nix shell nixpkgs#...`는 registry가 그때 가리키는 Nixpkgs를 사용하므로 빠른 실험에는
@@ -496,6 +503,9 @@ $ nix search nixpkgs editor --exclude 'emacs|vim'
 검색량이 많을 수 있으므로 필요한 경우 `Ctrl-C`로 중단하고 조건을 더 구체화한다.
 
 ### 4. 개발 shell의 두 실행 방식
+
+이 연습은 4.8의 예제처럼 `devShells.<system>.default`를 제공하는 Flake 프로젝트에서
+실행한다. 아직 프로젝트를 만들지 않았다면 7장의 통합 실습에서 수행해도 된다.
 
 ```console
 $ cd project-with-flake

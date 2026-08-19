@@ -1,9 +1,9 @@
 ---
 title: 출판 전 최종 Markdown 원고 인덱스
-version: 1.0
+version: 1.1
 status: final
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-19
 target_reader: Nix 지식이 없는 개발자와 NixOS·Home Manager 입문자
 topic: Nix 첫걸음
 ---
@@ -25,7 +25,7 @@ topic: Nix 첫걸음
 ## 최종 원고 확인
 
 - [x] 학습 목표, 본문, 예제와 연습이 장별로 대응한다.
-- [x] Nix 2.34, NixOS/Nixpkgs 26.05, Home Manager 26.05의 기준을 표시한다.
+- [x] Nix 2.34.9, NixOS/Nixpkgs 26.05, Home Manager 26.05의 기준을 표시한다.
 - [x] 내부 작업 메모, `TODO`, `검증 필요`, `출처 필요` 표시는 최종 챕터에 없다.
 - [x] 새 용어는 사용 전에 설명하고 같은 개념을 같은 표기로 쓴다.
 - [x] 장 사이 링크는 상대 `.md` 경로를 사용한다.

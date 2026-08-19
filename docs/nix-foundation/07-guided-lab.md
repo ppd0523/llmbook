@@ -157,8 +157,8 @@ $ git diff --cached
 - `flake.lock`에는 실제 선택된 revision과 hash 정보가 있다.
 - Store 결과물 자체를 Git에 넣지 않는다.
 
-이 실습에서 `git add`는 두 가지를 구분해 보여 준다. 새 `flake.nix`를 Git 기반
-Flake source에 포함시켜 평가할 수 있게 하고, 동시에 나중에 검토할 변경 목록에
+이 실습에서 새 파일에 대한 `git add`는 두 가지 역할을 한다. 새 `flake.nix`를 Git
+기반 Flake source에 포함시켜 평가할 수 있게 하고, 동시에 나중에 검토할 변경 목록에
 올린다. 아직 commit하지 않았으므로 `git diff --cached`로 내용을 확인한 뒤에만
 commit한다.
 
@@ -198,10 +198,11 @@ packages = [
 ];
 ```
 
-새 source가 Flake 평가에 보이도록 stage하고 검증한다.
+`flake.nix`는 이미 Git이 추적하는 파일이므로 수정 내용을 먼저 확인한 뒤 검증한다.
+추적 중인 파일의 작업 트리 수정은 stage하지 않아도 Flake 평가에 반영된다.
 
 ```console
-$ git add flake.nix
+$ git diff -- flake.nix
 $ nix develop --command rg --version
 ```
 
@@ -210,9 +211,13 @@ $ nix develop --command rg --version
 입력 갱신이 있었는지 diff로 확인하고, 이유를 모른 채 함께 commit하지 않는다.
 
 ```console
+$ git add flake.nix
 $ git status --short
 $ git diff --cached -- flake.nix flake.lock
 ```
+
+여기서 `git add flake.nix`는 검증한 변경을 다음 commit 후보로 올리는 단계다. 7.4의
+새 파일과 달리 평가에 포함시키기 위해 필요한 단계는 아니다.
 
 반대로 다음 명령은 입력 revision을 갱신할 수 있다.
 

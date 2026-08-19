@@ -3,7 +3,7 @@ title: 작성 범위 정의
 version: 0.2
 status: final
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-19
 target_reader: Nix를 처음 배우는 개발자와 NixOS·Home Manager 입문자
 topic: Nix 기초 학습자료 퇴고
 ---
@@ -15,7 +15,7 @@ topic: Nix 기초 학습자료 퇴고
 - 다룰 주제: Nix, Nixpkgs, Flake, Store, 개발 셸, module, NixOS, Home Manager의 기초
 - 중심 질문: Nix 설정과 명령을 입력·평가·실현·활성화의 흐름과 책임 계층으로 어떻게 안전하게 읽고 적용하는가?
 - 이 자료가 해결하는 문제: 비슷한 명령과 설정 위치를 혼동해 원치 않는 시스템·사용자·프로젝트 변경을 하는 문제
-- 이 자료가 다루는 기술 영역: Nix 2.34, NixOS/Nixpkgs 26.05, Home Manager 26.05
+- 이 자료가 다루는 기술 영역: Nix 2.34.9, NixOS/Nixpkgs 26.05, Home Manager 26.05
 
 ## 2. 독자 상태 진단
 

@@ -52,6 +52,12 @@ Home Manager가 NixOS 위에서 실행된다고 해서 모든 Home Manager 설�
 
 최소화한 예시는 다음과 같다.
 
+!!! warning
+    아래 두 예제의 `stateVersion = "26.05"`는 26.05에서 처음 만든 새 구성을
+    가정한다. 기존 NixOS나 Home Manager 구성에 현재 release 번호를 그대로 복사하지
+    않는다. 기존 값은 유지하고, 변경이 필요할 때만 release note의 migration 절차를
+    따른다.
+
 파일: `/etc/nixos/configuration.nix` (개념 예시)
 
 ```nix
@@ -119,7 +125,7 @@ Standalone Flake가 평가하는 `home.nix`는 다음과 비슷하다.
 
   programs.git = {
     enable = true;
-    userName = "Alice";
+    settings.user.name = "Alice";
   };
 
   programs.bash.shellAliases = {
@@ -139,8 +145,9 @@ $ home-manager build --flake ~/.config/home-manager#alice
 $ home-manager switch --flake ~/.config/home-manager#alice
 ```
 
-- `build`: 활성화 package를 build하고 보통 현재 디렉터리의 `result` 링크로 확인할
-  수 있게 한다. 이 명령만으로 새 home generation을 활성화하지는 않는다.
+- `build`: 활성화 package를 포함한 Home Manager 구성을 build하고, 보통 현재
+  디렉터리의 `result` 링크로 확인할 수 있게 한다. 이 명령만으로 새 home generation을
+  활성화하지는 않는다.
 - `switch`: build한 결과를 활성화하고 새 home generation을 현재 상태로 전환한다.
 
 Home Manager가 관리하는 파일을 직접 편집하면 그 변경은 원본 선언에 반영되지 않는다.
@@ -151,10 +158,10 @@ Home Manager가 관리하는 파일을 직접 편집하면 그 변경은 원본 
 
 Home Manager 공식 문서는 NixOS에서 두 방식을 모두 지원한다.
 
-| 방식 | 적용 명령 | system과 home generation | 장점 | 주의점 |
+| 방식 | 적용 명령 | system과 home의 적용 주기 | 장점 | 주의점 |
 |---|---|---|---|---|
 | standalone | `home-manager switch` | 분리 | 사용자 변경을 독립 적용 | system과 별도 검증·롤백 |
-| NixOS module | `nixos-rebuild switch` | 함께 build·전환 | 한 번에 일관된 배포 | 작은 home 변경도 system rebuild |
+| NixOS module | `nixos-rebuild switch` | 같은 rebuild에서 적용 | 한 번에 일관된 배포 | 작은 home 변경도 system rebuild |
 
 둘 중 하나가 항상 더 “Nix답다”는 결론은 없다. 운영 단위를 기준으로 고른다.
 현재 저장소의 후속 Home Manager 책은 standalone 방식을 사용한다.

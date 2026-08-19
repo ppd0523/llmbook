@@ -69,7 +69,7 @@ $ git status --short
 실행하며 log를 본다.
 
 ```console
-$ nix build -L
+$ nix build -L .#packageName
 ```
 
 이미 실패한 build의 log가 남아 있다면 installable을 지정해 확인한다.
@@ -95,7 +95,7 @@ package attribute 이름과 실제 executable 이름이 다를 수 있다.
 
 ```console
 $ nix build nixpkgs#packageName
-$ find result/bin -maxdepth 1 -type f -o -type l
+$ find result/bin -maxdepth 1 \( -type f -o -type l \)
 ```
 
 `find` 조건이 shell마다 다르게 보일 수 있으므로 단순히 `ls -l result/bin`으로
@@ -119,8 +119,8 @@ $ git status --short
 $ git add path/to/new-file
 ```
 
-Stage는 commit이 아니다. 평가에 포함시키기 위해 먼저 stage하고 diff를 검토할 수
-있다.
+새 파일은 평가에 포함시키기 위해 stage한 뒤 diff를 검토한다. 이미 Git이 추적하는
+파일의 수정은 stage 전에도 평가된다. 어느 경우든 stage는 commit이 아니다.
 
 ### `sudo nix ...`와 일반 사용자 결과가 다르다
 
@@ -151,7 +151,7 @@ Store는 생성 결과다. `result`나 Store를 가리키는 Home Manager 관리
 작게 수정
    │
    ▼
-Git diff 확인
+Git 상태·diff 확인
    │
    ▼
 build/check

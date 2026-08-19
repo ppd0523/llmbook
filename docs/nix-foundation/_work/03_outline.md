@@ -3,7 +3,7 @@ title: 구성 설계
 version: 0.2
 status: final
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-19
 target_reader: Nix 입문자
 topic: Nix 기초 학습자료 퇴고 구조
 ---
@@ -37,5 +37,5 @@ Nix의 개념·언어·Store·명령·module을 차례로 쌓아 NixOS, Home Man
 
 - 새 용어는 처음 등장한 문맥에서 목적과 한 문장 정의를 제공한다.
 - 추상 개념은 명령, 표, 저장소 구조 또는 직접 해보기로 바로 연결한다.
-- `build`·`switch`, Store 결과·source, stage·commit을 같은 문단에서 혼동하지 않게 분리한다.
+- `build`·`switch`, Store 결과·source, 새 파일의 stage·tracked 파일의 수정·commit을 혼동하지 않게 분리한다.
 - 길게 반복되는 설명은 핵심 규칙을 먼저 제시하고 상세 근거는 해당 장의 공식 자료로 연결한다.

@@ -3,7 +3,7 @@
 ## 학습 목표
 
 1. 값, 목록, 속성 집합, 함수, `let`, 문자열 보간을 읽는다.
-2. `.nix` 파일 하나가 표현식 하나라는 사실을 이해한다.
+2. `.nix` 파일 하나가 표현식 하나라는 사실을 설명한다.
 3. REPL, 한 줄 표현식, `.nix` 파일을 직접 평가한다.
 4. 평가, 빌드, 실행, module 적용에 사용하는 명령을 구분한다.
 5. NixOS와 Home Manager module의 함수 머리 부분을 해석한다.
@@ -37,7 +37,8 @@ $ nix eval --expr '1 + 2'
 ## 2.2 Nix 언어를 실행하는 방법
 
 Nix 언어에는 일반 프로그램의 `main` 함수처럼 무조건 실행되는 시작점이 없다.
-표현식을 **평가**해 값을 얻고, 결과가 derivation이면 그 계획을 **실현**한다.
+표현식을 **평가**해 값을 얻는다. Store 결과를 만드는 빌드 계획을
+**derivation**이라고 하며, 필요한 derivation은 별도의 명령으로 **실현**한다.
 따라서 무엇을 얻고 싶은지에 따라 명령이 달라진다.
 
 ### 한 줄 표현식 평가
@@ -163,7 +164,7 @@ Hello, Alice!
 | 대화형 문법 실험 | `nix repl` | 입력과 평가를 반복 |
 | package·derivation output | `nix build` | Store 결과를 확보 |
 | Flake app 실행 | `nix run` | app이 가리키는 프로그램 실행 |
-| 프로젝트 개발 환경 | `nix develop` | dev shell process 시작 |
+| 프로젝트 개발 환경 | `nix develop` | 개발 셸 프로세스 시작 |
 | NixOS 구성 | `nixos-rebuild build` | NixOS module 전체 평가·빌드 |
 | Home Manager 구성 | `home-manager build` | Home Manager module 전체 평가·빌드 |
 
@@ -250,7 +251,7 @@ NixOS와 Home Manager 설정에서는 첫 번째 축약형을 자주 쓴다. 공
 {
   programs.git = {
     enable = true;
-    userName = "Alice";
+    settings.user.name = "Alice";
   };
 }
 ```

@@ -6,17 +6,18 @@
 2. profile과 generation이 롤백을 가능하게 하는 방식을 설명한다.
 3. garbage collection이 무엇을 지울 수 있는지 판단한다.
 
-## 3.1 `/nix/store`는 결과의 저장소다
+## 3.1 `/nix/store`는 Nix가 관리하는 객체의 저장소다
 
-Nix가 관리하는 package와 구성 결과는 보통 다음과 같은 경로에 있다.
+Nix가 관리하는 source, derivation, package와 구성 결과는 보통 다음과 같은 경로에
+있다.
 
 ```text
 /nix/store/8ab...-hello-2.12.1
 /nix/store/f4c...-git-2.51.0
 ```
 
-앞의 digest는 이름만 같아도 입력이나 빌드 계획이 다른 결과를 별도 경로로 구분하게
-한다. 정확한 Store path 계산 방식은 객체 종류에 따라 세부 사항이 다르므로
+앞의 digest(해시)는 이름만 같아도 입력이나 빌드 계획이 다른 객체를 별도 경로로
+구분하게 한다. 정확한 Store path 계산 방식은 객체 종류에 따라 세부 사항이 다르므로
 “파일 내용의 단순 hash”로 이해하지 않는다.
 
 Store 객체에는 두 중요한 성질이 있다.
@@ -219,7 +220,8 @@ NixOS generation 롤백은 선언형 시스템 구성을 되돌리는 강력한 
 
 package 버전을 되돌려도 새 버전이 마이그레이션한 데이터가 자동으로 과거 format으로
 돌아가지는 않는다. 그래서 `system.stateVersion`, `home.stateVersion`, 서비스별
-state version을 package 버전과 구분하고, 중요한 데이터는 별도로 백업한다.
+state version처럼 호환성 기본값을 정하는 값은 package 버전과 구분하고, 중요한
+데이터는 별도로 백업한다. `stateVersion`의 적용 범위는 6장에서 설명한다.
 
 ## 직접 해보기
 
@@ -268,7 +270,7 @@ profile이나 shell 환경이 정한다. generation을 지우면 롤백 근거�
 
 ## 요약
 
-- `/nix/store`는 불변 결과와 그 참조 관계를 보관한다.
+- `/nix/store`는 Nix가 관리하는 불변 객체와 그 참조 관계를 보관한다.
 - derivation은 빌드 계획이며 실현된 output과 구분한다.
 - closure는 한 결과에서 참조를 따라 필요한 Store 객체 전체다.
 - profile의 현재 generation 링크를 바꾸므로 원자적인 전환과 롤백이 가능하다.
