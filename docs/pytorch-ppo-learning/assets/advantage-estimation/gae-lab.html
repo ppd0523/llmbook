@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GAE 역방향 계산 실험실</title>
+  <style>
+    :root{color-scheme:light dark;--bg:light-dark(#f7f9fc,#111827);--panel:light-dark(#fff,#1f2937);--fg:light-dark(#172033,#eef4ff);--muted:light-dark(#526174,#bdc9da);--border:light-dark(#c8d1df,#526174);--a:light-dark(#2563eb,#77a7ff);--warn:light-dark(#9f2d20,#ff998a)}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,"Noto Sans KR",sans-serif}main{max-width:980px;margin:auto;padding:24px}h1{font-size:1.55rem;margin:0 0 8px}p{color:var(--muted)}.controls{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin:18px 0}label{font-weight:700;display:grid;gap:8px}select{padding:8px;background:var(--panel);color:var(--fg);border:1px solid var(--border);border-radius:8px}.value{color:var(--a)}.note{border-left:4px solid var(--a);padding:10px 14px;background:var(--panel);margin:16px 0}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;background:var(--panel);font-variant-numeric:tabular-nums}th,td{padding:10px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}th:first-child,td:first-child{text-align:left}.boundary{color:var(--warn);font-weight:700}.formula{font-family:ui-monospace,Consolas,monospace;color:var(--muted);margin-top:14px}@media(max-width:670px){main{padding:14px}.controls{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main>
+  <h1>GAE 역방향 계산 실험실</h1>
+  <p>시점 2에서 에피소드가 끝난다고 두고, 자연 종료와 시간 제한이 bootstrap에 어떤 차이를 만드는지 비교한다.</p>
+  <section class="controls"><label>경계 유형<select id="boundary"><option value="none">경계 없음</option><option value="terminated">terminated</option><option value="truncated">truncated</option></select></label><label>γ = <span id="gammaValue" class="value"></span><input id="gamma" type="range" min="0" max="1" step="0.01" value="0.99"></label><label>λ = <span id="lambdaValue" class="value"></span><input id="lambda" type="range" min="0" max="1" step="0.01" value="0.95"></label></section>
+  <div id="note" class="note"></div>
+  <div class="table-wrap"><table><thead><tr><th>시점</th><th>rₜ</th><th>V(sₜ)</th><th>V(sₜ₊₁)</th><th>bootstrap mask</th><th>continuation mask</th><th>δₜ</th><th>Âₜ</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <p class="formula">δₜ = rₜ + γ·bootstrap_mask·V(sₜ₊₁) − V(sₜ)<br>Âₜ = δₜ + γλ·continuation_mask·Âₜ₊₁</p>
+</main><script>
+  const rewards=[1,1,1,2],values=[0.4,0.6,0.9,0.2],nextValues=[0.6,0.9,1.2,0.0];const boundary=document.getElementById('boundary'),gamma=document.getElementById('gamma'),lambda=document.getElementById('lambda');
+  function draw(){const g=Number(gamma.value),l=Number(lambda.value),kind=boundary.value,term=[false,false,kind==='terminated',false],trunc=[false,false,kind==='truncated',false],deltas=[],advantages=Array(4).fill(0);let nextAdv=0;for(let t=3;t>=0;t--){const bm=term[t]?0:1,cm=(term[t]||trunc[t])?0:1;const d=rewards[t]+g*bm*nextValues[t]-values[t];deltas[t]=d;nextAdv=d+g*l*cm*nextAdv;advantages[t]=nextAdv}document.getElementById('gammaValue').textContent=g.toFixed(2);document.getElementById('lambdaValue').textContent=l.toFixed(2);const messages={none:'경계가 없으므로 이후 TD residual이 앞 시점 advantage로 계속 전파된다.',terminated:'자연 종료: 다음 상태 가치로 bootstrap하지 않고, 다음 episode로 GAE 재귀도 연결하지 않는다.',truncated:'시간 제한: final observation의 가치로 bootstrap하지만, 다음 episode의 advantage로 재귀 연결하지 않는다.'};document.getElementById('note').textContent=messages[kind];document.getElementById('rows').innerHTML=rewards.map((r,t)=>{const bm=term[t]?0:1,cm=(term[t]||trunc[t])?0:1,b=(t===2&&kind!=='none')?` class="boundary"`:'';return `<tr${b}><td>t=${t}${b?' · 경계':''}</td><td>${r.toFixed(2)}</td><td>${values[t].toFixed(2)}</td><td>${nextValues[t].toFixed(2)}</td><td>${bm}</td><td>${cm}</td><td>${deltas[t].toFixed(3)}</td><td>${advantages[t].toFixed(3)}</td></tr>`}).join('')}
+  [boundary,gamma,lambda].forEach(x=>x.addEventListener(x.tagName==='SELECT'?'change':'input',draw));draw();
+</script></body></html>
+

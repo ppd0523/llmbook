@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>할인 return 실험실</title>
+  <style>
+    :root{color-scheme:light dark;--bg:light-dark(#f7f9fc,#111827);--panel:light-dark(#fff,#1f2937);--fg:light-dark(#172033,#eef4ff);--muted:light-dark(#526174,#bdc9da);--border:light-dark(#c8d1df,#526174);--accent:light-dark(#2563eb,#77a7ff);--soft:light-dark(#dbeafe,#1e3a5f)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,"Noto Sans KR",sans-serif}main{max-width:920px;margin:auto;padding:24px}h1{font-size:1.55rem;margin:0 0 8px}p{color:var(--muted);margin:0 0 20px}.controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;background:var(--panel);padding:16px;border:1px solid var(--border);border-radius:14px}.field{display:grid;gap:8px}label{font-weight:700}select,input{width:100%}select{padding:8px;background:var(--panel);color:var(--fg);border:1px solid var(--border);border-radius:8px}.value{color:var(--accent);font-variant-numeric:tabular-nums}.summary{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0}.metric{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 16px}.metric b{font-size:1.25rem;color:var(--accent)}svg{display:block;width:100%;height:auto;background:var(--panel);border:1px solid var(--border);border-radius:14px}.axis{stroke:var(--border);stroke-width:1}.bar{fill:var(--accent)}.weight{fill:var(--soft)}.svgtext{fill:var(--fg);font-size:14px}.muted{fill:var(--muted);font-size:13px}table{width:100%;border-collapse:collapse;margin-top:18px;background:var(--panel)}th,td{padding:10px;text-align:right;border-bottom:1px solid var(--border)}th:first-child,td:first-child{text-align:left}@media(max-width:620px){main{padding:14px}.controls{grid-template-columns:1fr}.summary{gap:8px}.metric{flex:1 1 45%}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>할인 return 실험실</h1>
+  <p>같은 보상도 멀리 있을수록 γ의 거듭제곱만큼 작게 반영된다. 막대는 시점 0 return에 대한 각 보상의 기여다.</p>
+  <section class="controls" aria-label="실험 제어">
+    <div class="field"><label for="scenario">보상 열</label><select id="scenario"><option value="steady">매 스텝 1: [1, 1, 1, 1, 1]</option><option value="delayed">늦은 성공: [0, 0, 0, 0, 10]</option><option value="cost">비용 뒤 성공: [-1, -1, -1, -1, 10]</option></select></div>
+    <div class="field"><label for="gamma">할인율 γ = <span class="value" id="gammaValue"></span></label><input id="gamma" type="range" min="0" max="1" step="0.01" value="0.90"></div>
+  </section>
+  <div class="summary"><div class="metric">할인하지 않은 합<br><b id="plain"></b></div><div class="metric">G₀<br><b id="return"></b></div><div class="metric">마지막 보상 가중치<br><b id="lastWeight"></b></div></div>
+  <svg id="chart" viewBox="0 0 860 350" role="img" aria-labelledby="chartTitle chartDesc"><title id="chartTitle">할인된 보상 기여 막대그래프</title><desc id="chartDesc">시간별 할인 가중치와 보상 기여를 비교한다.</desc></svg>
+  <table><thead><tr><th>시점 k</th><th>보상 rₖ</th><th>가중치 γᵏ</th><th>G₀ 기여 γᵏrₖ</th></tr></thead><tbody id="rows"></tbody></table>
+</main>
+<script>
+  const scenarios={steady:[1,1,1,1,1],delayed:[0,0,0,0,10],cost:[-1,-1,-1,-1,10]};
+  const gamma=document.getElementById('gamma'),scenario=document.getElementById('scenario'),svg=document.getElementById('chart');
+  const ns='http://www.w3.org/2000/svg';
+  function el(name,attrs,text){const node=document.createElementNS(ns,name);for(const [k,v] of Object.entries(attrs||{}))node.setAttribute(k,v);if(text!==undefined)node.textContent=text;return node}
+  function draw(){const g=Number(gamma.value),rewards=scenarios[scenario.value],terms=rewards.map((r,k)=>r*Math.pow(g,k));const max=Math.max(1,...terms.map(Math.abs));
+    document.getElementById('gammaValue').textContent=g.toFixed(2);document.getElementById('plain').textContent=rewards.reduce((a,b)=>a+b,0).toFixed(2);document.getElementById('return').textContent=terms.reduce((a,b)=>a+b,0).toFixed(3);document.getElementById('lastWeight').textContent=Math.pow(g,rewards.length-1).toFixed(3);
+    [...svg.children].filter(n=>!['title','desc'].includes(n.tagName)).forEach(n=>n.remove());const left=74,top=28,w=740,h=250,zero=top+h/2;svg.append(el('line',{x1:left,y1:zero,x2:left+w,y2:zero,class:'axis'}));svg.append(el('line',{x1:left,y1:top,x2:left,y2:top+h,class:'axis'}));
+    rewards.forEach((r,k)=>{const x=left+50+k*138,bh=Math.abs(terms[k])/max*(h/2-26),y=terms[k]>=0?zero-bh:zero;svg.append(el('rect',{x,y,width:62,height:bh,class:'bar',rx:5}));svg.append(el('text',{x:x+31,y:zero+24,'text-anchor':'middle',class:'svgtext'},`t=${k}`));svg.append(el('text',{x:x+31,y:terms[k]>=0?y-8:y+bh+18,'text-anchor':'middle',class:'svgtext'},terms[k].toFixed(2)));svg.append(el('text',{x:x+31,y:325,'text-anchor':'middle',class:'muted'},`γ^${k}=${Math.pow(g,k).toFixed(2)}`));});
+    document.getElementById('rows').innerHTML=rewards.map((r,k)=>`<tr><td>t=${k}</td><td>${r.toFixed(2)}</td><td>${Math.pow(g,k).toFixed(4)}</td><td>${terms[k].toFixed(4)}</td></tr>`).join('');
+  }
+  gamma.addEventListener('input',draw);scenario.addEventListener('change',draw);draw();
+</script>
+</body>
+</html>
+

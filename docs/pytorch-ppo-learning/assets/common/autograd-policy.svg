@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 430" role="img" aria-labelledby="title desc">
+  <title id="title">PPO에서 autograd가 흐르는 경계</title>
+  <desc id="desc">관측이 actor와 확률분포를 지나 새 로그확률과 PPO loss로 이어져 파라미터에 gradient가 흐르지만, 환경과 저장된 old log probability에는 gradient가 흐르지 않는 구조</desc>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#2563eb"/></marker><style>text{font-family:Arial,'Noto Sans KR',sans-serif;fill:#172033}.node{fill:#eef4ff;stroke:#2563eb;stroke-width:2}.frozen{fill:#f2f3f5;stroke:#8290a5;stroke-width:2;stroke-dasharray:8 6}.arrow{stroke:#2563eb;stroke-width:3;fill:none;marker-end:url(#a)}.stop{stroke:#8290a5;stroke-width:3;stroke-dasharray:8 6;fill:none;marker-end:url(#a)}.h{font-size:22px;font-weight:700}.t{font-size:17px}.g{fill:#166534;font-size:18px;font-weight:700}.x{fill:#9f2d20;font-size:18px;font-weight:700}@media(prefers-color-scheme:dark){text{fill:#edf3ff}.node{fill:#172943;stroke:#77a7ff}.frozen{fill:#252b35;stroke:#94a0b3}.arrow{stroke:#77a7ff}.stop{stroke:#94a0b3}.g{fill:#7ee39b}.x{fill:#ff998a}}</style></defs>
+  <rect class="node" x="35" y="90" width="155" height="90" rx="14"/><text class="h" x="112" y="128" text-anchor="middle">관측 o</text><text class="t" x="112" y="157" text-anchor="middle">[B, obs_dim]</text>
+  <path class="arrow" d="M190 135H265"/>
+  <rect class="node" x="265" y="75" width="180" height="120" rx="14"/><text class="h" x="355" y="120" text-anchor="middle">actor πθ</text><text class="t" x="355" y="150" text-anchor="middle">logits [B, A]</text><text class="g" x="355" y="181" text-anchor="middle">gradient 경로</text>
+  <path class="arrow" d="M445 135H520"/>
+  <rect class="node" x="520" y="75" width="190" height="120" rx="14"/><text class="h" x="615" y="115" text-anchor="middle">Categorical</text><text class="t" x="615" y="145" text-anchor="middle">new_log_prob [B]</text><text class="t" x="615" y="174" text-anchor="middle">entropy [B]</text>
+  <path class="arrow" d="M710 135H785"/>
+  <rect class="node" x="785" y="75" width="220" height="120" rx="14"/><text class="h" x="895" y="115" text-anchor="middle">PPO loss</text><text class="t" x="895" y="145" text-anchor="middle">backward()</text><text class="t" x="895" y="174" text-anchor="middle">optimizer.step()</text>
+  <rect class="frozen" x="230" y="285" width="235" height="100" rx="14"/><text class="h" x="347" y="326" text-anchor="middle">환경 rollout</text><text class="x" x="347" y="360" text-anchor="middle">미분하지 않음</text>
+  <rect class="frozen" x="570" y="285" width="235" height="100" rx="14"/><text class="h" x="687" y="326" text-anchor="middle">old_log_prob</text><text class="x" x="687" y="360" text-anchor="middle">저장값 · detach</text>
+  <path class="stop" d="M465 335H570"/><path class="stop" d="M687 285V205"/>
+  <text class="t" x="902" y="350" text-anchor="middle">환경을 미분하는 것이 아니다.</text><text class="t" x="902" y="378" text-anchor="middle">선택 행동의 새 로그확률만 미분한다.</text>
+</svg>
+

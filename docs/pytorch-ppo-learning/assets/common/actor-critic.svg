@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 500" role="img" aria-labelledby="title desc">
+  <title id="title">Actor와 critic의 역할 및 tensor shape</title>
+  <desc id="desc">같은 관측 batch가 actor와 critic으로 갈라져 actor는 행동 logits를, critic은 스칼라 가치를 내는 그림</desc>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#2563eb"/></marker><style>text{font-family:Arial,'Noto Sans KR',sans-serif;fill:#172033}.n{fill:#eef4ff;stroke:#2563eb;stroke-width:2}.actor{fill:#e9f8ef;stroke:#24864b;stroke-width:2}.critic{fill:#fff2e8;stroke:#d36b22;stroke-width:2}.arrow{stroke:#2563eb;stroke-width:3;fill:none;marker-end:url(#a)}.h{font-size:24px;font-weight:700}.t{font-size:19px}.m{font-size:17px;fill:#526174}@media(prefers-color-scheme:dark){text{fill:#edf3ff}.n{fill:#172943;stroke:#77a7ff}.actor{fill:#143323;stroke:#63cf88}.critic{fill:#3b281a;stroke:#f1a469}.arrow{stroke:#77a7ff}.m{fill:#bdc9da}}</style></defs>
+  <rect class="n" x="55" y="190" width="210" height="105" rx="18"/><text class="h" x="160" y="232" text-anchor="middle">관측 batch</text><text class="t" x="160" y="268" text-anchor="middle">[B, obs_dim]</text>
+  <path class="arrow" d="M265 230 C350 230 330 120 430 120"/><path class="arrow" d="M265 255 C350 255 330 370 430 370"/>
+  <rect class="actor" x="430" y="55" width="250" height="140" rx="18"/><text class="h" x="555" y="98" text-anchor="middle">Actor πθ</text><text class="t" x="555" y="132" text-anchor="middle">logits [B, n_actions]</text><text class="m" x="555" y="165" text-anchor="middle">행동 확률을 만든다.</text>
+  <rect class="critic" x="430" y="305" width="250" height="140" rx="18"/><text class="h" x="555" y="348" text-anchor="middle">Critic Vφ</text><text class="t" x="555" y="382" text-anchor="middle">value [B]</text><text class="m" x="555" y="415" text-anchor="middle">기대 return을 예측한다.</text>
+  <path class="arrow" d="M680 125H770"/><path class="arrow" d="M680 375H770"/>
+  <rect class="actor" x="770" y="65" width="220" height="120" rx="18"/><text class="h" x="880" y="105" text-anchor="middle">정책 손실</text><text class="t" x="880" y="140" text-anchor="middle">-min(ratio·A, clip·A)</text>
+  <rect class="critic" x="770" y="315" width="220" height="120" rx="18"/><text class="h" x="880" y="355" text-anchor="middle">가치 손실</text><text class="t" x="880" y="390" text-anchor="middle">½(V - target)²</text>
+  <text class="m" x="520" y="485" text-anchor="middle">critic은 좋은 행동을 직접 선택하지 않고 actor가 사용할 advantage의 기준을 제공한다.</text>
+</svg>
+

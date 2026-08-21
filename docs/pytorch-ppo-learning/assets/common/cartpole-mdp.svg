@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" role="img" aria-labelledby="title desc">
+  <title id="title">CartPole을 MDP 요소에 대응한 그림</title>
+  <desc id="desc">카트 위치와 속도, 막대 각도와 각속도를 관측하고 왼쪽 또는 오른쪽 행동을 선택하며 매 스텝 보상 1을 받는 구조</desc>
+  <defs>
+    <style>text{font-family:Arial,'Noto Sans KR',sans-serif;fill:#172033}.panel{fill:#f7f9fc;stroke:#95a3b8;stroke-width:2}.accent{fill:#e9f2ff;stroke:#2563eb;stroke-width:2}.h{font-size:24px;font-weight:700}.t{font-size:19px}.muted{font-size:17px;fill:#526174}.track{stroke:#34435a;stroke-width:6}.pole{stroke:#e05a47;stroke-width:12;stroke-linecap:round}.wheel{fill:#34435a}.cart{fill:#2563eb}@media(prefers-color-scheme:dark){text{fill:#edf3ff}.panel{fill:#151d2b;stroke:#61708a}.accent{fill:#172943;stroke:#77a7ff}.muted{fill:#bdc9da}.track{stroke:#c3cede}.wheel{fill:#c3cede}.cart{fill:#77a7ff}}</style>
+  </defs>
+  <rect class="panel" x="30" y="25" width="940" height="470" rx="20"/>
+  <line class="track" x1="90" y1="210" x2="500" y2="210"/>
+  <rect class="cart" x="240" y="155" width="130" height="50" rx="8"/>
+  <circle class="wheel" cx="265" cy="218" r="15"/><circle class="wheel" cx="345" cy="218" r="15"/>
+  <line class="pole" x1="305" y1="155" x2="345" y2="55"/>
+  <text class="muted" x="295" y="260" text-anchor="middle">CartPole-v1</text>
+  <rect class="accent" x="540" y="55" width="380" height="110" rx="14"/>
+  <text class="h" x="565" y="88">관측 oₜ ∈ ℝ⁴</text>
+  <text class="t" x="565" y="122">[카트 위치, 카트 속도, 막대 각도, 각속도]</text>
+  <text class="muted" x="565" y="148">관측은 센서로 볼 수 있는 상태 정보다.</text>
+  <rect class="accent" x="540" y="185" width="380" height="80" rx="14"/>
+  <text class="h" x="565" y="220">행동 aₜ ∈ {0, 1}</text>
+  <text class="t" x="565" y="250">왼쪽 힘 · 오른쪽 힘</text>
+  <rect class="accent" x="540" y="285" width="380" height="80" rx="14"/>
+  <text class="h" x="565" y="320">보상 rₜ = +1</text>
+  <text class="t" x="565" y="350">막대가 넘어지지 않은 매 스텝</text>
+  <rect class="accent" x="80" y="315" width="420" height="125" rx="14"/>
+  <text class="h" x="105" y="350">에피소드 종료</text>
+  <text class="t" x="105" y="385">terminated: 각도·위치가 허용 범위를 벗어남</text>
+  <text class="t" x="105" y="417">truncated: 시간 제한 500 스텝</text>
+  <text class="muted" x="500" y="476" text-anchor="middle">목표: 기대 return을 크게 만드는 정책 πθ(a | o)를 학습한다.</text>
+</svg>
+

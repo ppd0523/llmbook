@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 650" role="img" aria-labelledby="title desc">
+  <title id="title">PPO 학습 실패 디버깅 순서</title>
+  <desc id="desc">보상이 오르지 않을 때 환경 계약, 수치와 shape, 데이터 정합성, 업데이트 크기, 탐색과 critic 순으로 검사하는 결정 흐름</desc>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#2563eb"/></marker><style>text{font-family:Arial,'Noto Sans KR',sans-serif;fill:#172033}.n{fill:#eef4ff;stroke:#2563eb;stroke-width:2}.warn{fill:#fff2e8;stroke:#d36b22;stroke-width:2}.arrow{stroke:#2563eb;stroke-width:2.5;fill:none;marker-end:url(#a)}.h{font-size:22px;font-weight:700}.t{font-size:17px}.m{font-size:16px;fill:#526174}@media(prefers-color-scheme:dark){text{fill:#edf3ff}.n{fill:#172943;stroke:#77a7ff}.warn{fill:#3b281a;stroke:#f1a469}.arrow{stroke:#77a7ff}.m{fill:#bdc9da}}</style></defs>
+  <rect class="warn" x="410" y="25" width="300" height="75" rx="16"/><text class="h" x="560" y="70" text-anchor="middle">평가 return이 오르지 않는다</text>
+  <path class="arrow" d="M560 100V140"/>
+  <rect class="n" x="385" y="140" width="350" height="80" rx="16"/><text class="h" x="560" y="175" text-anchor="middle">① 환경 계약 확인</text><text class="t" x="560" y="204" text-anchor="middle">reset/step · action dtype · 종료 두 신호</text>
+  <path class="arrow" d="M560 220V260"/>
+  <rect class="n" x="385" y="260" width="350" height="80" rx="16"/><text class="h" x="560" y="295" text-anchor="middle">② 한 batch 수치 검사</text><text class="t" x="560" y="324" text-anchor="middle">finite · shape · reward · GAE 손계산</text>
+  <path class="arrow" d="M385 300H245"/><rect class="warn" x="25" y="255" width="220" height="90" rx="16"/><text class="h" x="135" y="290" text-anchor="middle">NaN/shape 오류</text><text class="t" x="135" y="320" text-anchor="middle">알고리즘 전에 수정</text>
+  <path class="arrow" d="M560 340V380"/>
+  <rect class="n" x="385" y="380" width="350" height="80" rx="16"/><text class="h" x="560" y="415" text-anchor="middle">③ old/new 정합성</text><text class="t" x="560" y="444" text-anchor="middle">old_log_prob 저장 · ratio 처음 ≈ 1</text>
+  <path class="arrow" d="M735 420H875"/><rect class="warn" x="875" y="375" width="220" height="90" rx="16"/><text class="h" x="985" y="410" text-anchor="middle">ratio가 처음부터 이상</text><text class="t" x="985" y="440" text-anchor="middle">정책·전처리 불일치</text>
+  <path class="arrow" d="M560 460V500"/>
+  <rect class="n" x="140" y="500" width="260" height="105" rx="16"/><text class="h" x="270" y="535" text-anchor="middle">④ KL·clipfrac 큼</text><text class="t" x="270" y="566" text-anchor="middle">lr/epoch/clip 확인</text><text class="m" x="270" y="590" text-anchor="middle">과대 업데이트</text>
+  <rect class="n" x="430" y="500" width="260" height="105" rx="16"/><text class="h" x="560" y="535" text-anchor="middle">⑤ entropy 급락</text><text class="t" x="560" y="566" text-anchor="middle">탐색·logits 확인</text><text class="m" x="560" y="590" text-anchor="middle">정책 조기 확정</text>
+  <rect class="n" x="720" y="500" width="260" height="105" rx="16"/><text class="h" x="850" y="535" text-anchor="middle">⑥ EV 낮음·V loss 큼</text><text class="t" x="850" y="566" text-anchor="middle">critic target/scale 확인</text><text class="m" x="850" y="590" text-anchor="middle">advantage 품질 문제</text>
+  <path class="arrow" d="M560 460 C500 480 330 470 270 500"/><path class="arrow" d="M560 460V500"/><path class="arrow" d="M560 460 C620 480 790 470 850 500"/>
+  <text class="m" x="560" y="635" text-anchor="middle">하이퍼파라미터 튜닝은 ①~③의 계약과 정합성이 맞은 뒤에 시작한다.</text>
+</svg>

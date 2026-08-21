@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 470" role="img" aria-labelledby="title desc">
+  <title id="title">PPO의 on-policy 데이터 생명주기</title>
+  <desc id="desc">정책을 고정해 rollout을 수집하고 old log probability를 저장한 후 GAE를 계산하고 여러 mini-batch epoch로 업데이트한 다음 batch를 폐기하는 순환</desc>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#2563eb"/></marker><style>text{font-family:Arial,'Noto Sans KR',sans-serif;fill:#172033}.n{fill:#eef4ff;stroke:#2563eb;stroke-width:2}.hot{fill:#fff2e8;stroke:#d36b22;stroke-width:2}.arrow{stroke:#2563eb;stroke-width:3;fill:none;marker-end:url(#a)}.cycle{stroke:#8290a5;stroke-width:3;stroke-dasharray:8 6;fill:none;marker-end:url(#a)}.h{font-size:21px;font-weight:700}.t{font-size:17px}.m{font-size:16px;fill:#526174}@media(prefers-color-scheme:dark){text{fill:#edf3ff}.n{fill:#172943;stroke:#77a7ff}.hot{fill:#3b281a;stroke:#f1a469}.arrow{stroke:#77a7ff}.cycle{stroke:#94a0b3}.m{fill:#bdc9da}}</style></defs>
+  <rect class="n" x="35" y="145" width="180" height="125" rx="16"/><text class="h" x="125" y="185" text-anchor="middle">① 정책 고정</text><text class="t" x="125" y="220" text-anchor="middle">πold</text><text class="m" x="125" y="248" text-anchor="middle">수집 중 update 금지</text>
+  <path class="arrow" d="M215 207H260"/>
+  <rect class="n" x="260" y="125" width="200" height="165" rx="16"/><text class="h" x="360" y="165" text-anchor="middle">② rollout 수집</text><text class="t" x="360" y="200" text-anchor="middle">o, a, r, 종료</text><text class="t" x="360" y="232" text-anchor="middle">old_log_prob, V</text><text class="m" x="360" y="264" text-anchor="middle">현재 정책의 경험</text>
+  <path class="arrow" d="M460 207H505"/>
+  <rect class="n" x="505" y="145" width="180" height="125" rx="16"/><text class="h" x="595" y="185" text-anchor="middle">③ GAE</text><text class="t" x="595" y="220" text-anchor="middle">advantage</text><text class="t" x="595" y="248" text-anchor="middle">value_target</text>
+  <path class="arrow" d="M685 207H730"/>
+  <rect class="hot" x="730" y="110" width="225" height="195" rx="16"/><text class="h" x="842" y="150" text-anchor="middle">④ PPO update</text><text class="t" x="842" y="185" text-anchor="middle">shuffle → mini-batch</text><text class="t" x="842" y="217" text-anchor="middle">여러 epoch</text><text class="t" x="842" y="249" text-anchor="middle">ratio · clip · backward</text><text class="m" x="842" y="280" text-anchor="middle">πold 값은 바뀌지 않음</text>
+  <path class="arrow" d="M955 207H1000"/>
+  <rect class="n" x="1000" y="145" width="150" height="125" rx="16"/><text class="h" x="1075" y="185" text-anchor="middle">⑤ 폐기</text><text class="t" x="1075" y="220" text-anchor="middle">old batch</text><text class="m" x="1075" y="248" text-anchor="middle">새 정책으로 재수집</text>
+  <path class="cycle" d="M1075 270 C1075 415 125 415 125 270"/>
+  <text class="h" x="590" y="400" text-anchor="middle">on-policy 경계: 한 batch는 제한된 epoch에서만 재사용하고 다음 순환에서 버린다.</text>
+</svg>
+
