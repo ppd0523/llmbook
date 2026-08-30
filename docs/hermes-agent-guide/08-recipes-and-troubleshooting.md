@@ -175,4 +175,5 @@ proposal을 읽는 용도로 먼저 실행하고, permanent allowlist 반영은 
 - [Fallback Providers](https://hermes-agent.nousresearch.com/docs/user-guide/features/fallback-providers/)
 - [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security/)
 
-[← 7장](./07-security-cost-reliability.md) · [목차](./index.md)
+[← 7장](./07-security-cost-reliability.md) · [목차](./index.md) ·
+[9장: Hermes로 Claude Code 대화형 세션 지시·관리하기 →](./09-control-claude-code-interactive-session.md)

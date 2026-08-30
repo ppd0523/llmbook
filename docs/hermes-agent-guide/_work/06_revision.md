@@ -1,9 +1,9 @@
 ---
 title: 수정 기록
-version: 1.2
+version: 1.3
 status: complete
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-30
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -34,3 +34,15 @@ topic: Hermes Agent 운영 가이드
   적용 시점과 fallback 순서로 재작성했다.
 - 핵심 장마다 확인 문제를 넣고 8장에 read-only 첫날 연습을 추가했다.
 - 한글 설명을 우선하고 command·config key·검색에 필요한 원문 용어는 유지했다.
+- 2026-08-30: Hermes 번들 `claude-code` 스킬을 기준으로 9장을 추가하고 one-shot과
+  `tmux` 대화형 실행의 선택 조건을 먼저 설명했다.
+- `claude -p`의 `--max-turns` 미완료 오류 위험을 반영해 print mode를 짧고 단순하며
+  도구 왕복 수가 예상 가능한 작업에만 사용하도록 선택 기준을 강화했다.
+- Hermes session, `tmux` session, Claude Code session, workspace를 별도 상태로 나누고
+  시작 보고에 이름·path·branch를 남기게 했다.
+- 상태 확인 요청과 Claude Code 후속 입력을 분리하고, permission dialog 위에 일반
+  문장을 보내지 않도록 화면별 행동표를 추가했다.
+- Hermes approval과 Claude Code permission을 두 승인 경계로 설명하고, 영구 permission
+  rule과 bypass mode를 자동 승인하지 않게 했다.
+- 읽기 전용 Worked Example, 정상 종료, 긴급 중단, 이름 기반 resume, Hermes의 독립
+  diff·test 검증을 하나의 운영 흐름으로 연결했다.

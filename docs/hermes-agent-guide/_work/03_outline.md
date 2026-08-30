@@ -1,9 +1,9 @@
 ---
 title: 구성 설계
-version: 1.2
+version: 1.3
 status: complete
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-30
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -41,8 +41,13 @@ topic: Hermes Agent 운영 가이드
 8. 운영 recipe와 troubleshooting
    - 개인 assistant, coding team, research pipeline
    - 첫날 연습, 증상별 진단표와 checklist
+9. Claude Code 대화형 세션 운영
+   - `claude -p`와 `tmux` 대화형 실행 선택
+   - Hermes·`tmux`·Claude Code session과 workspace 경계
+   - 화면 확인, 후속 입력, 이중 승인, 중단·재개, 독립 검증
 
 각 핵심 장 끝에는 독자가 상태·명령·안전 경계를 스스로 설명하는 확인 문제를 둔다.
 
 설명 흐름은 “무엇인가 → Discord에서 어떻게 쓰는가 → 상태를 어떻게 분리하는가 →
 작업을 어떻게 전달하는가 → 비용과 안전을 어떻게 통제하는가” 순서다.
+9장은 이 개념을 외부 coding agent를 운영하는 하나의 완결된 실습에 적용한다.

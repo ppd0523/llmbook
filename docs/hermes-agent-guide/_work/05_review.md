@@ -1,9 +1,9 @@
 ---
 title: 기술 및 구조 검토
-version: 1.2
+version: 1.3
 status: complete
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-30
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -28,6 +28,13 @@ topic: Hermes Agent 운영 가이드
 | model switch | session 중 변경 시 prompt cache reset | 6장 비용 주의에 반영 |
 | model catalog | live manifest, cache, bundled snapshot 순으로 picker 후보 제공 | 고정 모델 순위 제거 |
 | cron workdir | project context를 받으려면 absolute workdir 필요 | 4장에 반영 |
+| Claude Code 실행 방식 | one-shot은 `claude -p`, multi-turn은 번들 스킬이 `tmux` 권장 | 9장 선택표에 반영 |
+| print mode turn limit | `--max-turns` 도달 시 미완료 오류로 종료하며 복잡한 작업은 tool-use turn 수 예측이 어려움 | 짧고 단순한 작업으로 사용 범위 제한 |
+| 대화형 상태 | Hermes, `tmux`, Claude Code, workspace는 서로 다른 수명과 식별자를 가짐 | 세 겹 상태 그림과 시작 보고 추가 |
+| Claude Code busy input | 작업 중 일반 message는 내부 queue에 들어갈 수 있음 | 화면 확인 뒤 한 번만 전달하도록 수정 |
+| session 재개 | `--continue`는 current directory의 최근 대화, `--resume`은 이름·ID 지정 | 이름 있는 session을 기본으로 사용 |
+| permission | 일부 영구 승인은 repository rule로 저장되고 bypass는 격리 환경용 | 이중 승인과 자동 승인 금지 반영 |
+| nested 완료 검증 | Claude Code 요약만으로 diff·test 성공을 보장할 수 없음 | Hermes 독립 검증 절차 추가 |
 
 ## 구조 검토
 
@@ -39,6 +46,8 @@ topic: Hermes Agent 운영 가이드
 - 초심자가 Discord 용어를 안다고 가정하지 않고 장소·동작·Hermes 처리 방식을 먼저
   정의한다.
 - 1~7장에 확인 문제, 8장에 첫날 연습을 추가해 읽기만 하는 자료가 되지 않게 한다.
+- 9장은 기존 session·workspace·approval 개념을 Claude Code 운영 절차에 적용하고,
+  시작부터 복구까지 한 장 안에서 독립적으로 수행할 수 있게 한다.
 
 ## 남은 위험
 
@@ -46,3 +55,5 @@ topic: Hermes Agent 운영 가이드
   문서 첫머리와 참고 자료에 확인 날짜를 표시한다.
 - provider별 가격과 quota는 외부 상태라 고정하지 않는다. `/usage`와 provider dashboard를
   운영 기준으로 사용한다.
+- Hermes와 Claude Code의 CLI·permission 동작은 빠르게 바뀔 수 있으므로 9장에 확인
+  날짜를 표시하고 설치 버전의 `/help`와 `claude --help`를 최종 기준으로 둔다.

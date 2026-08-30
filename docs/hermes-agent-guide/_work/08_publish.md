@@ -1,9 +1,9 @@
 ---
 title: 최종 산출물 구성과 출판 검수
-version: 1.2
+version: 1.3
 status: complete
 owner: agent
-updated: 2026-08-11
+updated: 2026-08-30
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -16,7 +16,7 @@ topic: Hermes Agent 운영 가이드
 - 형식: MkDocs 챕터형 Markdown
 - 최종 경로: `docs/hermes-agent-guide/`
 - 파일: `index.md`, `01-mental-model.md`부터
-  `08-recipes-and-troubleshooting.md`
+  `09-control-claude-code-interactive-session.md`
 - 구성 도구: MkDocs Material
 - 검증 명령: `python -m mkdocs build --strict`
 
@@ -41,3 +41,7 @@ topic: Hermes Agent 운영 가이드
 다시 검증해 성공했다. 버전 1.2는 2026-08-11 퇴고와 공식 문서 재검증을 반영했다.
 MkDocs Material 9.7.6과 MkDocs 1.6.1로 strict build를 다시 실행해 성공했으며, 내부
 상대 링크와 게시 구조를 함께 확인했다.
+
+버전 1.3은 2026-08-30에 Claude Code 대화형 세션 운영 9장과 갱신한 목차를 추가했다.
+MkDocs Material 9.7.6과 MkDocs 1.6.1로 strict build를 실행해 성공했으며, 8장→9장과
+목차→9장의 상대 링크, 제목 계층, code fence 렌더링을 함께 확인했다.
