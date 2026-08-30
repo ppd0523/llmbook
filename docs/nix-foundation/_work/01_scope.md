@@ -3,7 +3,7 @@ title: 작성 범위 정의
 version: 0.2
 status: final
 owner: agent
-updated: 2026-08-19
+updated: 2026-08-30
 target_reader: Nix를 처음 배우는 개발자와 NixOS·Home Manager 입문자
 topic: Nix 기초 학습자료 퇴고
 ---
@@ -62,6 +62,8 @@ topic: Nix 기초 학습자료 퇴고
 
 - 독자는 임시 도구, 프로젝트 개발 환경, 사용자 설정, 시스템 설정의 소유 계층을 구분한다.
 - 독자는 `build`, `test`, `switch`가 현재 상태에 미치는 영향을 구분한다.
+- 독자는 Home Manager의 Bash 설정이 실제 파일에 반영되기 위한 enable 조건을
+  설명한다.
 - 모든 새 용어는 처음 등장한 장에서 필요성·정의·적용 맥락을 제공한다.
 - 최종 문서에는 내부 메모나 미검증 표시가 없다.
 

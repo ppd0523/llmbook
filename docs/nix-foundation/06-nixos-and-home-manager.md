@@ -128,8 +128,9 @@ Standalone Flake가 평가하는 `home.nix`는 다음과 비슷하다.
     settings.user.name = "Alice";
   };
 
-  programs.bash.shellAliases = {
-    ll = "ls -la";
+  programs.bash = {
+    enable = true;
+    shellAliases.ll = "ls -la";
   };
 
   home.stateVersion = "26.05";
@@ -149,6 +150,10 @@ $ home-manager switch --flake ~/.config/home-manager#alice
   디렉터리의 `result` 링크로 확인할 수 있게 한다. 이 명령만으로 새 home generation을
   활성화하지는 않는다.
 - `switch`: build한 결과를 활성화하고 새 home generation을 현재 상태로 전환한다.
+
+`programs.bash.shellAliases`는 Bash module이 활성화될 때 생성되는 `.bashrc`에
+반영된다. 따라서 예제처럼 별칭을 관리하려면 `programs.bash.enable = true`도 함께
+정의한다.
 
 Home Manager가 관리하는 파일을 직접 편집하면 그 변경은 원본 선언에 반영되지 않는다.
 설정 파일이 Store의 read-only 결과로 연결되어 있다면 편집 자체가 실패할 수 있다.
@@ -241,8 +246,15 @@ $ home-manager switch --flake .#alice
 $ home-manager generations
 ```
 
-`home-manager generations`가 보여 주는 이전 generation의 activation package를
-실행해 복구할 수 있다. 명령 형식은 현재 출력에 표시된 경로를 사용한다.
+직전 generation으로 복구하려면 다음 명령을 사용한다.
+
+```console
+$ home-manager switch --rollback
+```
+
+더 오래된 특정 상태가 필요하면 `home-manager generations`가 보여 주는 해당
+generation의 activation package를 실행한다. 명령 형식은 현재 출력에 표시된 경로를
+사용한다.
 
 ### Git
 
@@ -302,6 +314,8 @@ runtime path 연결만 선언한다. 구체적인 secret 도구 선택은 이 �
 - [NixOS configuration option](https://search.nixos.org/options)
 - [Home Manager 설치 방식](https://nix-community.github.io/home-manager/installation.html)
 - [Home Manager configuration 예시](https://nix-community.github.io/home-manager/usage/configuration.html)
+- [Home Manager Bash option](https://nix-community.github.io/home-manager/options/home-manager/programs/bash.html)
+- [Home Manager 26.05 CLI 구현](https://github.com/nix-community/home-manager/blob/release-26.05/home-manager/home-manager)
 - [`home.stateVersion`](https://nix-community.github.io/home-manager/options/home-manager/home.html#home-stateversion)
 
 [← 5장](./05-module-system.md) · [목차](./index.md) ·

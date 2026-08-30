@@ -101,8 +101,8 @@ Nix 코드를 계산한다. 타입 오류, 존재하지 않는 option, 무한 �
 - `nixos-rebuild switch`는 시스템 profile을 전환하고 서비스를 조정한다.
 - `home-manager switch`는 home generation을 전환하고 파일 링크 등을 적용한다.
 
-`nix build`나 `nixos-rebuild build`가 성공했다고 현재 환경이 자동으로 바뀌지는
-않는다. 이 구분이 안전한 운영의 출발점이다.
+`nix build`, `nixos-rebuild build`, `home-manager build`가 성공했다고 현재 환경이
+자동으로 바뀌지는 않는다. 이 구분이 안전한 운영의 출발점이다.
 
 ## 1.4 선언형, 재현 가능, 순수함은 서로 다르다
 

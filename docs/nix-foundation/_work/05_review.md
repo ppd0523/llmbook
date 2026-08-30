@@ -3,7 +3,7 @@ title: 기술 검증
 version: 0.2
 status: final
 owner: agent
-updated: 2026-08-19
+updated: 2026-08-30
 target_reader: Nix 입문자
 topic: Nix 기초 학습자료 기술 검증
 ---
@@ -21,6 +21,8 @@ topic: Nix 기초 학습자료 기술 검증
 | 5장 | module·definition 구분 | 한 줄 definition과 파일 단위 module의 관계에서 모순된 문장 발견 | 반영 |
 | 6장 | Home Manager build·switch | `build`는 활성화 전 검증, `switch`는 활성화와 generation 전환으로 수정 | 반영 |
 | 2·6장 | Home Manager Git option | 26.05 option 문서의 `programs.git.settings.user.name` 구조로 예제 갱신 | 반영 |
+| 6장 | Home Manager Bash 별칭 | 26.05 Bash module은 `enable`이 참일 때만 `.bashrc`와 별칭을 생성함 | 반영 |
+| 6장 | Home Manager rollback | 26.05 CLI의 `switch --rollback`은 직전 profile generation을 선택하고 activation script를 실행함 | 반영 |
 | 6장 | `stateVersion` 예제 | 새 26.05 구성 전용 값이며 기존 구성에서는 유지해야 함을 명시 | 반영 |
 | 6장 | `nixos-rebuild` 모드 | `build`, `test`, `switch`, `boot` 범위가 NixOS Manual과 일치 | 확인 |
 | 7장 | lockfile과 Git index | 입력 갱신, 새 source 포함, tracked 파일 수정을 분리 | 반영 |
@@ -36,6 +38,8 @@ topic: Nix 기초 학습자료 기술 검증
 
 ## 3. 검증 결론
 
-- Home Manager Git option과 tracked Flake 파일의 stage 설명에서 현재 공식 문서와 다른 부분을 발견해 수정했다.
+- Home Manager Git option, Bash enable 조건과 tracked Flake 파일의 stage 설명에서
+  현재 공식 문서·구현과 다른 부분을 발견해 수정했다.
 - Module과 definition을 구분하는 문장 모순, `stateVersion` 예제의 적용 조건을 함께 바로잡았다.
-- Nix 2.34.9와 26.05 공식 문서를 기준으로 나머지 명령 의미와 output 탐색 순서를 확인했다.
+- Nix 2.34.9와 26.05 공식 문서를 기준으로 나머지 명령 의미, rollback과 output 탐색
+  순서를 확인했다.

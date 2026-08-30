@@ -1,7 +1,7 @@
 ---
 title: "Nix 첫걸음: NixOS·개발 셸·Home Manager를 위한 기초"
-version: 1.5
-updated: 2026-08-19
+version: 1.6
+updated: 2026-08-30
 baseline: Nix 2.34.9, NixOS/Nixpkgs 26.05, Home Manager 26.05
 ---
 
@@ -59,7 +59,7 @@ experimental-features = nix-command flakes
 ```
 
 !!! note
-    이 책은 Nix 2.34.9와 2026-08-19에 확인한 26.05 계열을 기준으로 한다. 새 `nix`
+    이 책은 Nix 2.34.9와 2026-08-30에 확인한 26.05 계열을 기준으로 한다. 새 `nix`
     CLI와 Flake는 공식 문서에서도 experimental 인터페이스로 표시된다. 실제 설정을
     바꾸기 전에는 현재 잠근 입력의 release note와 option 문서를 함께 확인한다.
     오래된 자료를 읽는 데 필요한 legacy 명령은 비교표로만 설명한다.
