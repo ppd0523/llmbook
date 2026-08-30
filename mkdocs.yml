@@ -13,6 +13,17 @@ strict: true
 theme:
   name: material
   language: ko
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: 다크 모드로 전환
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: 라이트 모드로 전환
   features:
     - navigation.tabs
     - navigation.tabs.sticky
