@@ -1,9 +1,9 @@
 ---
 title: 수정 기록
-version: 1.3
+version: 1.4
 status: complete
 owner: agent
-updated: 2026-08-30
+updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -46,3 +46,13 @@ topic: Hermes Agent 운영 가이드
   rule과 bypass mode를 자동 승인하지 않게 했다.
 - 읽기 전용 Worked Example, 정상 종료, 긴급 중단, 이름 기반 resume, Hermes의 독립
   diff·test 검증을 하나의 운영 흐름으로 연결했다.
+- 2026-09-02: index에 한국어 설명·원문 병기·명령어 표기 원칙과 용어집 진입 링크를
+  추가했다.
+- gateway, tool, toolset, skill, MCP, system prompt, snapshot, turn, run, handle,
+  dispatcher, handoff, worktree, concurrency, aggregator, acceptance suite, prompt cache,
+  context compression, allowlist, write guard, side effect, prompt injection의 첫 등장 정의를
+  각 장에 보강했다.
+- 영문 중심 제목을 한국어 중심 제목으로 바꾸고, 검색에 필요한 원어는 첫 정의나
+  괄호에 남겼다.
+- 10장 용어집을 추가해 가장 혼동하기 쉬운 여섯 쌍과 범주별 정의·비교·공식 출처를
+  한곳에서 찾게 했다.

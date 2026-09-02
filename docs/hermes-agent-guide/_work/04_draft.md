@@ -1,16 +1,16 @@
 ---
 title: 초고 기록
-version: 1.3
+version: 1.4
 status: complete
 owner: agent
-updated: 2026-08-30
+updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
 
 # 초고 기록
 
-초고는 `03_outline.md`의 9장 구조로 작성했다. 설명의 중심을 기능 나열보다 실행 단위
+초고는 `03_outline.md`의 10장 구조로 작성했다. 설명의 중심을 기능 나열보다 실행 단위
 선택에 두었다.
 
 초고에서 사용한 대표 시나리오는 다음과 같다.
@@ -36,3 +36,7 @@ multi-turn 선택부터 시작해 세 겹의 session 상태, 시작 지시 템�
 승인, 읽기 전용 Worked Example, 중단·복구·독립 검증 순서로 초고를 구성했다.
 `claude -p`는 `--max-turns` 도달 시 미완료 오류가 될 수 있으므로 짧고 단순하며 도구
 왕복 수가 예상 가능한 작업에만 사용하도록 범위를 좁혔다.
+
+2026-09-02 용어 퇴고에서는 핵심 장의 첫 등장 정의를 보강하고, 상태·도구·실행·Kanban·
+모델·보안·Git·Claude Code 용어를 10장 용어집으로 묶었다. 정의만 나열하지 않고 가장
+혼동하기 쉬운 여섯 쌍을 먼저 비교하도록 구성했다.

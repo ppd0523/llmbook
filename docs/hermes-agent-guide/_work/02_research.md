@@ -1,9 +1,9 @@
 ---
 title: 조사 노트
-version: 1.3
+version: 1.4
 status: complete
 owner: agent
-updated: 2026-08-30
+updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -30,13 +30,18 @@ topic: Hermes Agent 운영 가이드
 | [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security/) | authorization, approval, file write guard, sandbox |
 | [Bundled Claude Code Skill](https://hermes-agent.nousresearch.com/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-claude-code) | `claude -p`와 `tmux` 대화형 운영, 화면 캡처·후속 입력·복구 |
 | [Built-in Tools Reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference/) | `terminal`과 background `process`의 책임 |
+| [Sessions](https://hermes-agent.nousresearch.com/docs/user-guide/sessions) | session, session ID, messaging session key와 저장 범위 |
+| [Toolsets Reference](https://hermes-agent.nousresearch.com/docs/reference/toolsets-reference) | tool과 toolset의 정의·종류·적용 범위 |
+| [MCP](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) | 외부 tool server와 Model Context Protocol의 책임 |
+| [Credential Pools](https://hermes-agent.nousresearch.com/docs/user-guide/features/credential-pools/) | 같은 provider 안의 key rotation과 fallback 차이 |
+| [Checkpoints and Rollback](https://hermes-agent.nousresearch.com/docs/user-guide/checkpoints-and-rollback/) | file checkpoint와 snapshot의 복구 대상 차이 |
 | [Claude Code CLI Reference](https://code.claude.com/docs/en/cli-usage) | interactive·print mode, named session, resume·continue |
 | [Claude Code Interactive Mode](https://code.claude.com/docs/en/interactive-mode) | 작업 중 message queue, interrupt, keyboard 동작 |
 | [Claude Code Permissions](https://code.claude.com/docs/en/permissions) | permission mode, 영구 rule, bypass 경고 |
 | [tmux Getting Started](https://github.com/tmux/tmux/wiki/Getting-Started) | session·pane, `send-keys`, `capture-pane` 명령 의미 |
 
 1~8장의 버전 의존 정보는 2026-08-11, 9장의 Hermes·Claude Code·tmux 정보는
-2026-08-30에 확인했다. 모델 catalog와 명령은 빠르게 바뀔 수 있으므로 본문은 live
+2026-08-30, 운영 용어 정의는 2026-09-02에 다시 확인했다. 모델 catalog와 명령은 빠르게 바뀔 수 있으므로 본문은 live
 `/model` picker와 공식 model catalog를 최종 기준으로 안내한다.
 
 ## 핵심 용어
@@ -53,6 +58,12 @@ topic: Hermes Agent 운영 가이드
 | auxiliary model | title, compression, vision, approval 같은 side job 전용 model | main model과 독립 지정 가능 |
 | tmux session | 대화형 terminal process와 화면을 이름 아래 유지하는 단위 | Claude Code 대화 history 자체와 다르다 |
 | Claude Code session | Claude Code의 대화 history·checkpoint·작업 상태 | Hermes session이나 tmux process와 다르다 |
+| tool | agent가 구조화된 입력으로 호출하는 개별 기능 | skill이나 toolset과 다르다 |
+| toolset | 함께 활성화할 수 있도록 관련 tool을 묶은 설정 단위 | 작업 절차인 skill과 다르다 |
+| skill | 기존 tool과 명령을 사용하는 재사용 절차·자료 묶음 | 외부 tool 연결 protocol인 MCP와 다르다 |
+| session key | message source로부터 계산한 gateway routing key | 저장 session의 ID·title과 다르다 |
+| credential pool | 같은 provider의 key·OAuth token을 선택·회전하는 묶음 | 다른 provider로 전환하는 fallback과 다르다 |
+| checkpoint | file 변경 전 workspace 복구를 위해 저장한 상태 | config·state snapshot과 복구 대상이 다르다 |
 
 ## 핵심 판단
 
@@ -104,3 +115,9 @@ topic: Hermes Agent 운영 가이드
   작업은 도구 왕복 수를 예측하기 어려우므로 대화형 실행 대상으로 분류했다.
 - Claude Code의 permission rule 일부는 repository에 영구 저장될 수 있고 bypass mode는
   격리 환경에서만 사용하라는 공식 경고를 확인했다.
+- tool은 개별 호출 기능, toolset은 도구의 활성화 묶음, skill은 도구 사용 절차,
+  MCP는 외부 tool server 연결 protocol이라는 경계를 공식 문서로 확인했다.
+- messaging session key가 플랫폼·chat·thread·user 조합에서 결정되며 session ID와
+  별도 식별자라는 점을 확인했다.
+- credential pool이 같은 provider 안의 key rotation이고 fallback은 다른 provider:model
+  조합으로 넘어가는 순서라는 점을 확인했다.

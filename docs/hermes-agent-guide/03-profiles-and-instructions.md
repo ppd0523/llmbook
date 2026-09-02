@@ -4,7 +4,7 @@
 도우미와 개인 도우미가 서로 다른 키, 모델, 기억, 스킬, Discord 봇을 가져야 한다면
 프로필을 나눈다. 단순히 대화 주제만 바꾸려면 새 세션으로 충분하다.
 
-## profile을 만들 기준
+## 프로필을 만들 기준
 
 다음 중 하나라도 지속적으로 달라야 하면 별도 profile이 유용하다.
 
@@ -59,10 +59,11 @@ hermes profile show coder
 hermes profile describe coder --text "Implements and tests code in the assigned project."
 ```
 
-description은 사람이 profile을 이해하는 label일 뿐 아니라 Kanban decomposer가 적절한
-assignee를 고를 때도 사용한다.
+설명(description)은 사람이 프로필의 역할을 알아보는 짧은 문장이다. 동시에 Kanban의
+작업 분해기(decomposer)가 적절한 담당자(assignee)를 고를 때 사용하는 경로 선택
+정보이기도 하다.
 
-## profile, workspace, sandbox를 함께 설정한다
+## 프로필, 작업 공간, 샌드박스를 함께 설정한다
 
 profile을 만들었다고 project 밖 접근이 막히지 않는다. 최소한 기본 작업 directory를
 절대 경로로 고정한다.
@@ -109,16 +110,18 @@ project 정보는 project context에 둔다. Hermes는 project root에서 `.herm
 [Context Files](https://hermes-agent.nousresearch.com/docs/user-guide/features/context-files/)에
 정리되어 있다.
 
-## memory의 용도와 한계
+## 기억과 맥락의 용도와 한계
 
-기본 persistent memory에는 두 종류가 있다.
+지속 기억(persistent memory)은 세션이 끝난 뒤에도 남아 다음 세션에 제공되는 사용자·환경
+정보다. 기본 지속 기억에는 두 종류가 있다.
 
 - `USER.md`: 이름, timezone, communication preference, skill level 같은 사용자 정보
 - `MEMORY.md`: 환경, convention, tool quirk, 완료된 작업처럼 agent가 기억할 사실
 
-memory는 session 시작 시 system prompt에 snapshot으로 들어간다. session 도중 memory를
-고쳐도 현재 prompt의 frozen snapshot은 즉시 바뀌지 않는다. 새 규칙을 확실히 적용하려면
-새 session을 시작한다.
+시스템 프롬프트(system prompt)는 에이전트의 역할, 도구, 안전 규칙, 기억처럼 매 실행에
+기본으로 제공되는 상위 지시 묶음이다. 기억은 세션 시작 시 이 프롬프트에 스냅샷
+(snapshot), 즉 그 시점의 복사본으로 들어간다. 세션 도중 기억을 고쳐도 이미 들어간
+복사본은 즉시 바뀌지 않는다. 새 규칙을 확실히 적용하려면 새 세션을 시작한다.
 
 다음 정보는 memory에 저장하지 않는다.
 
@@ -168,7 +171,7 @@ Hermes 자체의 safety block, tool restriction, 실제 filesystem 권한은 pro
 없다. 반대로 `SOUL.md`의 “project 밖 파일을 보지 마”는 행동 지침이지 sandbox 보장이
 아니다.
 
-## profile 변경의 적용 시점
+## 프로필 변경의 적용 시점
 
 - `config.yaml`의 main model 변경은 새 session에 적용한다.
 - `/model`은 현재 session에서 즉시 바꾸지만 prompt cache가 reset될 수 있다.

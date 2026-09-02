@@ -1,9 +1,9 @@
 ---
 title: 기술 및 구조 검토
-version: 1.3
+version: 1.4
 status: complete
 owner: agent
-updated: 2026-08-30
+updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -48,6 +48,12 @@ topic: Hermes Agent 운영 가이드
 - 1~7장에 확인 문제, 8장에 첫날 연습을 추가해 읽기만 하는 자료가 되지 않게 한다.
 - 9장은 기존 session·workspace·approval 개념을 Claude Code 운영 절차에 적용하고,
   시작부터 복구까지 한 장 안에서 독립적으로 수행할 수 있게 한다.
+- tool·toolset·skill·MCP, session ID·session key, credential pool·fallback,
+  snapshot·checkpoint의 경계를 공식 문서와 대조했다.
+- 용어집을 본문 정의의 대체물이 아닌 빠른 참조로 두고, 각 핵심 용어는 실제 사용 장의
+  첫 등장에서도 한 문장으로 설명한다.
+- 같은 영어 단어가 여러 층에서 다른 뜻을 가질 때 Hermes·`tmux`·Claude Code처럼
+  대상을 앞에 붙이고, 명령어·설정 키만 원문 표기를 유지한다.
 
 ## 남은 위험
 

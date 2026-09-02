@@ -1,9 +1,11 @@
 # 여러 에이전트를 함께 운영하기
 
-여러 agent 운영의 목표는 bot 수를 늘리는 것이 아니라 서로 다른 책임과 상태를
-분리하는 것이다. 가장 관리하기 쉬운 기본 구조는 사용자가 orchestrator 한 곳에
-요청하고, orchestrator가 Kanban에 specialist task를 만들며, specialist가 structured
-handoff를 남기는 방식이다.
+여러 에이전트 운영의 목표는 봇 수를 늘리는 것이 아니라 서로 다른 책임과 상태를
+분리하는 것이다. 오케스트레이터(orchestrator)는 전체 요청을 나누고 순서와 담당자를
+정하며 결과를 합치는 조정 역할이다. 전문 에이전트(specialist)는 조사·구현·검토처럼
+경계가 정해진 한 역할을 수행한다. 가장 관리하기 쉬운 기본 구조는 사용자가
+오케스트레이터 한 곳에 요청하고, 오케스트레이터가 Kanban에 전문 작업을 만들며,
+전문 에이전트가 구조화된 인계(handoff)를 남기는 방식이다.
 
 ```text
 사용자
@@ -105,18 +107,19 @@ reviewer gateway start
 나머지는 `slash_commands: false`로 설정한다. 일반 운영에서는 profile마다 고유 bot
 application과 token을 쓰는 편이 명확하다.
 
-## orchestrator에는 routing tool만 준다
+## 오케스트레이터에는 경로 선택 도구만 준다
 
-orchestrator가 모든 tool과 production credential을 가지면 specialist를 나눈 효과가
-작아진다. 가능하면 Kanban, gateway status, 필요한 memory처럼 routing에 필요한
-toolset만 준다. 구현 tool을 제거하면 orchestrator가 task를 직접 처리해 병목이 되는
+경로 선택(routing)은 작업의 성격에 맞는 담당자와 실행 방식을 고르는 일이다.
+오케스트레이터가 모든 도구와 운영 환경 자격 증명을 가지면 전문 에이전트를 나눈 효과가
+작아진다. 가능하면 Kanban, gateway status, 필요한 memory처럼 경로 선택에 필요한
+도구 모음만 준다. 구현 도구를 제거하면 오케스트레이터가 task를 직접 처리해 병목이 되는
 문제를 구조적으로 줄일 수 있다.
 
 반대로 worker가 다른 task를 임의 생성하거나 unrelated task를 바꾸지 않도록 역할
 contract를 둔다. dispatcher가 시작한 Kanban worker에는 자신의 task를 읽고
 complete·block·heartbeat·comment할 lifecycle guidance가 자동으로 주입된다.
 
-## dependency로 순서, profile로 책임을 표현한다
+## 의존 관계로 순서, 프로필로 책임을 표현한다
 
 예를 들어 두 지역 조사를 병렬 실행하고 writer가 합치며 reviewer가 마지막에 검토하는
 pipeline은 다음 graph다.
@@ -140,7 +143,7 @@ hermes kanban create "Review claims and citations" --assignee reviewer \
 done 되기 전 child를 강제로 ready로 만들면 빠르기는 해도 handoff가 빠진 상태로
 실행될 수 있다.
 
-## handoff를 결과의 일부로 본다
+## 인계를 결과의 일부로 본다
 
 작업 완료 summary에 “done”만 남기지 않는다.
 
@@ -168,7 +171,7 @@ Next agent:
 다음 worker는 parent task의 handoff와 comment를 읽고 시작한다. raw log, secret,
 긴 transcript를 metadata에 넣지 말고 artifact path와 요약을 남긴다.
 
-## workspace 충돌을 막는다
+## 작업 공간 충돌을 막는다
 
 두 coder가 같은 working tree를 동시에 수정하면 한쪽의 uncommitted change를 덮거나
 검증 결과를 섞을 수 있다.
@@ -179,8 +182,10 @@ Next agent:
 - 하나의 branch와 deploy environment에는 한 번에 한 owner만 둔다.
 - reviewer는 가능하면 구현과 분리된 clean workspace에서 결과를 검증한다.
 
+Git 작업 트리(working tree)는 현재 checkout의 파일이 펼쳐져 수정되는 디렉터리다. Git
+worktree는 같은 저장소에서 다른 branch를 별도 디렉터리에 checkout하는 기능이다.
 Kanban task는 `scratch`, `worktree`, `dir:<path>` 같은 workspace 종류를 지정할 수 있다.
-repository 변경에는 worktree를 우선 검토한다.
+저장소 변경에는 task별 worktree를 우선 검토한다.
 
 ```console
 hermes kanban create "Implement auth retry" \
@@ -189,10 +194,11 @@ hermes kanban create "Implement auth retry" \
   --branch auth-retry
 ```
 
-## concurrency와 비용을 함께 제한한다
+## 동시 실행 수와 비용을 함께 제한한다
 
-동시에 실행 가능한 agent 수를 늘리면 wall-clock time은 줄 수 있지만 API rate limit,
-token cost, CPU·memory, shared test resource 경쟁이 늘어난다.
+동시 실행 수(concurrency)는 같은 시점에 실행하도록 허용하는 작업 수다. 이 수를 늘리면
+실제 경과 시간은 줄 수 있지만 API 요청 한도, token cost, CPU·memory, 공유 test
+resource 경쟁이 늘어난다.
 
 처음에는 다음처럼 보수적으로 시작한다.
 

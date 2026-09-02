@@ -5,9 +5,11 @@ Discord에 연결한 Hermes는 허용된 사용자의 말에 따라 터미널과
 승인 대상인지, 어느 파일 시스템과 네트워크에 접근하는지, 얼마까지 지출할지를 각각
 제한한다.
 
-## Discord 접근은 fail-closed로 시작한다
+## Discord 접근은 기본 거부로 시작한다
 
-가장 작은 allowlist를 쓴다.
+기본 거부(fail-closed)는 설정이 없거나 판단이 불확실할 때 허용하지 않는 정책이다.
+허용 목록(allowlist)은 접근을 허용할 사용자나 역할만 명시한 목록이다. 가장 작은
+허용 목록으로 시작한다.
 
 ```dotenv
 DISCORD_BOT_TOKEN=replace-with-secret
@@ -22,10 +24,11 @@ Discord message, Kanban body, log snippet, repository에 넣지 않는다.
 user에게 model switch, destructive session reset, admin integration command가
 필요한지 검토한다. 각 사용자는 `/whoami`로 자신의 scope와 tier를 확인한다.
 
-## command approval을 끄지 않는다
+## 명령 승인을 끄지 않는다
 
-기본 smart approval은 low-risk command를 auxiliary model로 평가하고 위험하거나
-불확실한 경우 거부·확인을 요청한다.
+명령 승인(command approval)은 위험할 수 있는 셸 명령을 실행하기 전에 정책 또는
+사용자가 허용 여부를 결정하는 절차다. 기본 smart approval은 낮은 위험의 명령을 보조
+모델로 평가하고 위험하거나 불확실한 경우 거부·확인을 요청한다.
 
 ```yaml
 approvals:
@@ -48,9 +51,11 @@ approvals:
 recursive delete, force push, system service 변경, credential edit 같은 destructive
 class는 반복 작업이어도 영구 허용하지 않는 편이 안전하다.
 
-## profile과 write guard의 한계를 안다
+## 프로필과 쓰기 보호의 한계를 안다
 
-profile은 sandbox가 아니다. 또한 Hermes의 protected-path와 write-safe-root 검사는
+쓰기 보호(write guard)는 파일 도구가 보호 경로나 허용 범위 밖을 수정하지 못하게
+막는 검사다. 쓰기 안전 루트(write-safe root)는 파일 도구가 쓸 수 있는 최상위 경로를
+제한한다. 프로필은 sandbox가 아니며, 이 검사는
 주로 `write_file`과 `patch`에 적용된다. local terminal command는 같은 OS user 권한으로
 동작할 수 있으므로 untrusted prompt나 repository를 강하게 격리하려면 container·remote
 backend가 필요하다.
@@ -69,9 +74,10 @@ diff를 우선 신뢰한다. 모델이 성공했다고 말해도 write guard가 
 
 상위 항목은 model의 협조에 의존하고, 아래로 갈수록 실제 execution boundary에 가깝다.
 
-## 외부 side effect에는 명시적 승인선을 둔다
+## 외부 부수 효과에는 명시적 승인선을 둔다
 
-다음 행동은 task instruction에 “실행 전 멈춰 확인”이라고 적는다.
+부수 효과(side effect)는 답변 생성 밖에서 파일·서비스·타인에게 실제 변화를 일으키는
+행동이다. 다음 행동은 task instruction에 “실행 전 멈춰 확인”이라고 적는다.
 
 - email, Discord post, issue·PR comment처럼 타인에게 message 전송
 - purchase, subscription, booking, form submit
@@ -103,13 +109,13 @@ web·browser tool 사용에서 발생한다.
 
 ## 장애를 견디게 한다
 
-### provider 장애
+### 제공자 장애
 
 - 다른 provider의 capability-compatible fallback을 둔다.
 - 한 provider의 key quota 문제는 credential pool로 분리한다.
 - fallback이 실제 tool call과 긴 context를 처리하는지 test한다.
 
-### gateway 장애
+### 게이트웨이 장애
 
 - laptop의 일회성 shell보다 systemd·launchd·Docker supervision service를 쓴다.
 - profile마다 `gateway status`와 log를 확인한다.
@@ -130,20 +136,22 @@ web·browser tool 사용에서 발생한다.
 - source code와 agent state backup을 분리한다.
 - secret이 포함된 `.env`와 profile archive의 보관 권한을 제한한다.
 
-## dashboard와 Kanban 노출
+## 대시보드와 Kanban 노출
 
 dashboard는 기본 localhost bind를 유지한다. `0.0.0.0`으로 열면 인증을 기대하지 않는
 plugin route까지 network에서 접근 가능할 수 있다. Kanban에는 task body, comment,
 workspace path가 있고 모든 local profile이 공유하므로 secret이나 고객 원문을 그대로
 넣지 않는다.
 
-## attachment와 prompt injection
+## 첨부 파일과 프롬프트 주입
 
 Discord attachment는 authorized user가 올렸다는 사실만 검증한다. file 내용이 안전하다는
 뜻은 아니다. document와 repository의 instruction을 사용자 명령으로 취급하지 말라고
 명시하고, unknown script·archive는 sandbox에서 read-only로 분석한다.
 
-Hermes는 context file의 흔한 prompt-injection pattern을 scan하지만 완전한 보안
+프롬프트 주입(prompt injection)은 문서·웹페이지·저장소 안의 문장이 에이전트에게 원래
+사용자 지시를 무시하고 다른 행동을 하도록 유도하는 공격 또는 오염이다. Hermes는
+context file의 흔한 prompt-injection pattern을 scan하지만 완전한 보안
 경계는 아니다. 공유 repository의 `.hermes.md`, `AGENTS.md`, `CLAUDE.md`를 사람이
 review한다.
 

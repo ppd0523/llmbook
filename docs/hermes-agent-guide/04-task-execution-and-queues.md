@@ -17,17 +17,18 @@ Hermes에서 “큐에 넣는다”는 말은 세 가지를 뜻할 수 있다. `
 | restart 후에도 남고 역할 간 전달·comment·retry가 필요한가? | Kanban |
 | 정해진 시각이나 주기로 다시 실행해야 하는가? | cron |
 
-## `/queue`: 같은 session의 다음 turn
+## `/queue`: 같은 세션의 다음 실행 차례
 
 ```text
 /queue 이 작업이 끝나면 변경된 파일 목록과 test 결과를 요약해 줘.
 ```
 
-현재 run은 그대로 끝나고 queued prompt가 다음 user turn으로 실행된다. 이전 결과를
-이어받아야 하는 순차 작업에 적합하다. server 전체에 남는 durable task board는 아니므로
-gateway나 session 수명보다 오래 보존해야 하는 업무에는 쓰지 않는다.
+실행 차례(turn)는 사용자 입력 하나를 받아 에이전트가 응답을 마칠 때까지의 단위다.
+현재 실행(run)은 그대로 끝나고 대기시킨 프롬프트가 다음 사용자 차례로 실행된다. 이전
+결과를 이어받아야 하는 순차 작업에 적합하다. 서버 전체에 남는 내구성 작업 보드는
+아니므로 게이트웨이나 세션 수명보다 오래 보존해야 하는 업무에는 쓰지 않는다.
 
-## `/steer`: 현재 run의 방향 수정
+## `/steer`: 현재 실행의 방향 수정
 
 ```text
 /steer 성능보다 backward compatibility를 우선해. public API signature는 바꾸지 마.
@@ -37,18 +38,18 @@ gateway나 session 수명보다 오래 보존해야 하는 업무에는 쓰지 �
 계획을 보정한다. 이미 실행 중인 destructive command를 되돌리는 stop button은 아니므로
 긴급 중단에는 `/stop`을 쓴다.
 
-## `/background`: main chat을 비우는 독립 작업
+## `/background`: 주 대화를 비우는 독립 작업
 
 ```text
 /background repository /srv/app에서 전체 test suite를 실행하고 실패를 원인별로 묶어 줘.
 파일은 수정하지 말고 결과만 이 channel로 보내.
 ```
 
-background는 같은 profile의 model, provider, toolset을 쓰지만 별도 session이고 현재
-history를 받지 않는다. prompt를 self-contained하게 작성한다. 결과는 요청한 chat으로
+background는 같은 프로필의 모델, 제공자, 도구 모음을 쓰지만 별도 세션이고 현재 대화
+이력을 받지 않는다. 프롬프트만 읽어도 이해되게 작성한다. 결과는 요청한 chat으로
 돌아온다.
 
-## delegation: fresh-context child에게 맡기기
+## 위임: 새 맥락의 하위 에이전트에게 맡기기
 
 사용자는 자연어로 병렬화를 요청할 수 있다.
 
@@ -63,14 +64,15 @@ history를 받지 않는다. prompt를 self-contained하게 작성한다. 결과
 물려받지만 권한을 스스로 확대하지 못하며, 사용자에게 질문하거나 공유 기억에 쓰는
 등의 일부 동작은 제한된다.
 
-delegation은 다음 조건에서 좋다.
+위임(delegation)은 부모 에이전트가 대화 이력을 공유하지 않는 하위 에이전트에게 한시적
+하위 작업을 맡기고 최종 요약을 돌려받는 실행 방식이다. 다음 조건에서 좋다.
 
 - 서로 독립적인 research나 review를 동시에 할 수 있다.
 - 중간 tool output이 부모 context를 오염시키지 않아야 한다.
 - fresh perspective가 필요하다.
 - 최종 summary만 부모가 받아 종합하면 된다.
 
-최상위 `delegate_task`는 즉시 handle을 돌려주고 완료 결과를 나중에 원래 대화로
+최상위 `delegate_task`는 실행을 추적할 식별자(handle)를 즉시 돌려주고 완료 결과를 나중에 원래 대화로
 보낼 수 있다. 일반 후속 메시지는 진행 중인 child를 취소하지 않지만 `/stop`, 소유
 세션의 종료·초기화, Hermes process 재시작은 진행 중 실행을 취소하거나 상태를 알 수
 없게 만들 수 있다. 즉, “비동기”이지만 “재시작을 견디는 내구성 작업”은 아니다.
@@ -94,10 +96,26 @@ delegation은 다음 조건에서 좋다.
 재시작 뒤에도 감사 이력과 재시도가 남아야 할 일은 Kanban task로 만든다. 목표 문장에는
 “완료”를 판정할 수 있는 테스트·파일·보고서 같은 증거를 반드시 넣는다.
 
-## Kanban: durable multi-agent work queue
+## Kanban: 재시작 뒤에도 남는 작업 큐
 
-Kanban은 profile과 독립적으로 host의 board database에 task, status, dependency,
-comment, attempt, handoff를 저장한다. 기본 board를 시작하는 최소 흐름은 다음과 같다.
+Kanban은 여러 프로필이 공유하는 내구성 작업 보드다. 프로필과 독립적으로 호스트의
+보드 데이터베이스에 작업, 상태, 의존 관계, 댓글, 실행 시도, 인계 기록을 저장한다.
+
+### Kanban에서 쓰는 말
+
+- **보드(board)**: 작업과 상태 이력을 담는 전체 작업판이다.
+- **작업(task)**: 목표, 입력, 담당자, 완료 조건을 담은 실행 단위다.
+- **담당자(assignee)**: 해당 작업을 실행할 프로필 또는 worker lane이다.
+- **의존 관계(dependency)**: 먼저 끝나야 하는 부모 작업과 그 결과를 기다리는 자식
+  작업의 선후 관계다.
+- **디스패처(dispatcher)**: 실행 가능한 작업을 찾아 담당 프로필의 worker process를
+  시작하는 게이트웨이 내부 반복 실행부다.
+- **인계(handoff)**: 다음 작업자나 검토자가 재조사하지 않도록 남기는 결과와 검증
+  증거다.
+- **heartbeat**: 긴 작업이 멈추지 않고 진행 중임을 보드에 알리는 생존 신호다.
+- **재시도(retry)**: 실패 원인을 보완한 뒤 같은 작업을 다시 실행하는 시도다.
+
+기본 보드를 시작하는 최소 흐름은 다음과 같다.
 
 ```console
 hermes kanban init
@@ -168,9 +186,10 @@ hermes kanban create "Write comparison" --assignee writer --parent t_na --parent
 [Kanban 공식 문서](https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban)에
 있다.
 
-## cron: 시간이 queue를 만든다
+## cron: 시간이 작업을 시작하게 한다
 
-반복 업무는 대화에서 매번 요청하지 말고 cron job으로 만든다.
+cron은 정해진 시각이나 주기에 명령을 실행하는 시간 기반 스케줄러다. 반복 업무는
+대화에서 매번 요청하지 말고 cron job으로 만든다.
 
 ```console
 hermes cron create "every 1d at 09:00" \
@@ -189,7 +208,7 @@ unattended task의 destructive command는 기본 `approvals.cron_mode: deny`에�
 - 현재 run에 정보만 보태려면 `/steer`를 쓴다.
 - Kanban worker가 질문을 남겼다면 task에 comment하고 unblock한다.
 - dependency가 안 끝났다면 강제 완료하지 말고 parent 상태를 고친다.
-- 같은 원인으로 반복 block되면 입력, capability, workspace, assignee가 맞는지
+- 같은 원인으로 반복 block되면 입력, 기능, 작업 공간, 담당자가 맞는지
   수정한 뒤 retry한다.
 - 단순히 느리다는 이유로 같은 task를 중복 생성하지 않는다. automation에서는
   idempotency key를 사용한다.

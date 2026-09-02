@@ -1,8 +1,10 @@
 # Hermes로 Claude Code 대화형 세션 지시·관리하기
 
 Hermes는 터미널에서 Claude Code를 실행하고, 작업 지시를 입력하고, 화면을 읽고, 후속
-지시를 보내는 운영자 역할을 할 수 있다. 짧고 단순하며 범위가 닫힌 작업은 비대화형
-`claude -p`로 실행할 수 있지만, 구현 → 검토 → 수정 → 테스트처럼 깊은 추론과 여러
+지시를 보내는 운영자 역할을 할 수 있다. 출력 모드(print mode)는 요청 하나를 처리하고
+결과를 표준 출력으로 돌려준 뒤 프로세스가 끝나는 비대화형 실행 방식이며 `claude -p`로
+시작한다. 대화형 모드(interactive mode)는 같은 프로세스에 여러 차례 입력을 보내며
+상태를 이어 가는 실행 방식이다. 구현 → 검토 → 수정 → 테스트처럼 깊은 추론과 여러
 도구 왕복이 필요한 작업은 `tmux` 안에서 Claude Code 대화형 세션을 유지하는 편이
 안전하다.
 
@@ -30,8 +32,9 @@ Hermes의 번들 `claude-code` 스킬은 두 가지 실행 방식을 구분한�
 `tmux`는 터미널 프로그램을 이름 있는 세션 안에서 계속 실행하게 해 주는 터미널
 멀티플렉서(terminal multiplexer)다. Hermes가 한 번의 터미널 호출을 마쳐도 `tmux`
 안의 Claude Code는 계속 실행되며, Hermes는 나중에 다시 화면을 읽거나 키를 보낼 수
-있다. pane은 `tmux` 세션 안의 개별 터미널 화면이며, 이 장의 기본 구성은 pane 하나에
-Claude Code 하나를 실행한다.
+있다. 분할 화면(pane)은 `tmux` 세션 안의 개별 터미널 화면이며, 이 장의 기본 구성은
+pane 하나에 Claude Code 하나를 실행한다. `tmux`의 window는 여러 pane을 담을 수 있는
+상위 단위이므로 pane과 같은 말이 아니다.
 
 `--max-turns`는 print mode의 도구 사용 왕복 횟수를 제한한다. 도구 사용 왕복(tool-use
 turn)은 Claude Code가 도구를 호출하고 결과를 받은 뒤 다음 판단으로 넘어가는 한
@@ -59,8 +62,10 @@ turn으로 세는 것은 아니지만, 깊은 thinking이 필요한 디버깅·�
 
 ## 시작 전에 읽기 전용으로 확인한다
 
-Claude Code와 `tmux`가 같은 terminal backend에 설치되어 있고, Claude Code 인증이 그
-환경에서 보여야 한다. Hermes에게 다음처럼 사전 점검만 요청한다.
+터미널 백엔드(terminal backend)는 Hermes의 명령이 실제로 실행되는 local, Docker,
+SSH 같은 환경이다. Claude Code와 `tmux`가 같은 터미널 백엔드에 설치되어 있고,
+Claude Code 인증이 그 환경에서 보여야 한다. Hermes에게 다음처럼 사전 점검만
+요청한다.
 
 ```text
 /claude-code
@@ -189,6 +194,12 @@ tmux capture-pane -t claude-auth-refactor -p -S -120
 
 출력에 “완료”라는 단어가 보인다고 바로 끝내지 않는다. 입력창이 돌아왔는지, 요청한 test가
 실제로 실행됐는지, Git diff가 범위 안에 있는지 함께 확인한다.
+
+셸 프롬프트(shell prompt)는 Claude Code가 아니라 Bash·PowerShell 같은 셸이 다음
+명령을 기다리는 입력 표시다. 이 화면이 보이면 Claude Code 대화형 프로세스는 이미
+끝난 상태다. 권한 대화상자(permission dialog)는 Claude Code가 명령이나 파일 접근을
+허용할지 묻는 화면이고, 신뢰 대화상자(trust dialog)는 현재 작업 공간을 신뢰할지 묻는
+화면이다. 둘 다 일반 입력창과 구분해야 한다.
 
 ## 상태 확인과 후속 지시를 분리한다
 
@@ -380,4 +391,5 @@ tmux / Claude Code 세션 상태:
 - [Claude Code Permissions](https://code.claude.com/docs/en/permissions)
 - [tmux Getting Started](https://github.com/tmux/tmux/wiki/Getting-Started)
 
-[← 8장](./08-recipes-and-troubleshooting.md) · [목차](./index.md)
+[← 8장](./08-recipes-and-troubleshooting.md) · [목차](./index.md) ·
+[10장: Hermes Agent 운영 용어집 →](./10-glossary.md)

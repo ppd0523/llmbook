@@ -1,7 +1,7 @@
 # 운영 레시피와 문제 해결
 
-처음부터 많은 profile과 model을 만들지 않는다. 한 개의 안전한 Discord assistant로
-session과 queue를 익힌 뒤, 반복되는 역할만 profile과 Kanban으로 분리한다.
+처음부터 많은 프로필과 모델을 만들지 않는다. 한 개의 안전한 Discord assistant로
+세션과 큐를 익힌 뒤, 반복되는 역할만 프로필과 Kanban으로 분리한다.
 
 ## 첫날에 해 볼 세 가지
 
@@ -20,15 +20,15 @@ session과 queue를 익힌 뒤, 반복되는 역할만 profile과 Kanban으로 �
 
 ## 레시피 1: 개인용 Discord assistant
 
-목표는 한 bot으로 research, file 작업, reminder를 하되 대화가 서로 섞이지 않게 하는
+목표는 한 봇으로 조사, 파일 작업, 알림을 하되 대화가 서로 섞이지 않게 하는
 것이다.
 
-1. Discord allowlist에 자신만 넣는다.
-2. server의 `#hermes` channel에서 mention하면 auto-thread가 만들어지는 기본값을 쓴다.
-3. 작업 하나당 thread 하나를 쓴다.
-4. busy input mode는 `queue`로 둔다.
-5. 일반 작업은 foreground, 5분 이상 독립 작업은 `/background`로 보낸다.
-6. 반복 reminder는 `/cron`, 오래 남겨야 할 project work는 Kanban으로 옮긴다.
+1. Discord 허용 목록에 자신만 넣는다.
+2. 서버의 `#hermes` 채널에서 멘션하면 자동 스레드가 만들어지는 기본값을 쓴다.
+3. 작업 하나당 스레드 하나를 쓴다.
+4. 바쁜 세션의 입력 처리 방식은 `queue`로 둔다.
+5. 일반 작업은 전경 실행, 5분 이상 독립 작업은 `/background`로 보낸다.
+6. 반복 알림은 `/cron`, 오래 남겨야 할 프로젝트 작업은 Kanban으로 옮긴다.
 7. 주 1회 `/usage`, gateway status, cron list를 확인한다.
 
 권장 시작 설정:
@@ -45,9 +45,9 @@ approvals:
   cron_mode: deny
 ```
 
-## 레시피 2: coding team
+## 레시피 2: 코딩 팀
 
-profile은 `orchestrator`, `coder`, `reviewer` 세 개로 시작한다.
+프로필은 `orchestrator`, `coder`, `reviewer` 세 개로 시작한다.
 
 - orchestrator: 요구사항을 acceptance criterion과 task graph로 바꾼다.
 - coder: task별 worktree에서 구현하고 test한다.
@@ -76,7 +76,7 @@ orchestrator에게 보낼 지시:
 6. merge, push, deploy는 하지 말고 승인 대기 상태로 끝낸다.
 ```
 
-## 레시피 3: research와 writing pipeline
+## 레시피 3: 조사와 작성 파이프라인
 
 `researcher-a`, `researcher-b`, `writer`, `fact-checker`를 사용한다. 두 researcher에게
 같은 질문을 중복시키기보다 source 범위나 관점을 나눈다.
@@ -98,7 +98,7 @@ Do not publish; return a Markdown draft for approval.
 
 writer task는 두 research task를 parent로, fact-check task는 writer를 parent로 둔다.
 
-## 레시피 4: model cost를 단계적으로 줄이기
+## 레시피 4: 모델 비용을 단계적으로 줄이기
 
 1. main model을 바꾸지 않고 `/usage` baseline을 모은다.
 2. title generation과 web extraction을 fast auxiliary model로 옮긴다.
@@ -156,7 +156,7 @@ hermes approvals suggest
 hermes doctor
 ```
 
-profile별 gateway는 profile alias나 `-p`로 각각 확인한다. `approvals suggest`는
+프로필별 gateway는 profile alias나 `-p`로 각각 확인한다. `approvals suggest`는
 proposal을 읽는 용도로 먼저 실행하고, permanent allowlist 반영은 별도로 판단한다.
 
 ## 참고 자료
