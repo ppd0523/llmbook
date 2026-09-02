@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot name="ball_on_plate">
+  <material name="dark_gray">
+    <color rgba="0.12 0.14 0.18 1.0"/>
+  </material>
+  <material name="plate_blue">
+    <color rgba="0.15 0.42 0.75 1.0"/>
+  </material>
+
+  <link name="base_link">
+    <visual>
+      <geometry><cylinder radius="0.10" length="0.10"/></geometry>
+      <origin xyz="0 0 0.05"/>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.10" length="0.10"/></geometry>
+      <origin xyz="0 0 0.05"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.05"/>
+      <mass value="2.0"/>
+      <inertia ixx="0.00667" ixy="0" ixz="0" iyy="0.00667" iyz="0" izz="0.01000"/>
+    </inertial>
+  </link>
+
+  <link name="roll_frame">
+    <visual>
+      <geometry><box size="0.16 0.04 0.04"/></geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <geometry><box size="0.16 0.04 0.04"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="0.20"/>
+      <inertia ixx="0.000053" ixy="0" ixz="0" iyy="0.000453" iyz="0" izz="0.000453"/>
+    </inertial>
+  </link>
+
+  <joint name="roll_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="roll_frame"/>
+    <origin xyz="0 0 0.20" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.20944" upper="0.20944" effort="12.0" velocity="2.0"/>
+    <dynamics damping="0.10" friction="0.02"/>
+  </joint>
+
+  <link name="plate">
+    <visual>
+      <geometry><cylinder radius="0.50" length="0.02"/></geometry>
+      <material name="plate_blue"/>
+    </visual>
+    <collision>
+      <geometry><cylinder radius="0.50" length="0.02"/></geometry>
+    </collision>
+    <inertial>
+      <mass value="1.0"/>
+      <inertia ixx="0.06253" ixy="0" ixz="0" iyy="0.06253" iyz="0" izz="0.12500"/>
+    </inertial>
+  </link>
+
+  <joint name="pitch_joint" type="revolute">
+    <parent link="roll_frame"/>
+    <child link="plate"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.20944" upper="0.20944" effort="12.0" velocity="2.0"/>
+    <dynamics damping="0.10" friction="0.02"/>
+  </joint>
+</robot>

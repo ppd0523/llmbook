@@ -14,3 +14,4 @@
 - [로보틱스 역기구학 입문](./robotics-ik-learning/index.md)
 - [Canon EDSDK 카메라 제어 매뉴얼](./canon-edsdk-guide/index.md)
 - [처음부터 구현하며 배우는 PyTorch PPO](./pytorch-ppo-learning/index.md)
+- [원반 위 공으로 배우는 Isaac Lab 강화학습](./isaac-lab-ball-on-plate/index.md)

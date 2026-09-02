@@ -1,0 +1,20 @@
+[core]
+reloadable = true
+order = 0
+
+[package]
+version = "0.1.0"
+category = "Reinforcement Learning"
+title = "Ball on Plate Lab"
+description = "Direct and Manager-based Ball-on-Plate tasks for Isaac Lab 3.0"
+authors = ["llmBook tutorial"]
+repository = ""
+keywords = ["isaaclab", "reinforcement-learning", "tutorial"]
+
+[dependencies]
+"isaaclab" = {}
+"isaaclab_rl" = {}
+"isaaclab_tasks" = {}
+
+[[python.module]]
+name = "ball_on_plate_lab"
