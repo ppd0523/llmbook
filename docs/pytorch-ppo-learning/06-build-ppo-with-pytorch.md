@@ -194,10 +194,10 @@ def action_and_value(self, observations, actions=None):
 | `observations` | `[T, 4]` | 행동 전 관측 | actor·critic 입력 |
 | `actions` | `[T]` | old 정책 샘플 | new log probability의 대상 |
 | `old_log_probs` | `[T]` | old 정책의 선택 행동 로그확률 | ratio 분모 |
-| `rewards` | `[T]` | 한 스텝 보상 | TD residual |
+| `rewards` | `[T]` | 한 스텝 보상 | TD 잔차 |
 | `terminated` | `[T]` bool | 자연 종료 | bootstrap mask |
 | `truncated` | `[T]` bool | 시간 제한 | GAE continuation mask |
-| `values` | `[T]` | $V(s_t)$ | TD residual, value target |
+| `values` | `[T]` | $V(s_t)$ | TD 잔차, value target |
 | `next_values` | `[T]` | $V(s_{t+1})$ | bootstrap |
 | `advantages` | `[T]` | GAE 결과 | policy loss |
 | `value_targets` | `[T]` | $A_t+V(s_t)$ | critic loss |

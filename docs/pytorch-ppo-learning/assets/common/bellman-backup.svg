@@ -8,6 +8,5 @@
   <path class="arrow" d="M630 152H770"/>
   <rect class="n" x="770" y="100" width="160" height="105" rx="18"/><text class="h" x="850" y="145" text-anchor="middle">미래 가치</text><text class="t" x="850" y="180" text-anchor="middle">γVπ(sₜ₊₁)</text>
   <text class="h" x="490" y="292" text-anchor="middle">Vπ(sₜ) = 𝔼π[rₜ + γVπ(sₜ₊₁) | sₜ]</text>
-  <text class="m" x="490" y="329" text-anchor="middle">critic target과 TD residual은 이 한 스텝 관계에서 나온다.</text>
+  <text class="m" x="490" y="329" text-anchor="middle">critic target과 TD 오차·잔차는 이 한 스텝 관계에서 나온다.</text>
 </svg>
-

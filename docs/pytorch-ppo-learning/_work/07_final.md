@@ -1,9 +1,9 @@
 ---
 title: PyTorch PPO 출판 전 최종 원고 지도
-version: 1.1
+version: 1.2
 status: final
 owner: agent
-updated: 2026-08-21
+updated: 2026-09-08
 target_reader: 강화학습과 PyTorch 초심자
 topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ---
@@ -62,6 +62,7 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 - Importance sampling, surrogate, KL·trust region 비교
 - 실험 protocol, 여러 seed 통계, CSV·주기 평가·곡선 생성
 - 연속확률의 확률밀도와 `Normal`·`TanhNormal` 계약
+- 회귀 잔차, TD 잔차, 신경망 잔차 연결과 잔차 강화학습의 용어 경계
 
 분량 때문에 후속 키워드로 안내한 내용:
 

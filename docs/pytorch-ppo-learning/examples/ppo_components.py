@@ -52,6 +52,7 @@ def generalized_advantage_estimate(
     for index in reversed(range(rewards.shape[0])):
         bootstrap_mask = (~terminated[index]).float()
         continuation_mask = (~(terminated[index] | truncated[index])).float()
+        # delta는 TD error 또는 TD residual이라 부르는 한 스텝 가치 잔차다.
         delta = (
             rewards[index]
             + gamma * bootstrap_mask * next_values[index]
@@ -85,6 +86,6 @@ def explained_variance(targets: Tensor, predictions: Tensor) -> Tensor:
     target_variance = torch.var(targets, unbiased=False)
     if target_variance == 0:
         return torch.tensor(float("nan"), device=targets.device)
+    # 여기의 residual은 value target과 critic 예측 사이의 회귀 잔차다.
     residual_variance = torch.var(targets - predictions, unbiased=False)
     return 1.0 - residual_variance / target_variance
-

@@ -9,7 +9,7 @@
 1. REINFORCE loss의 `log_prob × return` 구조를 설명한다.
 2. baseline을 빼도 정책 gradient의 평균 방향을 바꾸지 않으면서 분산을 줄이는 이유를 직관적으로 말한다.
 3. actor와 critic의 역할을 구분한다.
-4. TD residual에서 GAE를 역방향으로 계산한다.
+4. TD 오차 또는 TD 잔차에서 GAE를 역방향으로 계산한다.
 5. 자연 종료와 시간 제한에 서로 다른 bootstrap·continuation mask를 적용한다.
 
 ## 기대 return을 직접 최적화하기
@@ -152,9 +152,9 @@ $$
 
 critic은 어떤 행동이 최선인지 직접 말하지 않는다. 가치 기준을 제공해 actor gradient의 분산을 줄인다.
 
-## TD residual을 advantage 신호로 쓰기
+## TD 오차 또는 TD 잔차를 advantage 신호로 쓰기
 
-Bellman 관계를 사용한 한 스텝 TD residual은 다음과 같다.
+2장에서 정의한 시간차 오차, 즉 **TD 잔차**는 Bellman 관계의 한 스텝 target에서 현재 가치 예측을 뺀 값이다.
 
 $$
 \delta_t=r_t+\gamma b_tV_\phi(s_{t+1})-V_\phi(s_t)
@@ -165,13 +165,21 @@ $b_t$는 bootstrap mask다.
 - 자연 종료: $b_t=0$
 - 계속 또는 시간 제한: $b_t=1$
 
-$\delta_t>0$이면 실제 한 스텝 결과가 critic 기대보다 좋았다는 뜻이다. 이를 한 스텝 advantage 추정으로 사용할 수 있지만, critic 예측 하나의 오류에 민감하다.
+$\delta_t>0$이면 실제 한 스텝 결과가 critic 기대보다 좋았다는 뜻이고, 음수면 나빴다는 뜻이다.
+
+| TD target | 현재 $V(s_t)$ | TD 잔차 $\delta_t$ | 해석 |
+|---:|---:|---:|---|
+| 7 | 5 | +2 | critic이 한 스텝 결과를 낮게 예상했다. |
+| 5 | 5 | 0 | target과 현재 예측이 일치한다. |
+| 3 | 5 | -2 | critic이 한 스텝 결과를 높게 예상했다. |
+
+이를 한 스텝 advantage 추정으로 사용할 수 있지만, critic 예측 하나와 transition 하나의 우연성에 민감하다. 또한 actor는 $\delta_t$의 부호로 행동 확률을 조정하고, critic은 value target과 예측의 회귀 잔차를 줄인다. 같은 잔차 신호가 두 모델에서 서로 다른 역할을 한다.
 
 ## GAE: 여러 길이의 TD 정보를 섞기
 
-**일반화 advantage 추정(Generalized Advantage Estimation, GAE)** 은 현재 TD residual과 이후 residual을 지수적으로 감쇠해 더한다.
+**일반화 advantage 추정(Generalized Advantage Estimation, GAE)** 은 현재 TD 잔차와 이후 TD 잔차를 지수적으로 감쇠해 더한다.
 
-먼저 여러 스텝 advantage가 residual 합으로 어떻게 연결되는지 보자.
+먼저 여러 스텝 advantage가 TD 잔차의 합으로 어떻게 연결되는지 보자.
 
 $$
 \begin{aligned}
@@ -206,7 +214,7 @@ $c_t$는 continuation mask다. episode가 끝나면 다음 episode의 advantage�
 
 | 경계 | bootstrap mask $b_t$ | continuation mask $c_t$ | 뜻 |
 |---|---:|---:|---|
-| 계속 | 1 | 1 | 다음 가치와 다음 residual을 모두 사용 |
+| 계속 | 1 | 1 | 다음 가치와 다음 TD 잔차를 모두 사용 |
 | `terminated` | 0 | 0 | 다음 가치는 0, 재귀도 종료 |
 | `truncated` | 1 | 0 | final observation 가치 사용, 다음 episode 재귀는 차단 |
 | rollout 끝이지만 episode 계속 | 1 | rollout 밖 advantage는 0 | 마지막 다음 가치로 bootstrap하고 현재 batch에서 재귀 종료 |
@@ -226,7 +234,7 @@ $c_t$는 continuation mask다. episode가 끝나면 다음 episode의 advantage�
 | 1 | 1.0 | 0.6 | 0.4 | 0 |
 | 2 | 1.0 | 0.4 | 0.0 | 1 |
 
-$\gamma=0.9$, $\lambda=0.8$이다. 먼저 residual을 구한다.
+$\gamma=0.9$, $\lambda=0.8$이다. 먼저 TD 잔차를 구한다.
 
 $$
 \begin{aligned}
@@ -280,7 +288,7 @@ advantage와 value target은 rollout 데이터에서 계산한 target이므로 a
 ## $\lambda$의 bias–variance 손잡이
 
 - $\lambda=0$: $\hat A_t=\delta_t$. 한 스텝 bootstrap 비중이 커서 분산은 낮지만 critic 편향에 민감하다.
-- $\lambda\to1$: 더 긴 미래 residual을 반영한다. Monte Carlo에 가까워져 편향은 줄 수 있지만 분산이 커진다.
+- $\lambda\to1$: 더 먼 미래의 TD 잔차를 반영한다. Monte Carlo에 가까워져 편향은 줄 수 있지만 분산이 커진다.
 
 이 설명은 방향을 잡기 위한 일반적 직관이지 모든 문제에서의 단조로운 보장은 아니다. Critic 오류, 유한 rollout 경계, advantage 표준화가 함께 작용하므로 실제 편향과 분산은 실험으로 확인한다.
 

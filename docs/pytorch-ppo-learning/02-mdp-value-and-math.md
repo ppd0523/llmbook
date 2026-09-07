@@ -8,7 +8,7 @@
 
 1. 짧은 보상 열의 discounted return을 계산한다.
 2. 상태 가치와 행동 가치를 기댓값으로 설명한다.
-3. Bellman 관계와 TD target을 한 스텝 그림으로 연결한다.
+3. Bellman 관계, TD target, TD 오차·잔차를 한 스텝 그림으로 연결한다.
 4. 로그확률, 기댓값, 기울기, chain rule이 policy gradient에서 맡는 역할을 설명한다.
 5. PPO probability ratio를 확률과 로그확률 두 방식으로 계산한다.
 
@@ -194,7 +194,15 @@ $$
 
 상태마다 값을 배열 한 칸에 저장하는 방법을 **tabular method(표 방식)** 라 한다. 상태가 유한하고 작을 때는 정확한 표가 가능하다. CartPole의 위치·속도·각도·각속도는 연속된 실수이므로 가능한 조합이 사실상 무한하다. 신경망 같은 매개변수 함수로 보지 못한 상태의 값까지 일반화하는 **function approximation(함수 근사)** 이 필요한 이유다.
 
-학습 모델이 맞추도록 만든 목표 숫자를 **target(목푯값)** 이라 한다. 한 transition에서 만든 TD target은 다음과 같다.
+학습 모델이 맞추도록 만든 목표 숫자를 **target(목푯값)** 이라 한다. 예측 문제에서 **잔차(residual)** 는 목푯값에서 현재 예측값을 뺀, 아직 설명하지 못한 차이다.
+
+$$
+e_t=y_t-\hat y_t
+$$
+
+예를 들어 목푯값이 7이고 예측이 5라면 잔차는 $+2$다. 모델이 2만큼 낮게 예측했다는 뜻이다. 예측이 9라면 잔차는 $-2$이며 2만큼 높게 예측했다는 뜻이다. 회귀 모델은 흔히 $e_t^2$처럼 잔차의 제곱을 줄이도록 학습한다. 제곱하면 양수와 음수가 상쇄되지 않고 큰 오차를 더 크게 벌점으로 준다.
+
+한 transition에서 만든 TD target은 다음과 같다.
 
 $$
 y_t=r_t+\gamma(1-d_t)V_\phi(s_{t+1})
@@ -202,17 +210,23 @@ $$
 
 $d_t=1$은 자연 terminal일 때다. 시간 제한 truncation에는 $d_t=0$으로 두어 final observation의 가치를 사용한다.
 
-**TD residual** 은 target과 현재 가치 예측의 차이다.
+**시간차 오차(temporal-difference error, TD error)** 는 TD target과 현재 가치 예측의 차이다. GAE 논문과 일부 구현은 같은 양을 **TD 잔차(TD residual)** 라 부른다. 이 책에서는 두 이름이 같은 $\delta_t$를 가리키며, 이후에는 GAE와의 연결을 강조할 때 “TD 잔차”라고 쓴다.
 
 $$
 \delta_t=r_t+\gamma(1-d_t)V_\phi(s_{t+1})-V_\phi(s_t)
 $$
 
-4장에서 이 residual을 여러 스텝 연결해 GAE를 만든다.
+$\delta_t>0$이면 관찰한 한 스텝 결과가 현재 가치 예측보다 좋았고, $\delta_t<0$이면 나빴다는 뜻이다. 4장에서 이 TD 잔차를 여러 스텝 연결해 GAE를 만든다.
+
+!!! note "TD 잔차와 Bellman 잔차의 정밀한 차이"
+    $\delta_t$는 실제 transition 하나에서 계산한 **표본 수준**의 차이다. 일부 문헌에서 Bellman 잔차는 가능한 다음 상태와 행동을 평균낸 $\mathbb E[r_t+\gamma V(s_{t+1})\mid s_t]-V(s_t)$를 가리킨다. 같은 상태에서 여러 transition의 TD 잔차를 평균내면 이 기대 잔차를 추정한다. 입문 구현에서는 두 표현을 느슨하게 섞기도 하므로, 수식이 표본 한 개를 뜻하는지 기댓값을 뜻하는지 확인한다.
+
+!!! warning "잔차를 쓴다고 모두 잔차 학습은 아니다"
+    PPO가 TD 잔차로 advantage를 계산한다는 사실만으로 PPO 전체를 “잔차 강화학습”이라 부르지는 않는다. 잔차 강화학습은 기존 제어 행동에 학습된 보정 행동을 더하는 별도 설계이며 8장에서 구분한다. ResNet의 잔차 연결도 또 다른 신경망 구조 용어다.
 
 ## Monte Carlo와 TD의 차이
 
-**Monte Carlo(MC)** 방식은 에피소드가 끝난 뒤 실제로 관찰한 전체 return을 target으로 쓴다. **Temporal-Difference(TD)** 방식은 한 스텝 reward와 아직 학습 중인 다음 가치 예측을 섞는다. 아직 모르는 값을 다른 추정값으로 대신하는 것을 **bootstrap**이라 한다.
+**Monte Carlo(MC)** 방식은 에피소드가 끝난 뒤 실제로 관찰한 전체 return을 target으로 쓴다. **시간차 학습(Temporal-Difference learning, TD learning)** 은 한 스텝 reward와 아직 학습 중인 다음 가치 예측을 섞는다. 여기서 “시간차”는 연속한 시점의 가치 예측 사이에 reward를 더해 생긴 차이 $\delta_t$로 현재 예측을 고친다는 뜻이다. 아직 모르는 값을 다른 추정값으로 대신하는 것을 **bootstrap**이라 한다.
 
 | 방식 | target | 장점 | 약점 |
 |---|---|---|---|
@@ -312,8 +326,8 @@ Stanford CS234는 다음 내용을 policy gradient 전에 더 깊게 다룬다. 
 
 1. reward `[2, -1, 3]`, $\gamma=0.5$의 $G_0,G_1,G_2$를 계산하라.
 2. old 행동 확률 0.25, 새 행동 확률 0.20의 ratio를 계산하라.
-3. `terminated=True`이고 $r=1$, $\gamma=0.9$, $V(s)=0.4$, $V(s')=100$일 때 TD residual을 계산하라.
-4. `truncated=True`이고 나머지 값이 3번과 같을 때 TD residual을 계산하라.
+3. `terminated=True`이고 $r=1$, $\gamma=0.9$, $V(s)=0.4$, $V(s')=100$일 때 TD 잔차를 계산하라.
+4. `truncated=True`이고 나머지 값이 3번과 같을 때 TD 잔차를 계산하라.
 5. advantage가 음수일 때 선택 행동 확률을 어느 방향으로 바꾸어야 하는가?
 
 ??? note "정답 확인"

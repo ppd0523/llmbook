@@ -173,6 +173,8 @@ $$
 EV=1-\frac{\operatorname{Var}(y-\hat y)}{\operatorname{Var}(y)}
 $$
 
+분자의 $y-\hat y$는 value target과 critic 예측 사이의 **회귀 잔차**다. `explained_variance()`는 이 잔차의 분산을 target 자체의 분산과 비교한다. 이는 한 transition의 TD target으로 계산한 TD 잔차 $\delta_t$와 관련은 있지만 같은 배열은 아니다. 이 구현에서 $y$는 GAE로 만든 `value_target`, $\hat y$는 update 뒤 critic 예측이다.
+
 - 1: target 변동을 잘 설명
 - 0: 평균 예측과 비슷한 수준
 - 음수: 단순 평균보다도 나쁜 예측 가능

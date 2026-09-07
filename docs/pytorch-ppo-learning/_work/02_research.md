@@ -142,13 +142,13 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 | 장 | 용어 묶음 |
 |---:|---|
 | 1 | 강화학습, deep RL, step, transition, action/observation space, delayed consequence, credit assignment, exploration/exploitation, deterministic/stochastic policy, episodic/continuing task, horizon, terminal, MDP, Markov property, partial observability, model, model-free, value-based, policy optimization, on/off-policy |
-| 2 | random variable, probability distribution, sample, conditional probability, expectation, sample mean, variance, standard deviation, return, value/Q/advantage, Bellman equation/backup, prediction/control, tabular/function approximation, Monte Carlo, TD, bootstrap, bias/variance, parameter, objective/loss, derivative/partial derivative/gradient, learning rate, gradient descent/ascent, chain rule |
+| 2 | random variable, probability distribution, sample, conditional probability, expectation, sample mean, variance, standard deviation, return, value/Q/advantage, Bellman equation/backup, prediction/control, tabular/function approximation, Monte Carlo, TD, regression residual, TD error/residual, Bellman residual, bootstrap, bias/variance, parameter, objective/loss, derivative/partial derivative/gradient, learning rate, gradient descent/ascent, chain rule |
 | 3 | tensor, axis/dimension, shape, dtype, device, broadcasting, neural network, layer, weight, bias, activation, MLP, forward pass, logits, softmax, categorical distribution, sampling, log probability, entropy, module, loss, optimizer, Adam, computation graph, backward, detach, train/eval mode, state dictionary |
 | 4 | policy gradient, estimator, REINFORCE, reward-to-go, baseline, actor, critic, TD residual, n-step return, GAE, bootstrap/continuation mask, entropy bonus |
 | 5 | proximal, importance sampling/ratio, surrogate objective, clip, mini-batch, epoch, KL divergence, trust region, clip fraction |
 | 6 | configuration, hyperparameter, unit test, smoke test, end-to-end, buffer, orthogonal initialization, checkpoint |
 | 7 | baseline experiment, metric, invariant, assertion, finite/NaN/Inf, seed, determinism/reproducibility, evaluation protocol, ablation, confidence interval, smoothing |
-| 8 | API, primitive, TensorDict, nested key, spec, transform, collector, storage, sampler, continuous action, probability density, Normal distribution, location/scale, bounded distribution |
+| 8 | API, primitive, TensorDict, nested key, spec, transform, collector, storage, sampler, continuous action, probability density, Normal distribution, location/scale, bounded distribution, residual connection, residual policy, residual reinforcement learning |
 | 9 | preregistration, selection bias, benchmark, protocol, rubric, correlation/causation |
 
 ## 11. 기술 근거 사용 원칙
@@ -157,3 +157,14 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 - 정의와 수식은 Sutton & Barto, PPO·GAE 원 논문, PyTorch·Gymnasium·TorchRL 공식 문서로 검증한다.
 - 공개 강의는 설명 순서와 과제 구조의 근거로 사용한다.
 - 서로 다른 표기 관례인 $R_{t+1}$과 이 책의 $r_t$를 처음에 명시해 시간 index 혼동을 막는다.
+
+## 12. 잔차 용어 보강 조사
+
+| 근거 | 확인한 내용 | 본문 반영 |
+|---|---|---|
+| Sutton & Barto, *Reinforcement Learning: An Introduction*, Chapter 6 | $\delta_t$를 temporal-difference error로 정의하고 현재 가치 갱신에 사용 | 2장에서 TD 오차와 TD 잔차가 같은 표본량을 가리킨다고 설명 |
+| Schulman et al., *High-Dimensional Continuous Control Using GAE* | GAE가 temporal-difference residual $\delta_t^V$의 할인 합으로 정의됨 | 4장에서 “TD 잔차”를 GAE의 입력 용어로 일관되게 사용 |
+| Johannink et al., *Residual Reinforcement Learning for Robot Control* | 기존 제어 신호와 RL residual 제어 신호를 중첩해 최종 행동 구성 | 8장에서 기본 제어 행동과 PPO 보정 행동의 합, scale·action bound 주의점 설명 |
+| He et al., *Deep Residual Learning for Image Recognition* | 신경망 층이 입력 기준의 residual function을 학습하고 shortcut으로 더함 | TD 잔차·잔차 정책과 ResNet 잔차 연결을 별도 개념으로 구분 |
+
+원문 링크: <https://incompleteideas.net/book/the-book-2nd.html>, <https://arxiv.org/abs/1506.02438>, <https://arxiv.org/abs/1812.03201>, <https://arxiv.org/abs/1512.03385>

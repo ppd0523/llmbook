@@ -237,9 +237,10 @@ iterative policy evaluation
 - action rescaling과 environment spec
 - observation·reward normalization
 - vectorized environment와 병렬 collector
+- 기존 제어 행동에 PPO 보정 행동을 더하는 residual reinforcement learning
 - MuJoCo 또는 로봇 시뮬레이터의 termination 설계
 
-여러 변수의 함께 움직이는 정도를 나타내는 covariance, 확률변수 변환, 물리 시뮬레이션은 양이 큰 선수지식이다. 부족하다면 `multivariate Gaussian`, `change of variables`, `Jacobian determinant`, `control timestep`을 별도 학습 키워드로 잡는다.
+여러 변수의 함께 움직이는 정도를 나타내는 covariance, 확률변수 변환, 물리 시뮬레이션은 양이 큰 선수지식이다. 부족하다면 `multivariate Gaussian`, `change of variables`, `Jacobian determinant`, `control timestep`을 별도 학습 키워드로 잡는다. 기존 PID·모델 기반 제어기가 있다면 8장의 잔차 강화학습 구분을 읽은 뒤 `base controller`, `residual action scale`, `action saturation`을 추가 키워드로 학습한다.
 
 ### 직접 환경을 만들고 싶다
 
@@ -270,7 +271,8 @@ Gymnasium contract를 구현한 뒤 `check_env_specs`, random rollout, determini
 ## 과정 마무리 체크리스트
 
 - [ ] Gymnasium transition 다섯 반환값을 설명할 수 있다.
-- [ ] Return, value, advantage, TD residual, GAE를 구분한다.
+- [ ] Return, value, advantage, TD 오차·잔차, GAE를 구분한다.
+- [ ] 회귀 잔차, TD 잔차, 신경망 잔차 연결, 잔차 강화학습을 구분한다.
 - [ ] `Categorical` policy의 sample과 log probability를 계산한다.
 - [ ] PPO ratio와 clipping을 advantage 부호별로 설명한다.
 - [ ] 직접 구현의 rollout과 update 경계를 찾는다.
@@ -297,11 +299,14 @@ Gymnasium contract를 구현한 뒤 `check_env_specs`, random rollout, determini
 | return $G_t$ / discount $\gamma$ | 미래 reward의 할인합 / 먼 미래의 가중치 | 2 |
 | expectation / variance | 확률 가중 평균 / 평균 주위의 흔들림 | 2 |
 | $V^\pi$, $Q^\pi$, $A^\pi$ | 상태 가치, 행동 가치, 평균 대비 행동 이점 | 2 |
-| TD residual $\delta_t$ | 한 스텝 target과 현재 가치 예측의 차이 | 2 |
+| residual $e=y-\hat y$ | target에서 예측을 뺀 아직 설명하지 못한 차이 | 2 |
+| TD error / TD residual $\delta_t$ | 한 스텝 TD target과 현재 가치 예측의 차이 | 2, 4 |
+| residual connection | 입력에 신경망 보정값을 더하는 $h+F(h)$ 구조 | 8 |
+| residual reinforcement learning | 기존 제어 행동에 학습한 보정 행동을 더하는 설계 | 8 |
 | actor / critic | 행동분포 모델 / 상태 가치 모델 | 3, 4 |
 | logits / softmax / entropy | 정규화 전 점수 / 확률 변환 / 분포 불확실성 | 3 |
 | gradient / optimizer / loss | 변화 방향 / 파라미터 갱신법 / 줄일 목적값 | 2, 3 |
-| GAE / $\lambda$ | 여러 길이 TD residual의 가중합 / 길이 혼합 계수 | 4 |
+| GAE / $\lambda$ | 여러 길이 TD 잔차의 가중합 / 길이 혼합 계수 | 4 |
 | old/new log probability | 수집 정책 / 갱신 중 현재 정책의 선택 행동 로그확률 | 5 |
 | ratio $r_t(\theta)$ | 새 선택 행동 확률을 old 확률로 나눈 값 | 5 |
 | clip $\epsilon$ / KL | ratio 목적의 제한 폭 / 두 정책분포 차이 척도 | 5 |
@@ -313,6 +318,7 @@ Gymnasium contract를 구현한 뒤 `check_env_specs`, random rollout, determini
 
 - [Schulman 외, Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
 - [Schulman 외, Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
+- [Johannink 외, Residual Reinforcement Learning for Robot Control](https://arxiv.org/abs/1812.03201)
 - [PyTorch 공식 TorchRL PPO 튜토리얼](https://docs.pytorch.org/tutorials/intermediate/reinforcement_ppo.html)
 - [OpenAI Spinning Up: PPO](https://spinningup.openai.com/en/latest/algorithms/ppo.html)
 - [Stanford CS234](https://web.stanford.edu/class/cs234/)

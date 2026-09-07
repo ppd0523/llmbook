@@ -10,7 +10,8 @@
 2. 직접 만든 rollout loop를 collector와 임시 replay buffer에 대응한다.
 3. `ProbabilisticActor`, `ValueOperator`, `GAE`, `ClipPPOLoss`를 조립한다.
 4. 이산 행동 정책과 연속 행동 정책의 차이를 구분한다.
-5. TorchRL 코드에서 자주 생기는 key·shape·버전 오류를 좁힌다.
+5. 회귀 잔차, TD 잔차, 신경망 잔차 연결, 잔차 강화학습을 구분한다.
+6. TorchRL 코드에서 자주 생기는 key·shape·버전 오류를 좁힌다.
 
 ## 라이브러리를 두 번째로 배우는 이유
 
@@ -107,6 +108,39 @@ CartPole 정책은 두 행동의 logits를 출력하고 `Categorical`에서 정�
 `Normal`은 종 모양의 정규분포다. `loc`은 중심인 평균, `scale`은 퍼짐인 표준편차이며 `scale`은 반드시 양수여야 한다. `NormalParamExtractor`는 신경망 출력을 `loc`과 양수 `scale`로 바꾸어 이 계약을 지킨다.
 
 일반 `Normal`에서 뽑은 값은 행동 범위를 넘을 수 있다. `tanh`는 모든 실수를 `(-1,1)`로 압축하고, `TanhNormal`은 이를 환경의 action 최솟값과 최댓값으로 다시 옮긴다. 값의 변환은 구간을 늘이거나 압축하므로 밀도도 바뀐다. 올바른 log probability에는 그 변화율을 반영하는 **Jacobian correction**이 필요하다. TorchRL이 이 계산을 맡는다. 엄밀한 유도는 양이 큰 확률·미적분 주제이므로 `change of variables`, `Jacobian determinant`, `squashed Gaussian policy`를 후속 학습 키워드로 넘긴다.
+
+## “잔차 학습”의 네 문맥을 구분하기
+
+**잔차 학습(residual learning)** 은 완성된 출력을 처음부터 모두 학습하는 대신, 이미 있는 예측·입력·제어값에서 부족한 **차이 또는 보정값**을 학습한다는 넓은 생각이다. 하지만 강화학습 자료에서는 “잔차”가 서로 다른 네 대상을 가리키므로 수식의 출력이 무엇인지 확인해야 한다.
+
+| 문맥 | 잔차가 뜻하는 것 | 이 책과의 관계 |
+|---|---|---|
+| 회귀 잔차 | target과 예측의 차이 $y-\hat y$ | Critic loss와 explained variance에 사용 |
+| TD 잔차 | 한 스텝 TD target과 가치 예측의 차이 $\delta_t$ | GAE가 합산하는 advantage 신호 |
+| 신경망 잔차 연결 | 층 입력에 학습 보정 $F(h)$를 더한 $h+F(h)$ | ResNet 계열 구조이며 PPO의 필수 조건은 아님 |
+| 잔차 강화학습 | 기존 제어 행동에 학습한 보정 행동을 더함 | 기존 제어기가 있는 로봇 제어의 확장 방법 |
+
+### 잔차 강화학습은 행동의 보정분을 학습한다
+
+**잔차 강화학습(Residual Reinforcement Learning, Residual RL)** 에서는 손으로 만든 제어기나 모델 기반 제어기가 기본 행동 $u_{base}(s_t)$를 제공하고, 강화학습 정책은 보정 행동 $\Delta u_\theta(s_t)$만 출력한다. 대표적인 결합은 다음과 같다.
+
+$$
+u_t=\operatorname{clip}\left(
+u_{base}(s_t)+\alpha\Delta u_\theta(s_t),
+u_{min},u_{max}
+\right)
+$$
+
+$\alpha$는 보정의 최대 영향력을 조절하는 residual scale이다. 예를 들어 기존 제어기가 torque `0.7`을 내고 PPO 잔차 정책이 `-0.2`, $\alpha=0.5$를 내면 최종 torque는 $0.7+0.5(-0.2)=0.6$이다. 기본 제어기는 알려진 물리를 처리하고, 잔차 정책은 마찰·접촉·모델 오차처럼 남은 부분을 보정하도록 설계할 수 있다.
+
+이 접근은 괜찮은 기존 제어기를 재사용해 처음부터 모든 행동을 탐색하는 부담을 줄일 수 있다. 반대로 기본 제어기가 나쁜 상태로 agent를 몰거나 residual scale이 너무 작으면 더 좋은 정책에 도달하지 못할 수 있다. Scale이 너무 크면 기본 제어기의 안정성을 쉽게 덮어쓴다. Action 단위·범위·squashing을 기본 행동과 보정 행동에 일관되게 적용하고, 두 항과 최종 행동을 각각 로그로 남겨야 한다.
+
+PPO를 잔차 정책의 optimizer로 사용할 수 있지만 **PPO와 잔차 강화학습은 같은 이름의 알고리즘이 아니다**. 이 책의 CartPole과 Pendulum 예제는 기존 제어기 없이 전체 행동을 정책이 학습하므로 residual RL 구현이 아니다. Residual RL에서 PPO ratio에 쓰는 old log probability는 기본 제어기의 값이 아니라, rollout 때 실제로 샘플링한 보정 행동 $\Delta u_t$의 정책 로그밀도다.
+
+용어의 출처와 심화 읽기:
+
+- Johannink et al. (2019), [*Residual Reinforcement Learning for Robot Control*](https://arxiv.org/abs/1812.03201)
+- He et al. (2016), [*Deep Residual Learning for Image Recognition*](https://arxiv.org/abs/1512.03385): 신경망 잔차 연결과의 차이를 확인할 때 사용
 
 ## Policy와 value module
 

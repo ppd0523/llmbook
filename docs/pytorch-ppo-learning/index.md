@@ -24,13 +24,14 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 | Agent–environment, MDP | 상세 포함 | 1~2장. 모든 PPO 기호의 출발점이다. |
 | Dynamic programming, value/policy iteration | 위치와 작동 조건만 설명 | 1~2장. 정확한 환경 모델과 표 기반 반복 알고리즘은 별도 과정이다. |
 | Monte Carlo, TD, bootstrapping | PPO에 필요한 깊이로 포함 | 2·4장. Critic과 GAE를 이해하는 직접 선수다. |
+| 잔차 용어와 residual learning | 구분·확장 개요 포함 | 2·4·7·8장. 회귀 잔차, TD 잔차, 신경망 잔차 연결, 잔차 강화학습을 분리한다. |
 | SARSA, Q-learning, DQN | 비교 개요와 후속 키워드 | PPO는 정책을 직접 최적화하므로 Q-learning 구현은 직접 선수가 아니다. |
 | 함수근사와 신경망 | 상세 포함 | 2~3장. 연속 상태를 표 대신 신경망으로 다루는 이유부터 설명한다. |
 | Policy gradient와 REINFORCE | 유도·예제 포함 | 4장. 궤적 확률에서 샘플 gradient까지 등식을 따라간다. |
 | Actor–critic과 GAE | 상세 포함 | 4장. PPO가 사용하는 advantage를 만든다. |
 | TRPO·trust region | 비교 개요 | 5장. PPO의 동기를 설명하되 제약 최적화 전체 유도는 생략한다. |
 | PPO-Clip | 수식·직접 구현·디버깅 포함 | 5~7장. 이 책의 중심이다. |
-| 연속 행동 PPO와 라이브러리 | 실습 포함 | 8장. 확률밀도와 `TanhNormal`부터 TorchRL 객체까지 연결한다. |
+| 연속 행동 PPO와 라이브러리 | 실습 포함 | 8장. 확률밀도와 `TanhNormal`, 잔차 정책 개요부터 TorchRL 객체까지 연결한다. |
 | 재현 가능한 실험 | 상세 포함 | 7·9장. 여러 seed, 평가 protocol, CSV와 곡선을 다룬다. |
 | Model-based, offline, multi-agent, safe RL | 지도와 후속 키워드 | 9장. 각각 별도 과정 규모이며 PPO 입문 뒤 선택한다. |
 
@@ -52,13 +53,13 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 | 단계 | 장 | 완료 기준 | 권장 시간 |
 |---:|---|---|---:|
 | 1 | [강화학습의 언어와 환경 루프](./01-reinforcement-learning-mental-model.md) | CartPole 한 transition을 관측·행동·보상·종료로 설명한다. | 3–4시간 |
-| 2 | [MDP, 가치와 PPO를 위한 최소 수학](./02-mdp-value-and-math.md) | return과 Bellman 관계를 계산하고 로그·기댓값·기울기의 역할을 설명한다. | 5–7시간 |
+| 2 | [MDP, 가치와 PPO를 위한 최소 수학](./02-mdp-value-and-math.md) | return과 Bellman 관계를 계산하고 TD 오차·잔차와 최적화 수학을 설명한다. | 5–7시간 |
 | 3 | [정책을 위한 PyTorch 기초](./03-pytorch-for-policies.md) | actor·critic 출력 shape와 `Categorical` 로그확률의 gradient를 추적한다. | 5–7시간 |
-| 4 | [Policy gradient, actor–critic과 GAE](./04-policy-gradient-and-gae.md) | TD residual과 GAE를 계산해 행동 확률의 업데이트 방향을 판단한다. | 6–8시간 |
+| 4 | [Policy gradient, actor–critic과 GAE](./04-policy-gradient-and-gae.md) | TD 잔차와 GAE를 계산해 행동 확률의 업데이트 방향을 판단한다. | 6–8시간 |
 | 5 | [PPO-Clip 목적함수](./05-ppo-clipped-objective.md) | advantage 부호에 따른 clipping 결과와 on-policy batch 생명주기를 설명한다. | 5–7시간 |
 | 6 | [순수 PyTorch로 PPO 만들기](./06-build-ppo-with-pytorch.md) | CartPole 학습을 실행하고 코드의 각 tensor를 수식에 대응시킨다. | 8–12시간 |
 | 7 | [PPO 실험과 디버깅](./07-debug-and-experiment.md) | KL, clip fraction, entropy, value loss로 실패 원인을 분류한다. | 5–8시간 |
-| 8 | [TorchRL로 PPO 사용하기](./08-use-ppo-with-torchrl.md) | 직접 구현을 TorchRL 환경·collector·GAE·loss module에 대응시킨다. | 6–9시간 |
+| 8 | [TorchRL로 PPO 사용하기](./08-use-ppo-with-torchrl.md) | 잔차 용어를 구분하고 직접 구현을 TorchRL 환경·collector·GAE·loss module에 대응시킨다. | 6–9시간 |
 | 9 | [최종 프로젝트와 다음 학습](./09-final-project-and-next-steps.md) | 여러 seed의 기준 실험과 변경 실험을 비교해 재현 보고서를 만든다. | 8–12시간 |
 
 ## 실습 자료

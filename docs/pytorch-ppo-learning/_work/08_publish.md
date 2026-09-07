@@ -1,9 +1,9 @@
 ---
 title: PyTorch PPO 출판 기록
-version: 1.2
+version: 1.3
 status: final
 owner: agent
-updated: 2026-08-21
+updated: 2026-09-08
 target_reader: 강화학습과 PyTorch 초심자
 topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ---
@@ -70,3 +70,17 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ## 6. 최종 공개 위치
 
 검증 완료 후 저장소 문서 홈의 “처음부터 구현하며 배우는 PyTorch PPO” 링크로 진입한다. `_work` 폴더는 MkDocs build에서 제외하고 검토 이력으로만 보존한다.
+
+## 7. 2026-09-08 잔차 용어 개정 검증
+
+| 게이트 | 상태 | 결과 |
+|---|---|---|
+| Component tests | 통과 | Return·GAE·PPO clipping 5개 테스트 통과 |
+| Raw PPO smoke | 통과 | 512 steps, 4 updates, 평가·checkpoint 저장 정상 |
+| TorchRL smoke | 통과 | 환경 spec, 128-frame 수집, update, 평가 정상 |
+| 잔차 용어 감사 | 통과 | 회귀·TD·Bellman·신경망·정책 잔차의 대상과 경계 명시 |
+| SVG XML | 통과 | 8개 SVG parse 정상 |
+| HTML script | 통과 | 4개 HTML의 script 4개 compile 정상 |
+| Markdown 구조·링크 | 통과 | 독자용 Markdown 10개, H1·fence·상대 링크 오류 0개 |
+| Site build | 통과 | MkDocs 1.6.1·Material 9.7.6 strict build 성공 |
+| Git whitespace | 통과 | `git diff --check` 오류 없음 |

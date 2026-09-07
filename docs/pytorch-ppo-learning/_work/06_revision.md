@@ -94,3 +94,14 @@ Interactive lab은 현재 slider 값의 모든 중간 계산을 숫자로 표시
 - [x] 개정 뒤 단위·smoke·plot·링크·MkDocs 검사를 다시 통과한다.
 
 2차 퇴고 검증에서는 4-row smoke CSV와 여섯 지표 panel SVG를 실제 생성하고, 주기 평가 값이 각 update 행에 기록되는지 확인했다.
+
+## 9. 잔차 용어 퇴고
+
+2026-09-08 추가 퇴고에서는 다음 네 문맥을 분리했다.
+
+1. Target에서 예측을 뺀 일반 회귀 잔차 $e=y-\hat y$
+2. 한 transition의 TD 오차 또는 TD 잔차 $\delta_t$
+3. 입력에 신경망 보정을 더하는 residual connection $h+F(h)$
+4. 기존 제어 행동에 학습한 residual action을 더하는 residual reinforcement learning
+
+TD 잔차와 기대 Bellman 잔차의 표본·기댓값 차이를 명시하고, actor는 잔차 부호를 advantage 신호로 사용하지만 critic은 value target과 예측의 회귀 잔차를 줄인다는 역할 차이를 추가했다. 8장에는 잔차 정책의 결합식, torque 수치 예, residual scale과 action bound의 실패 조건을 넣었다. 예제 코드와 GAE 시각화의 용어도 같은 표기로 맞췄다.
