@@ -10,7 +10,7 @@ topic:
 
 # Markdown 작성 기준
 
-기술자료의 기준 원고는 Markdown이다. HTML, PDF, ePub, PPT/PPTX 등은 Markdown 기준 원고에서 변환되는 출판 산출물로 취급한다.
+기술자료의 기준 원고는 Markdown이다. PDF, ePub, PPT/PPTX, 단독 HTML은 Markdown 기준 원고에서 변환되는 출판 변환 산출물이고, MkDocs 게시 사이트는 같은 기준 원고에서 상시 파생되는 읽기 표면이다. 어느 쪽도 직접 편집하지 않는다.
 
 ## 1. 문서 구조
 

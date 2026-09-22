@@ -4,6 +4,7 @@
 
 - 읽기: [게시 사이트](https://ppd0523.github.io/llmbook/) · [전체 책 목록](docs/index.md)
 - 에이전트 작업 시작: [AGENTS.md](AGENTS.md)
+- 저장소 용어: [CONTEXT.md](CONTEXT.md) · 되돌리기 어려운 결정 기록: [adr/](adr/)
 - 집필 절차와 템플릿: [.guide/README.md](.guide/README.md)
 
 ## 저장소 구조
@@ -11,9 +12,11 @@
 | 경로 | 역할 |
 |---|---|
 | `docs/index.md` | 전체 책 목록 |
-| `docs/<book-slug>/` | 책 목차, 챕터, 이미지와 예제 |
+| `docs/<book-slug>/` | 책 한 권. 목차, 챕터, 책 자산과 예제. `docs/` 바로 아래에는 책 폴더만 둔다 |
 | `docs/<book-slug>/_work/` | 내부 집필·검토 기록. 게시에서 제외 |
 | `.guide/` | 집필 규칙과 단계별 템플릿 |
+| `overrides/` | 어느 책에도 속하지 않는 사이트 자원. 테마 override와 전역 스크립트 |
+| `adr/` | 되돌리기 어려운 결정과 그 이유. 게시에서 제외 |
 | `mkdocs.yml` | 테마, Markdown 확장, 탐색·제외 설정 |
 | `requirements.txt` | 사이트 빌드 의존성. 전이 의존성까지 전체 고정. 갱신 방법은 파일 머리말 참고 |
 | `.github/workflows/pages.yml` | GitHub Pages 빌드·배포 |

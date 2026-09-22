@@ -1,6 +1,6 @@
 # 에이전트 작업 안내
 
-llmBook은 한국어 기술 학습자료를 Markdown으로 작성하고 MkDocs Material로 게시하는 저장소다. 사용자 요청을 우선하고 작업에 필요한 문서만 읽는다.
+llmBook은 한국어 기술 학습자료를 Markdown으로 작성하고 MkDocs Material로 게시하는 저장소다. 사용자 요청을 우선하고 작업에 필요한 문서만 읽는다. 저장소 용어는 [CONTEXT.md](CONTEXT.md)를 기준으로 쓴다. 규칙이 의아하면 [adr/](adr/)에서 그 결정의 이유를 확인한다.
 
 ## 시작과 탐색
 
@@ -10,15 +10,16 @@ llmBook은 한국어 기술 학습자료를 Markdown으로 작성하고 MkDocs M
 
 | 작업 | 필요한 문서 |
 |---|---|
-| 새 학습자료·장 추가·대규모 개정 | [.guide/PROCESS.md](.guide/PROCESS.md), [.guide/OUTPUTS.md](.guide/OUTPUTS.md), [.guide/MARKDOWN_STYLE.md](.guide/MARKDOWN_STYLE.md). 템플릿은 해당 단계에서만 읽는다. |
+| 새 학습자료·챕터 추가·대규모 개정 | [.guide/PROCESS.md](.guide/PROCESS.md), [.guide/OUTPUTS.md](.guide/OUTPUTS.md), [.guide/MARKDOWN_STYLE.md](.guide/MARKDOWN_STYLE.md). 템플릿은 해당 단계에서만 읽는다. |
 | 본문·오탈자·링크 수정 | 대상 본문과 MARKDOWN_STYLE. 경로 변경 시 OUTPUTS도 확인한다. |
 | 예제 코드 수정 | 해당 예제의 README, 버전·실행 조건, 연결된 챕터 |
-| 사이트·빌드·CI 수정 | [README.md](README.md), `mkdocs.yml`, `requirements.txt`, `.github/workflows/pages.yml` |
+| 사이트·빌드·CI 수정 | [README.md](README.md), `mkdocs.yml`, `overrides/`, `requirements.txt`, `.github/workflows/pages.yml` |
 | 지침·템플릿 수정 | [.guide/README.md](.guide/README.md)와 수정 대상 문서 |
+| 용어·구조 원칙 변경 | [CONTEXT.md](CONTEXT.md), [adr/](adr/). 기존 결정을 뒤집으면 해당 ADR을 갱신한다 |
 
 ## 저장소 규칙
 
-- 독자용 원본은 `docs/`, 내부 집필 기록은 책의 `_work/`, 공통 집필 지침은 `.guide/`에 둔다.
+- 최종 산출물은 `docs/`, 내부 작업 산출물은 책의 `_work/`, 공통 집필 지침은 `.guide/`, 어느 책에도 속하지 않는 사이트 자원은 `overrides/`에 둔다.
 - `site/`는 빌드 결과이므로 직접 편집하지 않는다. `.venv/`, `.obsidian/`, `.git/`는 일반 콘텐츠 탐색에서 제외한다.
 - 새 경로는 OUTPUTS를 따른다. 기존 `chapter.md` 하위 폴더 구조와 `examples/`는 관련 요청 없이 일괄 이동하거나 이름을 바꾸지 않는다.
 - 전체 책 목록은 `docs/index.md`, 책 목차는 해당 책의 `index.md`에서 관리한다. `mkdocs.yml`에 수동 `nav` 목록을 추가하지 않는다.
