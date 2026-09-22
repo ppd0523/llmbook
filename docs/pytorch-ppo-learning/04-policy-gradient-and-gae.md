@@ -320,13 +320,7 @@ advantage와 value target은 rollout 데이터에서 계산한 target이므로 a
 
 ## Entropy는 탐색 정도를 보여준다
 
-확률정책의 **entropy** 는 행동분포의 불확실성이다.
-
-$$
-H(\pi(\cdot\mid s))=-\sum_a\pi(a\mid s)\log\pi(a\mid s)
-$$
-
-`[0.5,0.5]`는 `[0.99,0.01]`보다 entropy가 크다. loss에서 entropy bonus를 사용하면 너무 이르게 한 행동만 고르는 것을 늦출 수 있다.
+3장에서 `Categorical.entropy()`로 계산한 $H(\pi(\cdot\mid s))=-\sum_a\pi(a\mid s)\log\pi(a\mid s)$가 여기서 loss의 항으로 들어간다. Entropy가 큰 정책일수록 행동이 고르게 퍼져 있으므로, loss에 entropy bonus를 더하면 정책이 너무 이르게 한 행동으로 굳는 것을 늦출 수 있다.
 
 ```python
 loss = policy_loss + value_coef * value_loss - entropy_coef * entropy

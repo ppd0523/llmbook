@@ -32,7 +32,7 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 | TRPO·trust region | 비교 개요 | 5장. PPO의 동기를 설명하되 제약 최적화 전체 유도는 생략한다. |
 | PPO-Clip | 수식·직접 구현·디버깅 포함 | 5~7장. 이 책의 중심이다. |
 | 연속 행동 PPO와 라이브러리 | 실습 포함 | 8장. 확률밀도와 `TanhNormal`, 잔차 정책 개요부터 TorchRL 객체까지 연결한다. |
-| 재현 가능한 실험 | 상세 포함 | 7·9장. 여러 seed, 평가 protocol, CSV와 곡선을 다룬다. |
+| 재현 가능한 실험 | 상세 포함 | 7장이 방법론(여러 seed, 평가 protocol, 비교 실험 설계)을 정의하고 9장이 그것을 프로젝트로 수행한다. |
 | Model-based, offline, multi-agent, safe RL | 지도와 후속 키워드 | 9장. 각각 별도 과정 규모이며 PPO 입문 뒤 선택한다. |
 
 이 범위표는 [Sutton과 Barto의 공개 교재](http://incompleteideas.net/book/the-book-2nd.html), [강화학습 Wikipedia 문서](https://en.wikipedia.org/wiki/Reinforcement_learning), [OpenAI Spinning Up의 알고리즘 분류](https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html), [Hugging Face 공개 과정](https://huggingface.co/learn/deep-rl-course/en/unit0/introduction)과 대학 강의 순서를 대조해 작성했다. Wikipedia는 범위 확인에 사용하고 정의·수식의 근거는 교재, 논문과 공식 문서를 우선한다.

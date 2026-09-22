@@ -104,7 +104,7 @@ python examples\ppo_cartpole.py `
     --eval-episodes 10
 ```
 
-학습 중 stochastic action과 평가지표의 deterministic action을 구분해 보고서에 쓴다.
+학습 중 stochastic action과 평가지표의 deterministic action을 구분해 보고서에 쓴다. 세 방식이 각각 어떤 질문에 답하는지는 [7장의 평가 방식 표](./07-debug-and-experiment.md)를 따른다.
 
 저장한 곡선을 한 그림에 겹친다.
 
@@ -120,15 +120,7 @@ python examples\plot_metrics.py `
 
 ## 4단계: 한 가지 ablation
 
-첫 프로젝트에서는 다음 중 하나만 고른다.
-
-| Ablation | 기준 | 변경 | 관찰할 핵심 |
-|---|---:|---:|---|
-| clip 폭 | 0.2 | 0.1 | clip fraction, KL, return |
-| GAE | 0.95 | 0 | 분산, EV, return |
-| update epoch | 10 | 3 | sample 재사용, KL, 시간 |
-| entropy bonus | 0.01 | 0 | entropy 감소, seed 민감도 |
-| learning rate | $3\times10^{-4}$ | $10^{-3}$ | KL 급증과 불안정 |
+후보와 각 변경에서 관찰할 지표는 [7장의 비교 실험 표](./07-debug-and-experiment.md)에 정리되어 있다. 첫 프로젝트에서는 그중 **하나만** 고른다. 두 개 이상을 동시에 바꾸면 결과의 원인을 분리할 수 없다.
 
 기준과 변경 설정은 같은 학습 seed, 같은 총 환경 step, 같은 평가 protocol을 사용한다. 실행 시간이 아니라 환경 상호작용 수를 주 예산으로 삼으면 비교가 더 공정하다.
 

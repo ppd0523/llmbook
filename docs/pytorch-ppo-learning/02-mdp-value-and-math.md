@@ -279,16 +279,9 @@ $$
 
 ## 후속 학습으로 넘기는 대학 과정 내용
 
-Stanford CS234는 다음 내용을 policy gradient 전에 더 깊게 다룬다. PPO 직접 구현의 필수 선수는 아니므로 이 책에서는 상세 증명·구현을 건너뛴다.
+Stanford CS234는 dynamic programming, value·policy iteration, Monte Carlo prediction, TD control과 함수 근사를 policy gradient 전에 더 깊게 다룬다. PPO 직접 구현의 필수 선수는 아니므로 이 책에서는 상세 증명·구현을 건너뛴다. 다만 본문에서 이름은 마주치므로 뜻만 여기서 정리한다.
 
-- finite MDP와 dynamic programming
-- iterative policy evaluation
-- value iteration과 policy iteration
-- Monte Carlo prediction
-- TD(0), SARSA, Q-learning
-- tabular method에서 function approximation으로의 확장
-
-**Dynamic programming(동적 계획법)** 은 환경의 전이와 보상 모델을 알고 있을 때 Bellman 관계를 반복 적용해 가치와 정책을 계산하는 방법군이다. **SARSA**와 **Q-learning**은 경험으로 행동 가치를 학습하는 대표적인 TD control 알고리즘이고, **DQN**은 Q-learning의 행동 가치 표를 신경망으로 바꾼 방법이다. 이들의 전체 알고리즘과 구현은 PPO 한 장에 넣으면 학습 목표가 갈라지므로 건너뛴다. PPO 뒤에 강화학습 전반을 체계적으로 넓히려면 위 순서로 다시 학습한다.
+**Dynamic programming(동적 계획법)** 은 환경의 전이와 보상 모델을 알고 있을 때 Bellman 관계를 반복 적용해 가치와 정책을 계산하는 방법군이다. **SARSA**와 **Q-learning**은 경험으로 행동 가치를 학습하는 대표적인 TD control 알고리즘이고, **DQN**은 Q-learning의 행동 가치 표를 신경망으로 바꾼 방법이다. 이들의 전체 알고리즘과 구현은 PPO 한 장에 넣으면 학습 목표가 갈라진다. PPO를 마친 뒤 어떤 순서로 이 주제들을 다시 밟을지는 [9장의 다음 학습 경로](./09-final-project-and-next-steps.md)에 정리했다.
 
 ## 연습문제
 
