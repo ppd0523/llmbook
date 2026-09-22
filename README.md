@@ -15,7 +15,7 @@
 | `docs/<book-slug>/_work/` | 내부 집필·검토 기록. 게시에서 제외 |
 | `.guide/` | 집필 규칙과 단계별 템플릿 |
 | `mkdocs.yml` | 테마, Markdown 확장, 탐색·제외 설정 |
-| `requirements.txt` | 사이트 빌드 의존성 |
+| `requirements.txt` | 사이트 빌드 의존성. 전이 의존성까지 전체 고정. 갱신 방법은 파일 머리말 참고 |
 | `.github/workflows/pages.yml` | GitHub Pages 빌드·배포 |
 | `site/` | 생성된 사이트. Git 추적 제외 |
 
