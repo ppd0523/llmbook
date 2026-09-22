@@ -28,10 +28,10 @@
 
 이 장은 다음 네 단계를 마쳤다고 가정한다.
 
-- [1단계: 평면 회전과 2관절 IK](./01-planar-kinematics.md)
-- [2단계: 3D 회전과 강체변환](./02-spatial-transformations.md)
-- [3단계: 6자유도 매니퓰레이터의 순기구학](./03-six-dof-forward-kinematics.md)
-- [4단계: 자코비안과 수치 역기구학](./04-jacobian-numerical-inverse-kinematics.md)
+- [1단계: 평면 회전과 2관절 IK](../robotics-kinematics-foundations/01-planar-kinematics.md)
+- [2단계: 3D 회전과 강체변환](../robotics-kinematics-foundations/02-spatial-transformations.md)
+- [3단계: 6자유도 매니퓰레이터의 순기구학](../robotics-manipulator-kinematics/01-six-dof-forward-kinematics.md)
+- [4단계: 자코비안과 수치 역기구학](../robotics-manipulator-kinematics/02-jacobian-numerical-inverse-kinematics.md)
 
 특히 다음 내용을 다시 확인하자.
 
@@ -769,7 +769,7 @@ HQP의 이차계획 솔버, 활성 제약 선택과 수치 분해는 이 장의 
 
 이 장으로 6자유도 매니퓰레이터에서 휴머노이드 전신 IK까지의 기구학 선행 학습을 마쳤다.
 
-다음에는 시간에 따른 스윙발·골반·CoM 궤적을 만들고, 접촉력과 운동방정식을 포함하는 동적 locomotion으로 이동할 수 있다. [6단계: 휴머노이드 동적 균형의 기초](./06-dynamic-balance-lipm-zmp-capture-point.md)에서는 16절에서 미리 구분한 ZMP·캡처 포인트·센트로이달 모멘텀 가운데 LIPM, ZMP와 캡처 포인트부터 학습한다.
+다음에는 시간에 따른 스윙발·골반·CoM 궤적을 만들고, 접촉력과 운동방정식을 포함하는 동적 locomotion으로 이동할 수 있다. [6단계: 휴머노이드 동적 균형의 기초](./02-dynamic-balance-lipm-zmp-capture-point.md)에서는 16절에서 미리 구분한 ZMP·캡처 포인트·센트로이달 모멘텀 가운데 LIPM, ZMP와 캡처 포인트부터 학습한다.
 
 ## 추가 읽을거리
 

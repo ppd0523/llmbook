@@ -31,7 +31,7 @@ $$
 
 ## 학습 전 확인
 
-이 장은 [1단계: 평면 회전과 2관절 IK](./01-planar-kinematics.md), [2단계: 3D 회전과 강체변환](./02-spatial-transformations.md), [3단계: 6자유도 매니퓰레이터의 순기구학](./03-six-dof-forward-kinematics.md)을 마쳤다고 가정한다. 특히 다음 내용을 다시 확인하자.
+이 장은 [1단계: 평면 회전과 2관절 IK](../robotics-kinematics-foundations/01-planar-kinematics.md), [2단계: 3D 회전과 강체변환](../robotics-kinematics-foundations/02-spatial-transformations.md), [3단계: 6자유도 매니퓰레이터의 순기구학](./01-six-dof-forward-kinematics.md)을 마쳤다고 가정한다. 특히 다음 내용을 다시 확인하자.
 
 - 2R 팔의 끝점은 $x=l_1\cos q_1+l_2\cos(q_1+q_2)$, $y=l_1\sin q_1+l_2\sin(q_1+q_2)$다.
 - 관절벡터 $\mathbf q$를 FK에 넣으면 현재 말단 위치와 방위가 하나로 정해진다.
@@ -819,7 +819,7 @@ $$
 
 ## 다음 단계
 
-[5단계: 휴머노이드 보행을 위한 전신 역기구학](./05-humanoid-whole-body-inverse-kinematics.md)에서는 지지발, 스윙발과 골반의 여러 자세 과제를 한 전신 관절벡터에 연결한다. 단순히 오차를 쌓는 방법의 한계를 확인하고, 접촉 조건과 과제 우선순위를 고려하는 휴머노이드 전신 IK로 확장한다.
+[5단계: 휴머노이드 보행을 위한 전신 역기구학](../humanoid-balance-and-whole-body-ik/01-humanoid-whole-body-inverse-kinematics.md)에서는 지지발, 스윙발과 골반의 여러 자세 과제를 한 전신 관절벡터에 연결한다. 단순히 오차를 쌓는 방법의 한계를 확인하고, 접촉 조건과 과제 우선순위를 고려하는 휴머노이드 전신 IK로 확장한다.
 
 ## 추가 읽을거리
 
