@@ -352,6 +352,14 @@ assert torch.isfinite(value_targets).all()
 | actor와 critic 역할 혼동 | critic 출력으로 행동을 직접 선택 | actor만 행동분포 생성 |
 | entropy 부호 반대 | 탐색을 장려하려다 억제 | 최소화 loss에서 `- entropy_coef * entropy` |
 
+## 정리
+
+- REINFORCE는 `log_prob × return` 구조다. 로그미분 항등식 덕분에 환경 전이를 미분하지 않아도 정책을 학습할 수 있다.
+- 현재 행동에 의존하지 않는 baseline을 빼면 기대 gradient는 그대로이고 분산만 줄어든다.
+- $A_t$는 참값, $\hat A_t$는 추정값이다. 코드와 loss에 실제로 들어가는 것은 언제나 $\hat A_t$다.
+- GAE는 TD 잔차를 $\gamma\lambda$로 감쇠해 뒤에서부터 더한다. $\lambda$가 bias–variance 손잡이다.
+- bootstrap mask $b_t$와 continuation mask $c_t$는 다른 질문에 답한다. `truncated`에서는 $b_t=1$, $c_t=0$이다.
+
 ## 연습문제
 
 1. $r=2$, $V(s)=1.5$, $V(s')=2$, $\gamma=0.9$, 계속 transition의 $\delta$를 계산하라.
@@ -363,7 +371,7 @@ assert torch.isfinite(value_targets).all()
 ??? note "정답 확인"
     1번: $2+0.9(2)-1.5=2.3$. 2번: $2-1.5=0.5$. 3번: bootstrap 1, continuation 0. 4번: $\hat A_1=2$, $\hat A_0=1+0.5(2)=2$. 5번: 정책이 탐색 전에 거의 결정론적으로 붕괴했을 수 있다.
 
-## 대학 강의와 참고문헌
+## 참고문헌
 
 - [UC Berkeley CS 185/285 Section 3: Policy Gradients and Actor-Critic](https://rail.eecs.berkeley.edu/deeprlcourse/static/sections/section-3.pdf)
 - [Stanford CS234: Policy Gradient lecture block](https://web.stanford.edu/class/cs234/modules.html)

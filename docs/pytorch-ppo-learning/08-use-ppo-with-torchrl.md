@@ -380,6 +380,14 @@ python -c "import torchrl; print(torchrl.__version__)"
 
 구조를 확인한 뒤 CartPole용 `Categorical` TorchRL policy를 직접 만드는 것이 좋은 확장 과제다.
 
+## 정리
+
+- `TensorDict`는 이름 있는 tensor 묶음이고, 환경 spec이 key와 shape의 계약을 정한다.
+- 직접 구현의 rollout loop는 collector에, GAE 계산은 `GAE`에, PPO loss는 `ClipPPOLoss`에 대응한다.
+- 이산 행동의 `Categorical`은 연속 행동에서 `TanhNormal`로 바뀌며, 값 변환 때문에 Jacobian 보정이 필요하다.
+- `ReplayBuffer`라는 이름이 off-policy replay를 뜻하지 않는다. 여기서는 한 rollout을 mini-batch로 나누는 그릇이다.
+- 잔차 강화학습은 기본 제어기 행동에 학습된 보정분을 더하는 별도 설계이며, PPO와 같은 이름의 알고리즘이 아니다.
+
 ## 연습문제
 
 1. `TensorDict`에서 reward가 `batch["reward"]`가 아니라 `batch["next", "reward"]`에 있는 이유를 transition 관점에서 설명하라.
@@ -391,7 +399,7 @@ python -c "import torchrl; print(torchrl.__version__)"
 ??? note "정답 확인"
     1번: reward는 현재 action을 적용한 다음 transition의 결과이기 때문이다. 2번: 더 과거 policy가 만든 sample이 현재 update에 섞인다. 3번: 연속 torque나 속도 명령처럼 bounded real action을 쓰는 환경이다. 4번: 수집 정책의 old log probability를 보존해 새 값과의 ratio를 계산해야 한다. 5번: `check_env_specs`와 아주 짧은 rollout이다.
 
-## 추가 읽기
+## 참고문헌
 
 - [PyTorch 공식 TorchRL PPO 튜토리얼](https://docs.pytorch.org/tutorials/intermediate/reinforcement_ppo.html)
 - [TorchRL collector 문서](https://docs.pytorch.org/rl/stable/reference/collectors.html)

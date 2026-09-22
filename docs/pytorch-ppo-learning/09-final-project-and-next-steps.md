@@ -186,6 +186,14 @@ python examples\plot_metrics.py `
 
 총 12점 중 10점 이상이며 각 영역이 1점 이상이면 이 입문 과정의 최종 목표를 달성한 것으로 본다.
 
+## 정리
+
+- 성공 기준과 계산 예산은 학습을 시작하기 전에 적는다. 나중에 정하면 결과에 맞춰 기준이 움직인다.
+- 기준과 변경 설정은 같은 seed 집합, 같은 총 환경 step, 같은 평가 protocol을 쓴다.
+- 가장 잘 나온 seed만 보고하지 않는다. seed별 원자료를 함께 남긴다.
+- 재현 패키지는 코드, 설정, checkpoint, 결과표, 곡선을 함께 담는다.
+- 다음 학습 주제는 목표에 따라 고른다. 남은 주제는 각각 별도 과정 규모임을 전제한다.
+
 ## 최종 개념 점검
 
 아래 질문에 코드를 보지 않고 답해 본다.
@@ -306,11 +314,11 @@ Gymnasium contract를 구현한 뒤 `check_env_specs`, random rollout, determini
 | terminated / truncated | MDP 자연 종료 / 외부 시간 제한 종료 | 1, 4 |
 | seed / protocol / ablation | 난수 시작값 / 고정 절차 / 한 요소 변경 실험 | 7, 9 |
 
-## 핵심 참고자료
+## 참고문헌
 
-- [Schulman 외, Proximal Policy Optimization Algorithms](https://arxiv.org/abs/1707.06347)
-- [Schulman 외, Generalized Advantage Estimation](https://arxiv.org/abs/1506.02438)
-- [Johannink 외, Residual Reinforcement Learning for Robot Control](https://arxiv.org/abs/1812.03201)
+- Schulman et al. (2017), [*Proximal Policy Optimization Algorithms*](https://arxiv.org/abs/1707.06347)
+- Schulman et al. (2015), [*High-Dimensional Continuous Control Using Generalized Advantage Estimation*](https://arxiv.org/abs/1506.02438)
+- Johannink et al. (2019), [*Residual Reinforcement Learning for Robot Control*](https://arxiv.org/abs/1812.03201)
 - [PyTorch 공식 TorchRL PPO 튜토리얼](https://docs.pytorch.org/tutorials/intermediate/reinforcement_ppo.html)
 - [OpenAI Spinning Up: PPO](https://spinningup.openai.com/en/latest/algorithms/ppo.html)
 - [Stanford CS234](https://web.stanford.edu/class/cs234/)

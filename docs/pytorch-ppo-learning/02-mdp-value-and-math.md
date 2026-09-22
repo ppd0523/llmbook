@@ -61,7 +61,7 @@ $\gamma$는 **할인율(discount factor)** 이며 $0\le\gamma\le1$이다. 할인
 
 끝이 있는 **episodic task**에서는 마지막 시점을 $T$라 하고 합을 거기서 멈춘다. 끝없이 이어지는 **continuing task**에서는 무한합이 유한한 값으로 수렴하도록 보통 $\gamma<1$을 쓴다. 따라서 할인은 (1) 먼 미래보다 가까운 보상을 선호하게 하고, (2) 무한한 보상 합이 발산하지 않게 하는 두 역할을 한다.
 
-### Worked Example: 네 스텝 return
+## Worked Example: 네 스텝 return
 
 reward가 `[1, 0, 2, 3]`, $\gamma=0.5$라 하자.
 
@@ -166,7 +166,7 @@ $$
 
 이 식을 **Bellman expectation equation** 이라 한다. 한 상태의 가치를 즉시 reward와 다음 상태 가치로 갱신하는 그림을 **backup** 이라고 부른다.
 
-### Worked Example: 두 상태 가치
+## Worked Example: 두 상태 가치
 
 상태 `safe`에서 reward 1을 받고 확률 0.8로 `safe`, 확률 0.2로 terminal로 간다고 하자. terminal의 가치는 0, $\gamma=0.9$다.
 
@@ -283,6 +283,14 @@ Stanford CS234는 dynamic programming, value·policy iteration, Monte Carlo pred
 
 **Dynamic programming(동적 계획법)** 은 환경의 전이와 보상 모델을 알고 있을 때 Bellman 관계를 반복 적용해 가치와 정책을 계산하는 방법군이다. **SARSA**와 **Q-learning**은 경험으로 행동 가치를 학습하는 대표적인 TD control 알고리즘이고, **DQN**은 Q-learning의 행동 가치 표를 신경망으로 바꾼 방법이다. 이들의 전체 알고리즘과 구현은 PPO 한 장에 넣으면 학습 목표가 갈라진다. PPO를 마친 뒤 어떤 순서로 이 주제들을 다시 밟을지는 [9장의 다음 학습 경로](./09-final-project-and-next-steps.md)에 정리했다.
 
+## 정리
+
+- return $G_t$는 이후 보상을 $\gamma$로 할인해 더한 값이고, 뒤에서부터 $G_t=r_t+\gamma G_{t+1}$로 계산한다.
+- $V^\pi$와 $Q^\pi$는 하나의 정답이 아니라 여러 가능한 미래의 평균이다.
+- Bellman 관계는 긴 미래를 한 스텝 보상과 다음 상태 가치로 접는다. 그 차이가 TD 잔차 $\delta_t$다.
+- bootstrap mask는 자연 종료에서 $b_t=0$, 시간 제한에서 $b_t=1$이다. 이 책은 $(1-d_t)$ 대신 항상 $b_t$를 쓴다.
+- 이 장의 수학은 도구다. 목적함수의 정의, policy gradient 추정식, 확률비, advantage 추정은 4~6장에서 알고리즘으로 세운다.
+
 ## 연습문제
 
 1. reward `[2, -1, 3]`, $\gamma=0.5$의 $G_0,G_1,G_2$를 계산하라.
@@ -294,7 +302,7 @@ Stanford CS234는 dynamic programming, value·policy iteration, Monte Carlo pred
 ??? note "정답 확인"
     1번: $G_2=3$, $G_1=0.5$, $G_0=2.25$. 2번: $0.20/0.25=0.8$. 3번: 자연 종료이므로 $b_t=0$이라 다음 가치를 버려 $1-0.4=0.6$. 4번: 시간 제한은 $b_t=1$로 bootstrap하므로 $1+0.9(100)-0.4=90.6$. 5번: $5-7=-2$이며 그 상태의 정책 평균보다 나쁜 행동이라는 뜻이다.
 
-## 대학 강의와 추가 읽기
+## 참고문헌
 
 - [Stanford CS234 Winter 2026 Lecture Materials](https://web.stanford.edu/class/cs234/modules.html): MDP planning, policy evaluation, policy gradient
 - [UC Berkeley CS 185/285 Spring 2026](https://rail.eecs.berkeley.edu/deeprlcourse/): Probability Review, RL Basics

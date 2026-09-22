@@ -347,6 +347,14 @@ Gradient로 학습되는 weight와 달리 learning rate, $\lambda$, clip 폭처�
 
 CartPole에서 네트워크를 크게 만드는 것은 보통 첫 해결책이 아니다.
 
+## 정리
+
+- 디버깅은 환경 계약 → 작은 수식 테스트 → tensor 불변조건 → old/current 정합성 순으로 좁힌다.
+- 지표는 하나씩 보지 않는다. return, approximate KL, clip fraction, entropy, value loss, explained variance를 함께 읽는다.
+- 첫 optimizer step 전 ratio는 1에 가까워야 한다. 가장 값싸고 확실한 단위 검사다.
+- 한 seed의 성공은 근거가 아니다. 최소 3개, 가능하면 5~10개 seed의 분포로 판단한다.
+- 비교 실험은 한 번에 한 변수만 바꾼다. 버그 수정과 하이퍼파라미터 튜닝을 같은 실행에서 섞지 않는다.
+
 ## 연습문제
 
 1. Return이 상승하지만 entropy가 첫 update부터 거의 0이라면 성공으로 단정하면 안 되는 이유를 쓰라.
@@ -358,7 +366,7 @@ CartPole에서 네트워크를 크게 만드는 것은 보통 첫 해결책이 �
 ??? note "정답 확인"
     1번: 탐색 전에 우연히 한 행동으로 굳어 seed 변화에 취약할 수 있다. 2번: old/current 정책·관측·행동이 일치하고 old log probability가 수집 시 저장됐는지 본다. 3번: 시간 제한에서 value bootstrap을 잃어 critic target이 낮아지고 advantage가 왜곡될 수 있다. 4번: 같은 seed 집합과 같은 평가 프로토콜을 쓴다. 5번: 세 seed 결과가 높은 분산과 불안정을 드러낸다.
 
-## 추가 읽기
+## 참고문헌
 
 - [TorchRL: Things to consider when debugging RL](https://docs.pytorch.org/rl/stable/reference/generated/knowledge_base/DEBUGGING_RL.html)
 - [CleanRL PPO metrics and implementation details](https://github.com/vwxyzjn/cleanrl/blob/master/docs/rl-algorithms/ppo.md)

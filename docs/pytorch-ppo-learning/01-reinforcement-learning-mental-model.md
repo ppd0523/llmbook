@@ -242,15 +242,23 @@ observation_space: Box(..., (4,), float32)
 action_space: Discrete(2)
 ```
 
-## 흔한 오해
+## 흔한 오류
 
-| 오해 | 바로잡기 |
+| 흔한 오해 | 바로잡기 |
 |---|---|
 | 보상이 행동의 정답이다. | 보상은 스칼라 평가 신호다. 어떤 행동을 했어야 하는지는 직접 말하지 않는다. |
 | 확률정책은 학습이 덜 된 정책이다. | 연속·부분관측·다중해 문제에서는 학습 후에도 확률정책이 필요할 수 있다. |
 | 에피소드와 rollout은 같다. | rollout은 학습을 위한 고정 길이 batch이고 여러 에피소드를 포함할 수 있다. |
 | `truncated`도 실패이므로 다음 가치는 0이다. | 시간 제한은 자연 terminal이 아니므로 final observation 가치로 bootstrap한다. |
 | 환경을 미분해야 정책을 학습한다. | policy gradient는 환경이 아니라 선택 행동의 로그확률을 미분한다. |
+
+## 정리
+
+- 강화학습은 정답 레이블이 아니라 행동의 결과인 보상으로 배운다. 데이터 분포 자체가 현재 정책에 따라 달라진다.
+- transition 한 개는 `(관측, 행동, 보상, 다음 관측, terminated, truncated)`이며 환경 API가 한 번에 반환하는 단위다.
+- `terminated`는 MDP의 자연 종료, `truncated`는 시간 제한이다. 둘 다 reset을 부르지만 가치 계산에서는 다르게 다룬다.
+- episode는 환경 종료 기준, rollout은 수집량 기준이다. 한 rollout 안에 여러 episode가 들어갈 수 있다.
+- MDP의 다섯 요소(상태·행동·전이·보상·할인율)가 이후 모든 PPO 기호의 출발점이다.
 
 ## 연습문제
 
@@ -262,7 +270,7 @@ action_space: Discrete(2)
 ??? note "정답 확인"
     2번: reset은 한다. 자연 terminal은 아니므로 final observation의 가치로 bootstrap한다. 3번: rollout은 수집량 기준이고 episode는 환경 종료 기준이다. 4번: 두 행동이 같은 확률인 `[0.5, 0.5]`의 불확실성이 더 크다.
 
-## 대학 강의와 추가 읽기
+## 참고문헌
 
 - [Stanford CS234: Introduction to Reinforcement Learning](https://web.stanford.edu/class/cs234/modules.html)
 - [UC Berkeley CS 185/285: Lecture 4 RL Basics](https://rail.eecs.berkeley.edu/deeprlcourse/)

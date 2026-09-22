@@ -289,6 +289,14 @@ $$
 | old batch를 다음 수집 뒤에도 유지 | on-policy 가정 악화 | update 뒤 buffer 비우기 |
 | PPO clipping과 gradient clipping 혼동 | 디버깅 지표 해석 오류 | ratio와 gradient norm을 별도 기록 |
 
+## 정리
+
+- 한 batch를 여러 번 쓰려면 old log probability를 저장해야 한다. 그 비율이 $r_t(\theta)$이며 보상 $r_t$와 다른 기호다.
+- clipping은 advantage 부호에 따라 서로 다른 방향의 ratio 이동만 막는다. 양쪽을 대칭으로 막지 않는다.
+- 최대화 목적 $L^{clip}$은 부호를 뒤집어 최소화 loss로 만든다. entropy 항 앞에는 음수가 붙는다.
+- rollout, mini-batch, epoch는 서로 다른 반복 단위다. epoch를 늘리면 데이터 재사용과 함께 KL도 커진다.
+- clipping은 KL에 대한 엄밀한 trust region 보장이 아니다. 그래서 7장의 지표로 실제 변화량을 관찰해야 한다.
+
 ## 연습문제
 
 1. old 확률 0.4, 새 확률 0.48일 때 ratio를 계산하라.
@@ -300,7 +308,7 @@ $$
 ??? note "정답 확인"
     1번: 1.2. 2번: 4.5, 3.6, 3.6. 3번: -1.5, -2.4, -2.4. 4번: $2048/128\times4=64$. 5번: old와 new 정책·관측 전처리가 같은지, old log probability를 수집 시점에 저장했는지 확인한다.
 
-## 대학 강의와 참고문헌
+## 참고문헌
 
 - Schulman et al. (2017), [*Proximal Policy Optimization Algorithms*](https://arxiv.org/abs/1707.06347)
 - [OpenAI Spinning Up: PPO](https://spinningup.openai.com/en/latest/algorithms/ppo.html)

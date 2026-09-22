@@ -165,7 +165,7 @@ entropy = distribution.entropy()            # [B]
 
 [Categorical 정책분포 실험실에서 logits와 entropy 비교하기](./assets/pytorch-foundations/policy-distribution-lab.html)
 
-### Worked Example: shape 추적
+## Worked Example: shape 추적
 
 batch 크기 32, 관측 크기 4, 행동 수 2라 하자.
 
@@ -339,6 +339,14 @@ print(actor[0].weight.grad.norm().item())
 | rollout을 gradient mode로 수집 | 메모리 증가와 old graph 재사용 오류 | `torch.inference_mode()` |
 | CPU tensor와 CUDA tensor 혼합 | device mismatch 예외 | 모델과 입력을 같은 device로 이동 |
 
+## 정리
+
+- tensor는 숫자와 shape를 함께 갖는다. PPO 버그의 큰 부분이 shape와 dtype에서 나온다.
+- actor는 `[B, A]` logits를, critic은 `[B, 1]`을 낸다. critic 출력은 `squeeze(-1)`로 `[B]`에 맞춘다.
+- `Categorical`은 logits 하나에서 행동, `log_prob`, `entropy`를 함께 제공한다. entropy는 $-\sum_a p\log p$이며 확률이 고를수록 크다.
+- rollout에서 저장한 old 값은 `detach` 또는 `inference_mode`로 만들어 gradient 경계를 끊는다.
+- optimizer 한 스텝은 `zero_grad` → `backward` → gradient clip → `step` 순서다.
+
 ## 연습문제
 
 1. 관측 batch `[128, 4]`가 행동 2개 actor를 통과할 때 logits, action, log probability shape를 써라.
@@ -350,7 +358,7 @@ print(actor[0].weight.grad.norm().item())
 ??? note "정답 확인"
     1번: `[128,2]`, `[128]`, `[128]`. 2번: `values.squeeze(-1)`. 3번: 새 정책 로그확률인 분자 쪽만 gradient가 흐른다. 4번 예: `[0.5,0.5]`가 높고 `[0.99,0.01]`이 낮다. 5번: 현재 loss의 gradient를 아직 계산하지 않았기 때문이다.
 
-## 대학 강의와 추가 읽기
+## 참고문헌
 
 - [UC Berkeley CS 185/285: Section 1 PyTorch Tutorial](https://rail.eecs.berkeley.edu/deeprlcourse/)
 - [PyTorch Learn the Basics](https://docs.pytorch.org/tutorials/beginner/basics/)

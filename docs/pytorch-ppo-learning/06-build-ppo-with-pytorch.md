@@ -418,7 +418,7 @@ python examples\ppo_cartpole.py --eval-only --checkpoint ppo_cartpole.pt
 4. `gae_lambda=0`과 `0.95`를 비교하라. 한 seed의 승패보다 곡선 변동과 여러 seed를 본다.
 5. `terminated`와 `truncated`를 합친 잘못된 구현을 별도 복사본에서 만들어 단위 테스트가 실패하도록 하라.
 
-## 흔한 실행 문제
+## 흔한 오류
 
 | 증상 | 원인 후보 | 확인 |
 |---|---|---|
@@ -428,6 +428,14 @@ python examples\ppo_cartpole.py --eval-only --checkpoint ppo_cartpole.pt
 | return이 9~20에서 고정 | 학습 방향·old log probability·GAE 오류 | 단위 테스트와 첫 ratio 확인 |
 | 잠깐 해결 후 급락 | update 과대·평가 표본 부족 | KL, clipfrac, 여러 평가 episode 확인 |
 | checkpoint 평가가 다름 | 설정이나 모델 구조 불일치 | checkpoint config와 현재 `Config` 비교 |
+
+## 정리
+
+- 프로그램은 환경·모델 구성 → rollout 수집 → GAE → advantage 표준화 → mini-batch update의 다섯 단계다.
+- rollout 수집에서는 gradient를 끄고, update에서만 같은 행동의 새 log probability를 다시 계산한다.
+- buffer의 각 열이 수식의 어느 기호인지 말로 대응시킬 수 있어야 코드를 읽은 것이다.
+- 평가에서는 행동을 argmax로 고정해 학습 rollout의 sampling과 분리한다.
+- checkpoint를 다른 process에서 읽어 평가할 수 있어야 재현 실험의 단위가 된다.
 
 ## 연습문제
 
