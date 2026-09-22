@@ -41,6 +41,7 @@ theme:
 plugins:
   - search:
       lang: ko
+  - awesome-pages
 
 markdown_extensions:
   - admonition

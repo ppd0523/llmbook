@@ -14,6 +14,7 @@
 | `docs/index.md` | 전체 책 목록 |
 | `docs/<book-slug>/` | 책 한 권. 목차, 챕터, 책 자산과 예제. `docs/` 바로 아래에는 책 폴더만 둔다 |
 | `docs/<book-slug>/_work/` | 내부 집필·검토 기록. 게시에서 제외 |
+| `docs/.pages`, `docs/<book-slug>/.pages` | 탐색 메뉴의 책 순서와 표시 이름 |
 | `.guide/` | 집필 규칙과 단계별 템플릿 |
 | `overrides/` | 어느 책에도 속하지 않는 사이트 자원. 테마 override와 전역 스크립트 |
 | `adr/` | 되돌리기 어려운 결정과 그 이유. 게시에서 제외 |

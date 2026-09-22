@@ -1,0 +1,17 @@
+# 책 목록의 표시 이름과 번호는 각 책 폴더의 .pages에서 정한다.
+# 아래 순서는 docs/index.md의 책 목록과 같게 유지한다.
+nav:
+  - index.md
+  - nix-foundation
+  - nixos-wsl-dev-environment
+  - home-manager-guide
+  - nix-flakes
+  - nix-cpp-cyclonedds
+  - lazyvim-development-environment
+  - hermes-agent-guide
+  - robotics-kinematics-foundations
+  - robotics-manipulator-kinematics
+  - humanoid-balance-and-whole-body-ik
+  - canon-edsdk-guide
+  - pytorch-ppo-learning
+  - isaac-lab-ball-on-plate
