@@ -73,8 +73,8 @@ PPO는 이 책에서 “병렬 롤아웃을 모으고 제한된 목적 함수로
 
 ## 제공 예제
 
-- [예제 프로젝트 README](./examples/ball_on_plate_lab/README.md)
-- [버전 잠금표](./examples/ball_on_plate_lab/VERSION_LOCK.md)
+- [예제 프로젝트 README](https://github.com/ppd0523/llmbook/blob/main/docs/isaac-lab-ball-on-plate/examples/ball_on_plate_lab/README.md) (저장소에서 읽는다)
+- [버전 잠금표](https://github.com/ppd0523/llmbook/blob/main/docs/isaac-lab-ball-on-plate/examples/ball_on_plate_lab/VERSION_LOCK.md) (저장소에서 읽는다)
 - [원판 URDF](./examples/ball_on_plate_lab/source/ball_on_plate_lab/ball_on_plate_lab/assets/urdf/ball_on_plate.urdf)
 - [공유 MDP 함수](./examples/ball_on_plate_lab/source/ball_on_plate_lab/ball_on_plate_lab/tasks/common.py)
 - [Direct 환경](./examples/ball_on_plate_lab/source/ball_on_plate_lab/ball_on_plate_lab/tasks/direct/ball_on_plate/ball_on_plate_env.py)
