@@ -1,9 +1,9 @@
 ---
 title: PyTorch PPO 학습 자료 검토 기록
-version: 0.8
+version: 0.9
 status: final
 owner: agent
-updated: 2026-08-21
+updated: 2026-09-22
 target_reader: 강화학습과 PyTorch 초심자
 topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ---
@@ -150,3 +150,59 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 | 병렬·분산·recurrent·multi-agent PPO | 후속 키워드 | 각각 별도 시스템·모델 과정이 필요하다. |
 
 누락과 의도적 생략을 구분했다. 의도적 생략은 본문에서 주제명, 필요한 이유, 권장 선행 키워드, 돌아올 시점을 함께 안내한다.
+
+
+## 11. 3차 개정: 기술 재검증과 코드 대조 (2026-09-22)
+
+### 수치 재검산
+
+본문의 모든 손계산을 다시 검산했다. **수치 오류는 없었다.** 2장 return 예제, 두 상태 가치,
+4장 GAE 역방향 계산과 연습문제 답, 5장 clipping 예제와 policy loss, 6장 로그 예시가 모두
+정확했다.
+
+### 기호 정합성에서 찾은 실제 결함
+
+| 결함 | 위치 | 처리 |
+|---|---|---|
+| $r_t$가 보상과 probability ratio를 동시에 지칭 | 2장 기호표 ↔ 5장 ratio 절 | ratio는 항상 $r_t(\theta)$로 표기. 2·5장에 충돌 경고 추가 |
+| $A_t$와 $\hat A_t$ 혼용 | 4장 정의·불릿·연습문제, 6장 buffer 표 | 참값/추정 구분을 4장에 명문화하고 오용 지점 교정 |
+| bootstrap mask 극성 충돌 | 2장 $(1-d_t)$ ↔ 4장 $b_t$ | 예제 코드의 `bootstrap_mask`와 같은 $b_t$로 통일 |
+| 마스크 표의 $c_t$ 열에 산문 | 4장 "rollout 끝이지만 episode 계속" 행 | 예제 코드 확인 결과 두 마스크 모두 1이고 재귀는 $\hat A_{t+1}=0$에서 시작해 batch 경계에서 끝난다. 표를 그대로 수정 |
+
+### 본문과 예제 코드의 어긋남
+
+`examples/ppo_components.py`, `examples/ppo_cartpole.py`, `examples/torchrl_ppo.py`,
+`tests/test_ppo_components.py`를 읽고 본문 발췌와 한 줄씩 대조했다.
+
+- **테스트 커버리지 과장**: 6장은 단위 테스트가 네 계약을 확인한다고 썼다. 실제로는
+  `ppo_cartpole.py`가 `generalized_advantage_estimate()`와 `explained_variance()`만
+  가져다 쓰고, clipping은 `update_model()` 안에 다시 작성했으며 `discounted_returns()`는
+  호출하지 않는다. 6·7·9장 서술을 실제 범위로 축소했다.
+- `train()` 발췌가 실제 첫 두 줄(`seed_everything`, `select_device`)을 생략 표시 없이 빼고 있었다.
+- `build_model()` 발췌가 observation space 검사를 빼고 있었다.
+- mini-batch index의 `device` 인자가 실제 코드와 달랐다.
+- KL 조기 중단 발췌에 빈 목록 가드 `epoch_kl_values and`가 빠져 있었다.
+- advantage 표준화 위치를 "update 전"이라 썼으나 실제로는 `update_model()` 첫 부분이다.
+- `explained_variance()`가 target 분산 0에서 `nan`을 반환하는데 7장이 이를 적지 않았다.
+- TorchRL 예제가 `empty()`를 두 번 호출하는데 8장 발췌는 뒤쪽만 보여 주었다.
+- 가상환경 이름이 3·6장은 `.venv-ppo`, 8장은 `.venv`였다. 8장을 따랐다면 다른 환경이 생긴다.
+
+### 실행하지 못한 검증 (중요)
+
+이번 개정에서는 **예제를 한 번도 실행하지 않았다.** 이유:
+
+- 저장소의 `.venv`는 NixOS에서 만든 Linux venv여서 현재 Windows 셸에서 사용할 수 없다.
+- `torch==2.13.0`, `gymnasium==1.3.0`, `torchrl==0.13.3`은 설치되어 있지 않다.
+- 본문 산문 퇴고가 목적이고 예제 코드는 읽기 전용으로 합의했으므로, 실행이 확인하는 것은
+  "이전 사이클에서 통과한 게이트가 여전히 통과한다"뿐이다.
+
+따라서 `_work/08_publish.md`의 2026-08-21·2026-09-08 실행 게이트 결과는 **이번 개정에서
+재확인되지 않았다.** 예제 코드 자체는 한 줄도 바꾸지 않았으므로 그 결과가 무효가 되지는
+않지만, 이번 개정의 증거로 인용할 수는 없다.
+
+### 후속 작업으로 분리한 항목
+
+`ppo_cartpole.py`의 `update_model()`이 clipping을 인라인하는 대신
+`ppo_components.clipped_surrogate()`를 호출하도록 바꾸면 단위 테스트가 학습 경로를 직접
+검증한다. 더 나은 최종 상태이지만, 학습 코드를 고치고 한 번도 실행하지 못하는 것이 최악의
+결과이므로 실행 가능한 환경에서 별건으로 수행한다.

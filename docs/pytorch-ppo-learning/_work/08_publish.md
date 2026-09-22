@@ -1,9 +1,9 @@
 ---
 title: PyTorch PPO 출판 기록
-version: 1.3
+version: 1.4
 status: final
 owner: agent
-updated: 2026-09-08
+updated: 2026-09-22
 target_reader: 강화학습과 PyTorch 초심자
 topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ---
@@ -84,3 +84,40 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 | Markdown 구조·링크 | 통과 | 독자용 Markdown 10개, H1·fence·상대 링크 오류 0개 |
 | Site build | 통과 | MkDocs 1.6.1·Material 9.7.6 strict build 성공 |
 | Git whitespace | 통과 | `git diff --check` 오류 없음 |
+
+
+## 8. 2026-09-22 3차 개정 검증
+
+### 실행한 게이트
+
+| 게이트 | 명령·방법 | 상태 | 결과 |
+|---|---|---|---|
+| Site build | `mkdocs build --strict` | 통과 | MkDocs 1.6.1, warning을 오류로 처리한 build 성공 |
+| 상대 링크 | 본문의 local target 존재 확인 | 통과 | 새로 추가한 7장·6장·9장 교차 링크 포함 |
+| 기호 잔존 검사 | `r_t`, `A_t`, `d_t` 전수 grep | 통과 | 맨 `r_t`는 보상 용도와 5장의 충돌 경고문만, 맨 `A_t`는 참값 정의 문맥만, `(1-d_t)`는 2장의 유도와 정리 불릿 2곳만 |
+| 제목 통일 검사 | `^## ` 전수 grep | 통과 | `정리` 9곳, `참고문헌` 9곳, `흔한 오류` 5곳 |
+| 본문↔예제 코드 대조 | 발췌와 `examples/*.py` 한 줄 대조 | 통과 | 어긋남 8건을 찾아 본문 수정 |
+| Git whitespace | `git diff --check` | 통과 | 오류 없음 |
+
+빌드 환경 주의: 저장소의 `.venv`는 NixOS에서 만든 Linux venv여서 Windows 셸에서 쓸 수 없다.
+이번 검증은 `requirements.txt`(mkdocs-material 9.7.6)만 설치한 별도 임시 Windows 환경에서
+수행했고, 저장소의 `.venv`는 건드리지 않았다.
+
+### 실행하지 못한 게이트
+
+다음 게이트는 **이번 개정에서 실행하지 않았다.** `torch`, `gymnasium`, `torchrl`이 설치되어
+있지 않고, 예제 코드를 한 줄도 바꾸지 않았으므로 설치 비용을 들이지 않기로 결정했다.
+
+- Python syntax (`compileall`)
+- Component tests (`unittest discover`)
+- Raw PPO smoke / full
+- Checkpoint reload, CSV·주기 평가, Metric plot
+- TorchRL smoke
+- SVG XML, HTML script
+
+2026-08-21·2026-09-08 사이클의 위 결과를 이번 개정의 증거로 인용하지 않는다.
+
+### 경로 변경
+
+없다. 장 분할·병합과 파일 이름 변경을 하지 않았으므로 공개 URL이 하나도 바뀌지 않았고,
+리다이렉트 설정을 추가하지 않았다. 등록할 항목이 0개인 플러그인은 죽은 설정이 된다.

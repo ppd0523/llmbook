@@ -1,9 +1,9 @@
 ---
 title: PyTorch PPO 입문 조사 노트
-version: 1.0
+version: 1.1
 status: final
 owner: agent
-updated: 2026-08-21
+updated: 2026-09-22
 target_reader: 강화학습과 PyTorch 초심자
 topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 ---
@@ -168,3 +168,28 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 | He et al., *Deep Residual Learning for Image Recognition* | 신경망 층이 입력 기준의 residual function을 학습하고 shortcut으로 더함 | TD 잔차·잔차 정책과 ResNet 잔차 연결을 별도 개념으로 구분 |
 
 원문 링크: <https://incompleteideas.net/book/the-book-2nd.html>, <https://arxiv.org/abs/1506.02438>, <https://arxiv.org/abs/1812.03201>, <https://arxiv.org/abs/1512.03385>
+
+
+## 13. 3차 개정: 1차 출처 재검증 (2026-09-22)
+
+버전 번호는 갱신하지 않기로 결정했다. 설치·실행이 불가능한 환경에서 확인하지 않은 버전을
+적으면 검증 기록이 거짓이 되기 때문이다. 대조 대상은 수식 정의, 부호 규약, 하이퍼파라미터
+기본값, API 시그니처로 한정했다.
+
+| 본문 주장 | 대조한 1차 출처 | 결과 |
+|---|---|---|
+| clip 폭 $\epsilon$ 보통 0.2 | Schulman et al. (2017) Table 1 ablation | 0.1 → 0.76, 0.2 → 0.82, 0.3 → 0.70. 0.2가 최고. 확인 |
+| 같은 논문 Atari 설정 | 같은 논문 Table 5 | Clipping parameter 0.1. 본문에 환경별 차이로 기록 |
+| $\gamma=0.99$, $\lambda=0.95$ | 같은 논문 Table 3(MuJoCo), Table 5(Atari) | 두 표 모두 Discount 0.99, GAE parameter 0.95. 확인 |
+| Spinning Up 기본값 | OpenAI Spinning Up PPO 문서 | clip_ratio 0.2, gamma 0.99, lam **0.97**. lambda 차이를 본문에 명시 |
+| orthogonal init 0.01 / 1.0 | The 37 Implementation Details of PPO (ICLR Blog Track, 2022) | 은닉층 $\sqrt2$, 정책 출력 0.01, 가치 출력 1.0. 확인 |
+| ratio 표기 $r_t(\theta)$, advantage 표기 $\hat A_t$ | Schulman et al. (2017) 3절 | 논문도 같은 표기. 이 책의 기호 규약과 일치 |
+| `from torchrl.collectors import Collector` | TorchRL 0.14 collectors 문서 | `Collector`가 공식 front door. `SyncDataCollector`는 문서에서 사라짐. 본문 정확 |
+| `auto_register_policy_transforms=True` | TorchRL 0.14 `Collector` 문서 | 실재. 기본값은 0.14까지 `None`이고 0.15에서 `True`로 바뀔 예정. 본문 정확 |
+| `entropy_coeff`, `critic_coeff` | TorchRL 0.14 `ClipPPOLoss` 문서 | 철자 일치(`_coef` 아님). 본문 정확 |
+
+8장의 TorchRL API 이름이 구버전 관례(`SyncDataCollector`, `entropy_coef`)와 달라 오류를
+의심했으나, 대조 결과 **본문이 최신 API를 정확히 쓰고 있었다**. 수정하지 않았다.
+
+남은 한계: 위 대조는 모두 문서 기준이다. 고정 버전(PyTorch 2.13.0, Gymnasium 1.3.0,
+TorchRL 0.13.3)에서 실제로 import되고 동작하는지는 이번 개정에서 실행하지 못했다.
