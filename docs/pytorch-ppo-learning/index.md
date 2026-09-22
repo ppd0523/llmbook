@@ -55,11 +55,11 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 | 1 | [강화학습의 언어와 환경 루프](./01-reinforcement-learning-mental-model.md) | CartPole 한 transition을 관측·행동·보상·종료로 설명한다. | 3–4시간 |
 | 2 | [MDP, 가치와 PPO를 위한 최소 수학](./02-mdp-value-and-math.md) | return과 Bellman 관계를 계산하고 TD 오차·잔차와 최적화 수학을 설명한다. | 5–7시간 |
 | 3 | [정책을 위한 PyTorch 기초](./03-pytorch-for-policies.md) | actor·critic 출력 shape와 `Categorical` 로그확률의 gradient를 추적한다. | 5–7시간 |
-| 4 | [Policy gradient, actor–critic과 GAE](./04-policy-gradient-and-gae.md) | TD 잔차와 GAE를 계산해 행동 확률의 업데이트 방향을 판단한다. | 6–8시간 |
+| 4 | [Policy gradient, actor–critic과 GAE](./04-policy-gradient-and-gae.md) | TD 잔차와 GAE를 계산해 행동 확률의 업데이트 방향을 판단하고 “잔차”의 네 문맥을 구분한다. | 6–8시간 |
 | 5 | [PPO-Clip 목적함수](./05-ppo-clipped-objective.md) | advantage 부호에 따른 clipping 결과와 on-policy batch 생명주기를 설명한다. | 5–7시간 |
 | 6 | [순수 PyTorch로 PPO 만들기](./06-build-ppo-with-pytorch.md) | CartPole 학습을 실행하고 코드의 각 tensor를 수식에 대응시킨다. | 8–12시간 |
 | 7 | [PPO 실험과 디버깅](./07-debug-and-experiment.md) | KL, clip fraction, entropy, value loss로 실패 원인을 분류한다. | 5–8시간 |
-| 8 | [TorchRL로 PPO 사용하기](./08-use-ppo-with-torchrl.md) | 잔차 용어를 구분하고 직접 구현을 TorchRL 환경·collector·GAE·loss module에 대응시킨다. | 6–9시간 |
+| 8 | [TorchRL로 PPO 사용하기](./08-use-ppo-with-torchrl.md) | 직접 구현을 TorchRL 환경·collector·GAE·loss module에 대응시키고 잔차 강화학습의 결합 방식을 설명한다. | 6–9시간 |
 | 9 | [최종 프로젝트와 다음 학습](./09-final-project-and-next-steps.md) | 여러 seed의 기준 실험과 변경 실험을 비교해 재현 보고서를 만든다. | 8–12시간 |
 
 ## 실습 자료
