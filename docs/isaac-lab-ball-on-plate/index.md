@@ -1,3 +1,10 @@
+---
+title: 원반 위 공으로 배우는 Isaac Lab 강화학습
+version: 1.0
+updated: 2026-09-02
+baseline: Isaac Sim 6.0.1, Isaac Lab v3.0.0-beta2.patch1, PyTorch 2.11.0
+---
+
 # 원반 위 공으로 배우는 Isaac Lab 강화학습
 
 이 책은 복잡한 로봇 대신 **두 축으로 기울어지는 원형 판과 공 하나**로 Isaac Lab의 환경 작성법을 배운다. 먼저 모든 제어 흐름이 보이는 Direct 환경을 만들고, 같은 MDP를 Manager-based 환경으로 다시 구성한다. 학습은 Newton MJWarp로 빠르게 반복하고, 마지막에 Isaac Sim PhysX로 같은 정책을 비교한다.

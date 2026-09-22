@@ -1,3 +1,10 @@
+---
+title: 처음부터 구현하며 배우는 PyTorch PPO
+version: 1.0
+updated: 2026-09-22
+baseline: PyTorch 2.13.0, Gymnasium 1.3.0, TorchRL 0.13.3
+---
+
 # 처음부터 구현하며 배우는 PyTorch PPO
 
 이 책은 강화학습을 처음 접하는 학습자가 **PPO(Proximal Policy Optimization)** 를 수식·tensor·실행 코드의 세 관점에서 연결하도록 만든 입문 과정이다. 먼저 순수 PyTorch로 PPO-Clip을 구현해 내부를 확인하고, 마지막에는 같은 구조를 PyTorch 공식 강화학습 라이브러리인 TorchRL로 옮긴다.
