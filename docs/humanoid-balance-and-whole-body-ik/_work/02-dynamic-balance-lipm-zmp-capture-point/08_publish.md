@@ -12,14 +12,14 @@ topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 
 ## 1. 최종 산출물 계획
 
-- 기준 원고 Markdown: `docs/robotics-ik-learning/_work/06-dynamic-balance-lipm-zmp-capture-point/07_final.md`
+- 기준 원고 Markdown: `docs/humanoid-balance-and-whole-body-ik/_work/02-dynamic-balance-lipm-zmp-capture-point/07_final.md`
 - 원본 버전: 1.2
 - 최종 산출물 형식: MkDocs 챕터형 Markdown, 독립 실행형 HTML 실험
-- 최종 산출물 경로: `docs/robotics-ik-learning/06-dynamic-balance-lipm-zmp-capture-point.md`
-- MkDocs 책 폴더명 `<book-slug>`: `robotics-ik-learning`
+- 최종 산출물 경로: `docs/humanoid-balance-and-whole-body-ik/02-dynamic-balance-lipm-zmp-capture-point.md`
+- MkDocs 책 폴더명 `<book-slug>`: `humanoid-balance-and-whole-body-ik`
 - 챕터 파일명 규칙: `NN-<chapter-slug>.md`
-- 챕터 파일 배치: `docs/robotics-ik-learning/` 바로 아래
-- 보조 산출물: `docs/robotics-ik-learning/assets/dynamic-balance-lipm-zmp-capture-point/dynamic-balance-lab.html`
+- 챕터 파일 배치: `docs/humanoid-balance-and-whole-body-ik/` 바로 아래
+- 보조 산출물: `docs/humanoid-balance-and-whole-body-ik/assets/dynamic-balance-lipm-zmp-capture-point/dynamic-balance-lab.html`
 - 구성 또는 변환 도구: MkDocs Material 9.7.6, Codex 인앱 브라우저
 - 구성 또는 변환 명령: `mkdocs build --strict`
 - 구성 또는 변환 일시: 2026-08-12
@@ -57,8 +57,8 @@ topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 
 ## 4. MkDocs 챕터형 Markdown 검수
 
-- [x] 책이 `docs/robotics-ik-learning/` 아래에 있으며 폴더명이 소문자 kebab-case다.
-- [x] 사이트 전체 진입점 `docs/index.md`와 책 진입점 `docs/robotics-ik-learning/index.md`가 있다.
+- [x] 책이 `docs/humanoid-balance-and-whole-body-ik/` 아래에 있으며 폴더명이 소문자 kebab-case다.
+- [x] 사이트 전체 진입점 `docs/index.md`와 책 진입점 `docs/humanoid-balance-and-whole-body-ik/index.md`가 있다.
 - [x] 챕터 파일이 책 폴더 바로 아래에 있다.
 - [x] 챕터 파일명이 두 자리 번호와 소문자 kebab-case를 사용한다.
 - [x] `chapter.md`처럼 반복되는 일반 파일명을 사용하지 않는다.

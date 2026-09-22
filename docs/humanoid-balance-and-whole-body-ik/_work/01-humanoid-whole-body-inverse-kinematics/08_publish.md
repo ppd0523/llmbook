@@ -9,10 +9,10 @@ updated: 2026-08-12
 
 ## 출판 결과
 
-- 공개 장: `docs/robotics-ik-learning/05-humanoid-whole-body-inverse-kinematics.md`
-- 최종 원고: `docs/robotics-ik-learning/_work/05-humanoid-whole-body-inverse-kinematics/07_final.md`
-- 인터랙티브 실습: `docs/robotics-ik-learning/assets/humanoid-whole-body-inverse-kinematics/whole-body-ik-lab.html`
-- 목차: `docs/robotics-ik-learning/index.md`의 5단계와 실습 목록에 연결
+- 공개 장: `docs/humanoid-balance-and-whole-body-ik/01-humanoid-whole-body-inverse-kinematics.md`
+- 최종 원고: `docs/humanoid-balance-and-whole-body-ik/_work/01-humanoid-whole-body-inverse-kinematics/07_final.md`
+- 인터랙티브 실습: `docs/humanoid-balance-and-whole-body-ik/assets/humanoid-whole-body-inverse-kinematics/whole-body-ik-lab.html`
+- 목차: `docs/humanoid-balance-and-whole-body-ik/index.md`의 5단계와 실습 목록에 연결
 - 이전 단계 연결: 4단계의 `다음 단계` 절에서 5단계 공개 장으로 연결
 
 ## 내용 검증

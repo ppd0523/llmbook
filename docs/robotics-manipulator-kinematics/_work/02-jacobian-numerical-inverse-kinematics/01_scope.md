@@ -64,10 +64,10 @@ updated: 2026-08-12
 
 ## 최종 산출물
 
-- 기준 원고: `docs/robotics-ik-learning/_work/04-jacobian-numerical-inverse-kinematics/07_final.md`
-- 공개 장: `docs/robotics-ik-learning/04-jacobian-numerical-inverse-kinematics.md`
-- 인터랙티브 실습: `docs/robotics-ik-learning/assets/jacobian-numerical-inverse-kinematics/numerical-ik-lab.html`
-- 책 색인: `docs/robotics-ik-learning/index.md`
+- 기준 원고: `docs/robotics-manipulator-kinematics/_work/02-jacobian-numerical-inverse-kinematics/07_final.md`
+- 공개 장: `docs/robotics-manipulator-kinematics/02-jacobian-numerical-inverse-kinematics.md`
+- 인터랙티브 실습: `docs/robotics-manipulator-kinematics/assets/jacobian-numerical-inverse-kinematics/numerical-ik-lab.html`
+- 책 색인: `docs/robotics-manipulator-kinematics/index.md`
 - 형식: MkDocs 챕터형 Markdown과 외부 라이브러리 없는 정적 HTML
 - 예상 학습 시간: 10–14시간
 

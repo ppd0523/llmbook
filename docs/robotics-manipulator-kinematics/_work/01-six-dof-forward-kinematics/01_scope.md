@@ -59,10 +59,10 @@ updated: 2026-08-11
 
 ## 최종 산출물
 
-- 기준 원고: `docs/robotics-ik-learning/_work/03-six-dof-forward-kinematics/07_final.md`
-- 공개 장: `docs/robotics-ik-learning/03-six-dof-forward-kinematics.md`
-- 인터랙티브 실습: `docs/robotics-ik-learning/assets/six-dof-forward-kinematics/forward-kinematics-lab.html`
-- 책 색인: `docs/robotics-ik-learning/index.md`
+- 기준 원고: `docs/robotics-manipulator-kinematics/_work/01-six-dof-forward-kinematics/07_final.md`
+- 공개 장: `docs/robotics-manipulator-kinematics/01-six-dof-forward-kinematics.md`
+- 인터랙티브 실습: `docs/robotics-manipulator-kinematics/assets/six-dof-forward-kinematics/forward-kinematics-lab.html`
+- 책 색인: `docs/robotics-manipulator-kinematics/index.md`
 - 형식: MkDocs 챕터형 Markdown과 외부 라이브러리 없는 정적 HTML
 
 ## 성공 기준

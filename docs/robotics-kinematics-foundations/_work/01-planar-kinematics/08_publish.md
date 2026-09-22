@@ -12,11 +12,11 @@ topic: 2관절 평면 매니퓰레이터의 역기구학
 
 ## 1. 최종 산출물 계획
 
-- 기준 원고: `docs/robotics-ik-learning/_work/07_final.md`
+- 기준 원고: `docs/robotics-kinematics-foundations/_work/01-planar-kinematics/07_final.md`
 - 최종 형식: MkDocs 챕터형 Markdown 학습자료
-- 최종 경로: `docs/robotics-ik-learning/index.md`, `docs/robotics-ik-learning/01-planar-kinematics.md`
+- 최종 경로: `docs/robotics-kinematics-foundations/index.md`, `docs/robotics-kinematics-foundations/01-planar-kinematics.md`
 - 보조 산출물: `assets/planar-kinematics/fk-playground.html`, `assets/planar-kinematics/ik-practice.html`
-- 책 폴더명: `robotics-ik-learning`
+- 책 폴더명: `robotics-kinematics-foundations`
 - 챕터 규칙: `NN-<chapter-slug>.md`
 - 수식 렌더링: `pymdownx.arithmatex` 및 MathJax 설정
 
@@ -33,7 +33,7 @@ topic: 2관절 평면 매니퓰레이터의 역기구학
 
 ## 3. 검수 결과
 
-- [x] 책 폴더가 `docs/robotics-ik-learning/`에 있고 kebab-case다.
+- [x] 책 폴더가 `docs/robotics-kinematics-foundations/`에 있고 kebab-case다.
 - [x] 책 진입점과 `01-planar-kinematics.md` 챕터가 존재한다.
 - [x] 내부 작업 산출물은 `_work/`에 분리되어 있고 `mkdocs.yml`의 `exclude_docs`에서 제외된다.
 - [x] `docs/index.md`에 책 진입점 링크를 추가했다.

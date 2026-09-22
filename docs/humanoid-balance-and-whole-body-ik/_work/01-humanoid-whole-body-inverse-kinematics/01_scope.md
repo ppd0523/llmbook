@@ -98,13 +98,13 @@ updated: 2026-08-12
 ## 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고: `docs/robotics-ik-learning/_work/05-humanoid-whole-body-inverse-kinematics/07_final.md`
-- 내부 작업 산출물: `docs/robotics-ik-learning/_work/05-humanoid-whole-body-inverse-kinematics/`
+- 기준 원고: `docs/humanoid-balance-and-whole-body-ik/_work/01-humanoid-whole-body-inverse-kinematics/07_final.md`
+- 내부 작업 산출물: `docs/humanoid-balance-and-whole-body-ik/_work/01-humanoid-whole-body-inverse-kinematics/`
 - 최종 산출물 형식: MkDocs 챕터형 Markdown과 독립 실행형 정적 HTML
-- 공개 장: `docs/robotics-ik-learning/05-humanoid-whole-body-inverse-kinematics.md`
-- 인터랙티브 실습: `docs/robotics-ik-learning/assets/humanoid-whole-body-inverse-kinematics/whole-body-ik-lab.html`
-- 책 색인: `docs/robotics-ik-learning/index.md`
-- 책 폴더명: `robotics-ik-learning`
+- 공개 장: `docs/humanoid-balance-and-whole-body-ik/01-humanoid-whole-body-inverse-kinematics.md`
+- 인터랙티브 실습: `docs/humanoid-balance-and-whole-body-ik/assets/humanoid-whole-body-inverse-kinematics/whole-body-ik-lab.html`
+- 책 색인: `docs/humanoid-balance-and-whole-body-ik/index.md`
+- 책 폴더명: `humanoid-balance-and-whole-body-ik`
 - 챕터 파일명 규칙: `NN-<chapter-slug>.md`
 - 챕터 수: 이 작업에서 1장 추가
 - 수식 지원: MathJax 필요

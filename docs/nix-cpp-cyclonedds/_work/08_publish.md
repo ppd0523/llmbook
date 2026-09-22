@@ -33,4 +33,17 @@ MkDocs 챕터형 Markdown 학습자료. 경로는 `docs/nix-cpp-cyclonedds/`이�
 - 교차 산출물 ELF의 `Machine`·`INTERP`·`NEEDED`
 - 대상 장치 배포와 LAN에서의 publisher·subscriber 통신
 
+## 4. 추후 검증 필요
+
+위 네 항목은 **추후 검증 필요** 상태로 남긴다. 이 저장소 환경의 제약 때문이며 본문의 결함이 아니다. NixOS 환경에서 다음 순서로 확인하면 채워진다.
+
+1. `nix develop`으로 셸에 진입해 `cmake --version`과 교차 컴파일러 실행을 확인한다.
+2. `conan lock create`와 `conan install`을 native 프로필로 실행해 7장 절차를 재현한다.
+3. host 프로필을 aarch64-musl로 바꿔 빌드하고 `readelf`로 8.4의 기대값 표를 대조한다.
+4. 실행 파일과 설정을 대상 장치에 배포해 publisher와 subscriber의 통신을 확인한다.
+
+확인한 결과는 이 파일의 2절 표에 추가하고 이 절에서 해당 항목을 지운다.
+
+## 5. 검증 근거
+
 본문의 기술 주장은 공식 문서 대조와 예제 소스 읽기로 검증했다. 근거와 판정은 `02_research.md`와 `05_review.md`에 있다. 실행 검증은 NixOS 환경에서 별도로 수행해야 한다. 빌드 통과를 예제 실행 성공으로 간주하지 않는다.

@@ -62,11 +62,11 @@ topic: 2관절 평면 매니퓰레이터로 배우는 역기구학의 첫걸음
 ## 5. 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고 경로: `docs/robotics-ik-learning/_work/07_final.md`
-- 내부 작업 산출물: `docs/robotics-ik-learning/_work/`
+- 기준 원고 경로: `docs/robotics-kinematics-foundations/_work/01-planar-kinematics/07_final.md`
+- 내부 작업 산출물: `docs/robotics-kinematics-foundations/_work/01-planar-kinematics/`
 - 최종 산출물: MkDocs 챕터형 Markdown 학습자료와 정적 HTML 실습 2개
-- 최종 경로: `docs/robotics-ik-learning/index.md`, `docs/robotics-ik-learning/01-planar-kinematics.md`, `docs/robotics-ik-learning/assets/planar-kinematics/`
-- 책 폴더명: `robotics-ik-learning`
+- 최종 경로: `docs/robotics-kinematics-foundations/index.md`, `docs/robotics-kinematics-foundations/01-planar-kinematics.md`, `docs/robotics-kinematics-foundations/assets/planar-kinematics/`
+- 책 폴더명: `robotics-kinematics-foundations`
 - 챕터 파일명 규칙: `NN-<chapter-slug>.md`
 - 현재 챕터 수: 1. 이후 묶음은 별도 챕터로 추가한다.
 - 빌드 도구: MkDocs Material

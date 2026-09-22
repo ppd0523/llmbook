@@ -82,9 +82,9 @@ updated: 2026-08-12
 ## 6. 최종 산출물 형식
 
 - 기준 원고: Markdown
-- 기준 원고 경로: docs/robotics-ik-learning/_work/06-dynamic-balance-lipm-zmp-capture-point/07_final.md
-- 공개 장: docs/robotics-ik-learning/06-dynamic-balance-lipm-zmp-capture-point.md
-- 실습: docs/robotics-ik-learning/assets/dynamic-balance-lipm-zmp-capture-point/dynamic-balance-lab.html
+- 기준 원고 경로: docs/humanoid-balance-and-whole-body-ik/_work/02-dynamic-balance-lipm-zmp-capture-point/07_final.md
+- 공개 장: docs/humanoid-balance-and-whole-body-ik/02-dynamic-balance-lipm-zmp-capture-point.md
+- 실습: docs/humanoid-balance-and-whole-body-ik/assets/dynamic-balance-lipm-zmp-capture-point/dynamic-balance-lab.html
 - 최종 형식: MkDocs 챕터형 Markdown과 독립 실행형 HTML
 - 수식: MathJax 호환 LaTeX
 - 모바일 가독성: 320 px 이상
