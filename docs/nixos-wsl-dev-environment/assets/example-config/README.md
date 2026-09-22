@@ -37,7 +37,7 @@ $ exit
 
 Configure and test GitHub SSH authentication before the first push. The full
 from-scratch sequence, including WSL installation and SSH key setup, is in
-[Chapter 2](../../02_install_nixos_wsl/chapter.md) of the guide.
+[Chapter 2](../../02-install-nixos-wsl.md) of the guide.
 
 The initial channel update is only an image bootstrap step recommended by
 NixOS-WSL; the rebuild itself uses the locked Flake inputs.

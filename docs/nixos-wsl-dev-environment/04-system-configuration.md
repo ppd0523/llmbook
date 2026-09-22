@@ -8,7 +8,7 @@
 
 ## 4.1 공통 시스템 모듈
 
-[예제 `modules/nixos/common.nix`](../assets/example-config/modules/nixos/common.nix)는 호스트 종류와 무관한 최소 정책만 둔다.
+[예제 `modules/nixos/common.nix`](assets/example-config/modules/nixos/common.nix)는 호스트 종류와 무관한 최소 정책만 둔다.
 
 파일: `modules/nixos/common.nix` (핵심 내용)
 
@@ -146,4 +146,4 @@ $ test -e /lib64/ld-linux-x86-64.so.2 && echo nix-ld:ok
 - [nix-ld 설명](https://github.com/nix-community/nix-ld)
 - [NixOS 안정판 매뉴얼](https://nixos.org/manual/nixos/stable/)
 
-[← 3장](../03_repository_architecture/chapter.md) · [목차](../index.md) · [5장: Home Manager →](../05_home_manager/chapter.md)
+[← 3장](03-repository-architecture.md) · [목차](index.md) · [5장: Home Manager →](05-home-manager.md)

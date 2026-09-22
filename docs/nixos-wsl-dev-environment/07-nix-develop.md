@@ -32,7 +32,7 @@ direnv만으로도 Nix를 호출할 수 있지만, nix-direnv를 함께 쓰면 �
 
 ## 7.2 Home Manager로 direnv와 nix-direnv 설치
 
-이 책의 [Home Manager 예제](../assets/example-config/modules/home/programs.nix)에는 다음 설정이 포함되어 있다.
+이 책의 [Home Manager 예제](assets/example-config/modules/home/programs.nix)에는 다음 설정이 포함되어 있다.
 
 파일: 구성 저장소의 `modules/home/programs.nix` (`programs.direnv` 부분)
 
@@ -62,7 +62,7 @@ $ type _direnv_hook
 
 ## 7.3 가장 작은 `devShell` 만들기
 
-프로젝트 루트에 다음 `flake.nix`를 만든다. 그대로 실행할 수 있는 파일은 [예제 개발 셸](../assets/example-dev-shell/flake.nix)에도 있다.
+프로젝트 루트에 다음 `flake.nix`를 만든다. 그대로 실행할 수 있는 파일은 [예제 개발 셸](assets/example-dev-shell/flake.nix)에도 있다.
 
 파일: 프로젝트 루트의 `flake.nix` (핵심 내용)
 
@@ -213,7 +213,7 @@ Home Manager
 
 ### LazyVim 공통 요구사항 설치
 
-[예제 `lazyvim.nix`](../assets/example-config/modules/home/lazyvim.nix)는 Neovim,
+[예제 `lazyvim.nix`](assets/example-config/modules/home/lazyvim.nix)는 Neovim,
 Nixpkgs가 고정한 lazy.nvim, 공통 요구사항만 설치한다. 언어 extra는 여기에 없다.
 
 파일: 구성 저장소의 `modules/home/lazyvim.nix` (`programs.neovim` 부분)
@@ -249,7 +249,7 @@ $ tree-sitter --version
 
 ### LazyVim 설정을 Git으로 관리
 
-[예제 Neovim 설정](../assets/example-config/dotfiles/nvim/lua/config/lazy.lua)은 공식
+[예제 Neovim 설정](assets/example-config/dotfiles/nvim/lua/config/lazy.lua)은 공식
 starter 구조를 따르되 프로젝트별 spec, lock 파일, 플러그인 캐시를 선택한다.
 
 파일: 구성 저장소의 `dotfiles/nvim/lua/config/lazy.lua` (프로젝트 경로 선택 핵심 부분)
@@ -346,7 +346,7 @@ $ git commit -m "Configure project LazyVim plugins"
 
 ## 7.8 Python: uv 가상환경을 LazyVim에 연결
 
-전체 파일은 [Python 예제](../assets/example-dev-shell/python/flake.nix)에 있다.
+전체 파일은 [Python 예제](assets/example-dev-shell/python/flake.nix)에 있다.
 소유권은 다음처럼 나뉜다.
 
 | 파일 | 역할 |
@@ -422,7 +422,7 @@ $ git add .envrc .lazy.lua .lazy-lock.json .python-version \
 
 ## 7.9 Node.js: NVM과 프로젝트 로컬 vtsls 연결
 
-전체 파일은 [Node.js 예제](../assets/example-dev-shell/nodejs/flake.nix)에 있다.
+전체 파일은 [Node.js 예제](assets/example-dev-shell/nodejs/flake.nix)에 있다.
 `.nvmrc`는 정확한 Node.js 버전을, `package-lock.json`은 TypeScript와
 `@vtsls/language-server`, Prettier 버전을 고정한다. `flake.nix`에는 Node.js를 넣지
 않는다. 프로젝트의 `.lazy.lua`도 TypeScript와 Prettier extra만 선택한다.
@@ -482,7 +482,7 @@ $ git add .envrc .lazy.lua .lazy-lock.json .nvmrc flake.nix flake.lock \
 
 ## 7.10 Rust: rustup component를 LazyVim에 연결
 
-전체 파일은 [Rust 예제](../assets/example-dev-shell/rust/flake.nix)에 있다.
+전체 파일은 [Rust 예제](assets/example-dev-shell/rust/flake.nix)에 있다.
 `rust-toolchain.toml`이 컴파일러뿐 아니라 LazyVim이 사용할 구성 요소도 고정한다.
 
 Rust와 test extra는 프로젝트의 `.lazy.lua`에서만 활성화한다.
@@ -643,4 +643,4 @@ $ git add flake.nix flake.lock .envrc .lazy.lua .lazy-lock.json
 - [NVM `.nvmrc` 사용법](https://github.com/nvm-sh/nvm#nvmrc)
 - [rustup 디렉터리 override](https://rust-lang.github.io/rustup/overrides.html)
 
-[← 6장](../06_language_toolchains/chapter.md) · [목차](../index.md) · [8장: Git 복원 워크플로 →](../07_restore_workflow/chapter.md)
+[← 6장](06-language-toolchains.md) · [목차](index.md) · [8장: Git 복원 워크플로 →](08-restore-workflow.md)

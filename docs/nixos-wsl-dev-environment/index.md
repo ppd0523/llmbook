@@ -1,7 +1,7 @@
 ---
 title: NixOS-WSL 개발 환경을 Git으로 복원하기
-version: 1.9
-updated: 2026-07-22
+version: 2.0
+updated: 2026-09-22
 ---
 
 # NixOS-WSL 개발 환경을 Git으로 복원하기
@@ -25,15 +25,15 @@ Docker 구성은 이 자료의 범위에서 제외한다.
 
 ## 읽는 순서
 
-1. [역할과 경계](./01_mental_model/chapter.md)
-2. [처음부터 NixOS-WSL과 구성 저장소 만들기](./02_install_nixos_wsl/chapter.md)
-3. [저장소 구조와 Flake](./03_repository_architecture/chapter.md)
-4. [시스템 설정 분리](./04_system_configuration/chapter.md)
-5. [독립 실행형 Home Manager](./05_home_manager/chapter.md)
-6. [언어별 툴체인](./06_language_toolchains/chapter.md)
-7. [`nix develop`과 direnv](./07_nix_develop/chapter.md)
-8. [Git 복원 워크플로](./07_restore_workflow/chapter.md)
-9. [업데이트와 문제 해결](./08_operations_and_troubleshooting/chapter.md)
+1. [역할과 경계](01-mental-model.md)
+2. [처음부터 NixOS-WSL과 구성 저장소 만들기](02-install-nixos-wsl.md)
+3. [저장소 구조와 Flake](03-repository-architecture.md)
+4. [시스템 설정 분리](04-system-configuration.md)
+5. [독립 실행형 Home Manager](05-home-manager.md)
+6. [언어별 툴체인](06-language-toolchains.md)
+7. [`nix develop`과 direnv](07-nix-develop.md)
+8. [Git 복원 워크플로](08-restore-workflow.md)
+9. [업데이트와 문제 해결](09-operations-and-troubleshooting.md)
 
 ## 어느 시작 경로를 사용할까
 
@@ -44,9 +44,9 @@ Docker 구성은 이 자료의 범위에서 제외한다.
 
 ## 함께 제공하는 예제
 
-[전체 예제 구성](./assets/example-config/README.md)은 본문 코드의 완성본이다. 개인 저장소가 없는 첫 컴퓨터에서는 2장의 순서대로 예제를 `~/.config/nixos`에 복사하고, 로컬 Git 저장소와 원격 GitHub 저장소를 연결한 뒤 `flake.lock`을 생성해 커밋한다. 이 자료에 포함된 예제 자체에는 잠금 파일과 실제 하드웨어 설정이 없다. 둘은 사용자의 저장소와 호스트에 종속되기 때문이다.
+[전체 예제 구성](assets/example-config/README.md)은 본문 코드의 완성본이다. 개인 저장소가 없는 첫 컴퓨터에서는 2장의 순서대로 예제를 `~/.config/nixos`에 복사하고, 로컬 Git 저장소와 원격 GitHub 저장소를 연결한 뒤 `flake.lock`을 생성해 커밋한다. 이 자료에 포함된 예제 자체에는 잠금 파일과 실제 하드웨어 설정이 없다. 둘은 사용자의 저장소와 호스트에 종속되기 때문이다.
 
-프로젝트별 `nix develop` 실습에는 별도의 [개발 셸 예제](./assets/example-dev-shell/README.md)를 사용한다. 이 디렉터리에는 uv 기반 Python, NVM 기반 Node.js, rustup 기반 Rust를 LazyVim에 연결하는 예제가 함께 있다. 시스템 구성 Flake와 프로젝트 Flake는 책임과 저장소가 다르므로 예제도 분리했다.
+프로젝트별 `nix develop` 실습에는 별도의 [개발 셸 예제](assets/example-dev-shell/README.md)를 사용한다. 이 디렉터리에는 uv 기반 Python, NVM 기반 Node.js, rustup 기반 Rust를 LazyVim에 연결하는 예제가 함께 있다. 시스템 구성 Flake와 프로젝트 Flake는 책임과 저장소가 다르므로 예제도 분리했다.
 
 ## 가장 중요한 경계
 
@@ -62,4 +62,4 @@ Docker 구성은 이 자료의 범위에서 제외한다.
 | 프로젝트별 Nix 도구와 네이티브 라이브러리 | 프로젝트 `devShell` | `flake.nix`, `flake.lock`, `.envrc` |
 | 프로젝트별 LazyVim extra와 plugin 리비전 | 프로젝트 저장소 | `.lazy.lua`, `.lazy-lock.json` |
 
-[1장: 역할과 경계 →](./01_mental_model/chapter.md)
+[1장: 역할과 경계 →](01-mental-model.md)

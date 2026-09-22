@@ -2,8 +2,6 @@
 
 ## 학습 목표
 
-이 장을 마치면 다음을 할 수 있다.
-
 1. NixOS와 Nix 패키지 관리자의 역할을 구분한다.
 2. Flake와 `flake.lock`이 무엇을 고정하는지 설명한다.
 3. 시스템 설정, 사용자 설정, 프로젝트 설정의 소유자를 결정한다.
@@ -123,4 +121,4 @@ dotfiles는 프로그램이 읽는 설정 원본이다. Home Manager와 경쟁�
 - [Home Manager 설치 방식](https://nix-community.github.io/home-manager/installation.html)
 - [NixOS `stateVersion` FAQ](https://wiki.nixos.org/wiki/FAQ/When_do_I_update_stateVersion)
 
-[← 목차](../index.md) · [2장: NixOS-WSL 설치 →](../02_install_nixos_wsl/chapter.md)
+[← 목차](index.md) · [2장: NixOS-WSL 설치 →](02-install-nixos-wsl.md)

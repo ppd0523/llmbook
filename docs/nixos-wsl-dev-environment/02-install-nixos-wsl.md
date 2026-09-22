@@ -1,6 +1,6 @@
 # 2. 처음부터 NixOS-WSL과 구성 저장소 만들기
 
-이 장은 GitHub 계정만 있고 구성 저장소, SSH 키, NixOS-WSL이 모두 없는 첫 컴퓨터에서 시작한다. 여기서 만든 저장소가 이후 컴퓨터를 복원하는 원본이 된다. 이미 이 절차를 한 번 끝낸 저장소가 있다면 [8장의 복원 절차](../07_restore_workflow/chapter.md)로 이동한다.
+이 장은 GitHub 계정만 있고 구성 저장소, SSH 키, NixOS-WSL이 모두 없는 첫 컴퓨터에서 시작한다. 여기서 만든 저장소가 이후 컴퓨터를 복원하는 원본이 된다. 이미 이 절차를 한 번 끝낸 저장소가 있다면 [8장의 복원 절차](08-restore-workflow.md)로 이동한다.
 
 ## 학습 목표
 
@@ -174,11 +174,11 @@ $ ssh -T git@github.com
 
 ## 2.8 제공 예제를 구성 디렉터리로 복사하기
 
-이 안내서의 [`assets/example-config`](../assets/example-config/README.md)가 개인 구성 저장소의 시작점이다. 안내서 저장소를 내려받은 위치를 `<guide-root>`라고 하면 다음처럼 복사한다.
+이 안내서의 [`assets/example-config`](assets/example-config/README.md)가 개인 구성 저장소의 시작점이다. 안내서 저장소를 내려받은 위치를 `<guide-root>`라고 하면 다음처럼 복사한다.
 
 ```console
 $ mkdir -p ~/.config
-$ cp -R <guide-root>/nixos-wsl-dev-environment/assets/example-config \
+$ cp -R <guide-root>/docs/nixos-wsl-dev-environment/assets/example-config \
     ~/.config/nixos
 $ cd ~/.config/nixos
 ```
@@ -186,7 +186,7 @@ $ cd ~/.config/nixos
 예를 들어 안내서를 Windows의 `C:\Users\me\llmBook`에 내려받았다면 WSL 경로는 `/mnt/c/Users/me/llmBook`이다.
 
 ```console
-$ cp -R /mnt/c/Users/me/llmBook/nixos-wsl-dev-environment/assets/example-config \
+$ cp -R /mnt/c/Users/me/llmBook/docs/nixos-wsl-dev-environment/assets/example-config \
     ~/.config/nixos
 ```
 
@@ -195,7 +195,7 @@ $ cp -R /mnt/c/Users/me/llmBook/nixos-wsl-dev-environment/assets/example-config 
 ```console
 $ git clone <guide-repository-url> /tmp/nixos-wsl-guide
 $ mkdir -p ~/.config
-$ cp -R /tmp/nixos-wsl-guide/nixos-wsl-dev-environment/assets/example-config \
+$ cp -R /tmp/nixos-wsl-guide/docs/nixos-wsl-dev-environment/assets/example-config \
     ~/.config/nixos
 $ cd ~/.config/nixos
 ```
@@ -348,4 +348,4 @@ wsl -d NixOS
 - [GitHub REST API rate limit](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
 - [Nix `access-tokens` 설정](https://releases.nixos.org/nix/nix-2.31.3/manual/command-ref/conf-file.html#conf-access-tokens)
 
-[← 1장](../01_mental_model/chapter.md) · [목차](../index.md) · [3장: 저장소 구조와 Flake →](../03_repository_architecture/chapter.md)
+[← 1장](01-mental-model.md) · [목차](index.md) · [3장: 저장소 구조와 Flake →](03-repository-architecture.md)

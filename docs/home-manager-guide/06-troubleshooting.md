@@ -339,6 +339,6 @@ $ git diff -- flake.lock
 - [Home Manager 매뉴얼](https://nix-community.github.io/home-manager/)
 - [Home Manager 옵션](https://nix-community.github.io/home-manager/options.html)
 - [dotfile 충돌과 백업](https://nix-community.github.io/home-manager/usage/dotfiles.html)
-- [기존 매뉴얼의 업데이트와 문제 해결](../nixos-wsl-dev-environment/08_operations_and_troubleshooting/chapter.md)
+- [기존 매뉴얼의 업데이트와 문제 해결](../nixos-wsl-dev-environment/09-operations-and-troubleshooting.md)
 
 [← 5장](./05-apply-and-rollback.md) · [목차](./index.md)

@@ -30,4 +30,4 @@ successful editor startup. The shared Home Manager configuration only
 provides the LazyVim base and enables trusted local specs.
 
 The complete beginner-oriented explanation is in
-[Chapter 7](../../07_nix_develop/chapter.md) of the guide.
+[Chapter 7](../../07-nix-develop.md) of the guide.

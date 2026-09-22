@@ -1,9 +1,9 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 1.9
+version: 2.0
 status: complete
 owner: agent
-updated: 2026-07-22
+updated: 2026-09-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -13,7 +13,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 ## 1. 최종 산출물
 
 - 목차: `index.md`
-- 본문: 9개 챕터의 `chapter.md`
+- 본문: 책 폴더 바로 아래의 `NN-<chapter-slug>.md` 챕터 파일 9개
 - 기준 원고: `_work/07_final.md`
 - 복제 가능한 사용자·시스템 구성: `assets/example-config/`
 - Python·Node.js·Rust 프로젝트 환경: `assets/example-dev-shell/`
@@ -74,3 +74,21 @@ NixOS-WSL에서 정상 평가되었다. NixOS 전체 build, Home Manager switch,
 - Neovim 설정의 경로별 소유권 분리는 사용자 NixOS-WSL의 Home Manager 평가를 통과했다.
 - Markdown 사이트는 MkDocs strict build 기준으로 출판 가능하다.
 - NixOS와 Neovim 실행 검증은 실제 대상 환경에서 완료해야 한다.
+
+
+## 7. 개정 검수 (2026-09-22)
+
+챕터 파일 배치를 `NN-<chapter-slug>.md`로 바꾼 뒤 다시 실행한 게이트다.
+
+- [x] `python -m mkdocs build --strict`가 통과한다.
+- [x] `index.md`의 읽는 순서 아홉 항목이 01~09 챕터 파일에 각각 연결된다.
+- [x] 챕터 사이 이전·다음 링크와 목차 링크가 새 파일명을 가리킨다.
+- [x] 챕터의 `assets/` 링크가 한 단계 올라온 기준 경로에 맞는다.
+- [x] `docs/home-manager-guide/06-troubleshooting.md`의 교차 링크가 9장을 가리킨다.
+- [x] 두 예제 asset README의 챕터 링크가 새 파일명을 가리킨다.
+- [x] 저장소 전체에 `chapter.md`를 가리키는 링크가 남아 있지 않다.
+- [x] 읽기 순서 번호 01~09가 중복 없이 한 번씩 쓰인다.
+
+실행하지 못한 것은 이전과 같다. 작성 호스트에 Nix와 Neovim이 없으므로
+이번 개정에서 고친 2.8절 복사 경로와 5장 bootstrap 명령은 명령 문자열
+대조로만 확인했고 실제 실행 검증은 대상 NixOS-WSL에서 수행해야 한다.

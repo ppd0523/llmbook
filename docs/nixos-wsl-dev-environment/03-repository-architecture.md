@@ -181,9 +181,9 @@ $ nix flake show
 
 ## 3.7 전체 예제
 
-- [완성된 `flake.nix`](../assets/example-config/flake.nix)
-- [예제 저장소 README](../assets/example-config/README.md)
-- [예제 `.gitignore`](../assets/example-config/.gitignore)
+- [완성된 `flake.nix`](assets/example-config/flake.nix)
+- [예제 저장소 README](assets/example-config/README.md)
+- [예제 `.gitignore`](assets/example-config/.gitignore)
 
 개인 정보와 비밀은 예제에 넣지 않는다. 공개 가능한 Git 이름·이메일은 Home Manager에 추가할 수 있지만 토큰, SSH 개인 키, 레지스트리 인증 값은 별도 비밀 관리가 필요하다.
 
@@ -209,4 +209,4 @@ $ nix flake show
 - [Nix에서 로컬 파일 다루기](https://nix.dev/tutorials/working-with-local-files.html)
 - [NixOS-WSL Flake 예제](https://nix-community.github.io/NixOS-WSL/how-to/nix-flakes.html)
 
-[← 2장](../02_install_nixos_wsl/chapter.md) · [목차](../index.md) · [4장: 시스템 설정 →](../04_system_configuration/chapter.md)
+[← 2장](02-install-nixos-wsl.md) · [목차](index.md) · [4장: 시스템 설정 →](04-system-configuration.md)

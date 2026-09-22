@@ -149,4 +149,4 @@ Nix는 이 과정의 도구를 제공하지만 프로젝트 의존성 다운로�
 - [rustup 툴체인 override](https://rust-lang.github.io/rustup/overrides.html)
 - [rustup 환경 변수](https://rust-lang.github.io/rustup/environment-variables.html)
 
-[← 5장](../05_home_manager/chapter.md) · [목차](../index.md) · [7장: nix develop과 direnv →](../07_nix_develop/chapter.md)
+[← 5장](05-home-manager.md) · [목차](index.md) · [7장: nix develop과 direnv →](07-nix-develop.md)

@@ -195,4 +195,4 @@ LSP는 맞지만 editor plugin 구성이 다름
 - [NixOS 안정판 매뉴얼](https://nixos.org/manual/nixos/stable/)
 - [Home Manager 매뉴얼](https://nix-community.github.io/home-manager/)
 
-[← 8장](../07_restore_workflow/chapter.md) · [목차](../index.md)
+[← 8장](08-restore-workflow.md) · [목차](index.md)

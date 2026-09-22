@@ -1,6 +1,6 @@
 # 8. Git clone에서 완전한 환경까지
 
-이 장은 2장에서 원본 구성 저장소를 만들고 `flake.lock`까지 push한 뒤, 두 번째 컴퓨터나 재설치한 환경에 복원하는 절차다. 개인 구성 저장소가 아직 없다면 clone을 시도하지 말고 먼저 [2장의 최초 생성 절차](../02_install_nixos_wsl/chapter.md)를 완료한다.
+이 장은 2장에서 원본 구성 저장소를 만들고 `flake.lock`까지 push한 뒤, 두 번째 컴퓨터나 재설치한 환경에 복원하는 절차다. 개인 구성 저장소가 아직 없다면 clone을 시도하지 말고 먼저 [2장의 최초 생성 절차](02-install-nixos-wsl.md)를 완료한다.
 
 ## 학습 목표
 
@@ -205,4 +205,11 @@ $ sudo nixos-rebuild list-generations
 - 네이티브 시스템 출력에는 해당 호스트의 하드웨어 모듈과 기존 상태 버전이 필요하다.
 - 프로젝트는 언어별 버전 파일과 lockfile에서 다시 만든다.
 
-[← 7장](../07_nix_develop/chapter.md) · [목차](../index.md) · [9장: 운영과 문제 해결 →](../08_operations_and_troubleshooting/chapter.md)
+## 추가 읽을거리
+
+- [NixOS-WSL 공식 설치 문서](https://nix-community.github.io/NixOS-WSL/install.html)
+- [GitHub SSH 키 생성](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent?platform=linux)
+- [Home Manager standalone 설치](https://nix-community.github.io/home-manager/installation/standalone.html)
+- [NixOS 안정판 매뉴얼](https://nixos.org/manual/nixos/stable/)
+
+[← 7장](07-nix-develop.md) · [목차](index.md) · [9장: 운영과 문제 해결 →](09-operations-and-troubleshooting.md)

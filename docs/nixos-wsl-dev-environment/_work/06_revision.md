@@ -1,9 +1,9 @@
 ---
 title: 퇴고 계획 및 반영 내역
-version: 0.8
+version: 0.9
 status: complete
 owner: agent
-updated: 2026-07-22
+updated: 2026-09-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -89,3 +89,60 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 ## 7. 남은 TODO
 
 없음. 실제 Nix 실행 환경 부재는 최종 문서의 안전 절차인 `build` 선행으로 처리하고, 내부 검증 기록에만 남긴다.
+
+
+## 8. 개정: 챕터 파일 배치와 잔여 결함 정리 (2026-09-22)
+
+### 배경
+
+CONTEXT.md가 챕터와 읽기 순서 번호를 정의한 뒤, 이 책만 규칙에서 벗어나 있었다.
+챕터마다 `NN_slug/chapter.md` 하위 폴더를 쓰고 폴더 이름이 snake_case였으며,
+`07_nix_develop`과 `07_restore_workflow`가 읽기 순서 번호 07을 공유했다.
+본문의 장 번호는 이미 1~9로 맞아 있었으므로 어긋난 것은 파일 배치뿐이다.
+
+### 배치 변경
+
+| 이전 경로 | 새 경로 | 읽기 순서 번호 |
+|---|---|---|
+| `01_mental_model/chapter.md` | `01-mental-model.md` | 01 |
+| `02_install_nixos_wsl/chapter.md` | `02-install-nixos-wsl.md` | 02 |
+| `03_repository_architecture/chapter.md` | `03-repository-architecture.md` | 03 |
+| `04_system_configuration/chapter.md` | `04-system-configuration.md` | 04 |
+| `05_home_manager/chapter.md` | `05-home-manager.md` | 05 |
+| `06_language_toolchains/chapter.md` | `06-language-toolchains.md` | 06 |
+| `07_nix_develop/chapter.md` | `07-nix-develop.md` | 07 |
+| `07_restore_workflow/chapter.md` | `08-restore-workflow.md` | 08 |
+| `08_operations_and_troubleshooting/chapter.md` | `09-operations-and-troubleshooting.md` | 09 |
+
+중복 번호는 `index.md`의 읽는 순서를 근거로 풀었다. 그 목록은 이미
+`nix develop`을 7번째, Git 복원 워크플로를 8번째, 운영과 문제 해결을 9번째로
+두었고 각 챕터의 `#` 제목과 이전·다음 링크도 같은 번호를 쓰고 있었다.
+따라서 읽기 순서를 새로 정한 것이 아니라 파일 이름을 본문에 맞춘 것이다.
+
+챕터가 한 단계 위로 올라왔으므로 링크 기준도 함께 옮겼다. 챕터 안의
+`../assets/`는 `assets/`, `../index.md`는 `index.md`, 다른 책을 가리키던
+`../../home-manager-guide/`는 `../home-manager-guide/`가 되었다. 책 밖에서
+이 책을 참조하던 `docs/home-manager-guide/06-troubleshooting.md`의 링크와
+두 예제 asset README의 `../../<챕터>` 링크도 새 파일명으로 고쳤다.
+
+### 함께 정리한 본문 결함
+
+| 위치 | 문제 | 처리 |
+|---|---|---|
+| 2.8절 | 예제 복사 경로에 `docs/`가 빠져 있어 그대로 실행하면 대상이 없다 | 세 예시 모두 `<guide-root>/docs/nixos-wsl-dev-environment/assets/example-config`로 수정 |
+| 5장 흔한 오류 | `home-manager` 부재 해결로 `nix run ...release-26.05`를 제시해, 잠긴 입력을 쓰려고 만든 3.5절의 `apps.home-manager`와 어긋남 | `nix run .#home-manager -- switch --flake .#nixos`로 통일 |
+| 5.2절 | history 설명 뒤의 “반면”이 대조할 대상 없이 `shellAliases`로 이어짐 | history 내용이 머신별 생성 상태라 복원되지 않는다는 문장을 앞에 넣어 대조를 세움 |
+| 8장 | 9개 챕터 중 유일하게 `추가 읽을거리`가 없음 | 복원 절차에 대응하는 공식 출처 네 건 추가 |
+| 1장 | 학습 목표 앞의 “이 장을 마치면 다음을 할 수 있다.”가 이 장에만 있음 | 나머지 여덟 장과 같이 목록으로 바로 들어가도록 삭제 |
+
+### 남긴 것
+
+`docs/` 아래 다른 책 열 권은 이미 `NN-<chapter-slug>.md`를 쓰고 있어 건드리지
+않았다. 7장이 646행으로 가장 길지만 절 경계가 언어별로 명확해 분할하지 않았다.
+챕터별로 `흔한 오류`와 `직접 확인` 중 하나만 있는 것은 실습 장과 개념 장의
+성격 차이이므로 통일하지 않았다.
+
+공개 URL은 바뀐다. `/nixos-wsl-dev-environment/01_mental_model/chapter/`가
+`/nixos-wsl-dev-environment/01-mental-model/`이 된다. 기존 URL은 살리지 않기로
+정했다. 따라서 리다이렉트를 넣지 않고, `requirements.txt`의 고정 목록에
+`mkdocs-redirects`를 추가하지도 않는다. 이전 경로로 들어오는 링크는 404가 된다.

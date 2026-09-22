@@ -10,7 +10,7 @@
 
 ## 5.1 사용자 프로필의 진입점
 
-[예제 `modules/home/default.nix`](../assets/example-config/modules/home/default.nix)는 사용자 환경의 공통 진입점이다.
+[예제 `modules/home/default.nix`](assets/example-config/modules/home/default.nix)는 사용자 환경의 공통 진입점이다.
 
 파일: `modules/home/default.nix` (핵심 내용)
 
@@ -61,7 +61,7 @@
 
 ## 5.2 프로그램 전용 모듈 사용
 
-[예제 `programs.nix`](../assets/example-config/modules/home/programs.nix)는 다음 프로그램을 선언한다.
+[예제 `programs.nix`](assets/example-config/modules/home/programs.nix)는 다음 프로그램을 선언한다.
 
 - Git
 - bat
@@ -161,17 +161,18 @@
 등록되거나 실행 순서가 달라질 수 있다.
 
 zsh의 `history.size`는 현재 셸이 메모리에 보관하는 항목 수이고 `history.save`는 history
-파일에 저장할 항목 수다. `share = true`는 여러 zsh 세션의 history를 공유한다. 반면
-`shellAliases`는 선언적 설정이므로 Git으로 복원된다. 예제는 Ubuntu에서 익숙한 사용
-흐름을 유지하려고 `cat`을 `bat`, `grep`을 `rg`에 연결한다.
+파일에 저장할 항목 수다. `share = true`는 여러 zsh 세션의 history를 공유한다. 세 값은
+history의 동작만 정하고, history 내용 자체는 머신별 생성 상태여서 복원되지 않는다.
+반면 `shellAliases`는 선언적 설정이므로 Git으로 복원된다. 예제는 Ubuntu에서 익숙한
+사용 흐름을 유지하려고 `cat`을 `bat`, `grep`을 `rg`에 연결한다.
 
 direnv는 디렉터리 진입 시 프로젝트의 `.envrc`를 실행하고, nix-direnv는 그 안의
 `use flake`가 만든 개발 환경을 캐시한다. 이 파일은 통합 기능을 켜는 역할만 하며,
 프로젝트별 `.envrc`와 `flake.nix`는 각 프로젝트 저장소가 소유한다. 승인 절차와
-`devShell` 사용법은 [7장](../07_nix_develop/chapter.md)에서 다룬다.
+`devShell` 사용법은 [7장](07-nix-develop.md)에서 다룬다.
 
 Neovim과 LazyVim은 책임이 더 크므로 별도
-[Home Manager 모듈](../assets/example-config/modules/home/lazyvim.nix)로 분리한다.
+[Home Manager 모듈](assets/example-config/modules/home/lazyvim.nix)로 분리한다.
 이 모듈은 Neovim, Nixpkgs가 고정한 `lazy.nvim`, `fd`, `tree-sitter`와 공통
 dotfiles 링크만 제공한다. Python·TypeScript·Rust extra는 사용자 전체에 설치하지
 않고 각 프로젝트의 `.lazy.lua`가 선택한다.
@@ -219,18 +220,18 @@ in
 
 `~/.config/nvim`은 이제 심볼릭 링크가 아닌 일반 디렉터리다. 그 안에서 Home Manager는
 생성된 `init.lua`를 소유하고, `lua/`, `stylua.toml`, `lazy-lock.json`은 각각 Git 작업
-트리로 연결한다. [Neovim `init.lua` 원본](../assets/example-config/dotfiles/nvim/init.lua)을
+트리로 연결한다. [Neovim `init.lua` 원본](assets/example-config/dotfiles/nvim/init.lua)을
 변경하면 `builtins.readFile` 결과가 달라지므로 Home Manager를 다시 build하고 switch해야
 한다. 반면 out-of-store 링크인 `lua/`의 파일과 `stylua.toml` 변경은 작업 트리에 바로
 반영된다.
 
 프로젝트 밖에서 LazyVim을 실행하면
-[기본 `lazy-lock.json`](../assets/example-config/dotfiles/nvim/lazy-lock.json)에 플러그인
+[기본 `lazy-lock.json`](assets/example-config/dotfiles/nvim/lazy-lock.json)에 플러그인
 리비전을 쓴다. 파일 단위 out-of-store 링크이므로 LazyVim이 쓸 수 있고 Git으로도
 추적된다. `~/.config/nixos`가 이 책에서 정한 clone 위치이므로 저장소를 다른 위치에
 둘 경우 `nvimSource`도 함께 바꾼다. 프로젝트 안에서는 해당 프로젝트의
 `.lazy-lock.json`과 별도 플러그인 캐시를 사용한다. 프로젝트별 `.lazy.lua`, 신뢰 확인,
-LSP 구성은 [7장](../07_nix_develop/chapter.md)에서 실습한다.
+LSP 구성은 [7장](07-nix-develop.md)에서 실습한다.
 
 ## 5.4 NVM은 일반 패키지와 다르다
 
@@ -248,7 +249,7 @@ Nix Store의 고정 소스
   └── ~/.local/share/nvm/versions/node/...
 ```
 
-[전체 `nvm.nix`](../assets/example-config/modules/home/nvm.nix)의 파일 선언은 다음과 같다.
+[전체 `nvm.nix`](assets/example-config/modules/home/nvm.nix)의 파일 선언은 다음과 같다.
 
 파일: `modules/home/nvm.nix` (NVM 파일 배치 부분)
 
@@ -346,7 +347,7 @@ $ direnv version
 | 기존 `.zshrc` 또는 Neovim 디렉터리 충돌 | Home Manager가 관리할 위치에 수동 파일 존재 | 기존 파일을 백업하고 원본을 모듈/dotfiles로 이동 |
 | `nvm`이 명령이 아님 | zsh 초기화가 적용되지 않음 | `echo $SHELL`, 생성된 `.zshrc`, 새 로그인 세션 확인 |
 | NVM이 Node를 설치하지 못함 | `$NVM_DIR` 전체가 읽기 전용 링크 | 개별 스크립트만 링크하고 부모 디렉터리를 쓰기 가능하게 유지 |
-| `home-manager` 명령이 없음 | 최초 bootstrap 전 | `nix run ...release-26.05 -- switch ...` 실행 |
+| `home-manager` 명령이 없음 | 최초 bootstrap 전 | 구성 저장소에서 `nix run .#home-manager -- switch --flake .#nixos` 실행 |
 | `init.lua`를 `$HOME` 밖에 설치한다는 Home Manager build 오류 | `programs.neovim`의 `init.lua`와 `xdg.configFile."nvim"` 부모 링크 충돌 | 부모 링크를 제거하고 예제처럼 `lua/`, `stylua.toml`, `lazy-lock.json`만 연결 |
 | LazyVim 기본 lock을 쓸 수 없음 | `lazy-lock.json`이 Nix Store 링크이거나 개별 링크가 누락됨 | 파일 단위 out-of-store 링크와 `nvimSource`의 clone 위치 확인 |
 
@@ -362,11 +363,11 @@ $ direnv version
 
 ## 추가 읽을거리
 
-- [NixOS에서 standalone Home Manager 운영하기](../../home-manager-guide/index.md)
+- [NixOS에서 standalone Home Manager 운영하기](../home-manager-guide/index.md)
 - [Home Manager standalone 설치](https://nix-community.github.io/home-manager/installation/standalone.html)
 - [Home Manager 옵션](https://nix-community.github.io/home-manager/options.html)
 - [NVM 공식 저장소](https://github.com/nvm-sh/nvm)
 - [LazyVim 설치와 구성 구조](https://www.lazyvim.org/installation)
 - [lazy.nvim configuration](https://lazy.folke.io/configuration)
 
-[← 4장](../04_system_configuration/chapter.md) · [목차](../index.md) · [6장: 언어별 툴체인 →](../06_language_toolchains/chapter.md)
+[← 4장](04-system-configuration.md) · [목차](index.md) · [6장: 언어별 툴체인 →](06-language-toolchains.md)
