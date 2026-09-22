@@ -262,7 +262,13 @@ rollout["advantages"] = (
 )
 ```
 
-표준화는 정책 update의 scale을 안정화하는 구현 선택이다. 원래 값은 critic target을 만들 때 이미 사용했으므로 value target을 함께 표준화하지 않는다.
+수식으로는 다음과 같다.
+
+$$
+\hat A'_t=\frac{\hat A_t-\operatorname{mean}(\hat A)}{\operatorname{std}(\hat A)+10^{-8}}
+$$
+
+분모의 $10^{-8}$은 표준편차가 0에 가까울 때 0으로 나누는 것을 막는다. 표준화는 PPO 정의의 일부가 아니라 정책 update의 scale을 안정화하는 널리 쓰이는 구현 선택이며, 부호와 상대적 크기는 그대로 둔 채 optimizer가 다루는 범위만 정돈한다. 원래 값은 critic target을 만들 때 이미 사용했으므로 value target을 함께 표준화하지 않는다.
 
 ## Mini-batch PPO update
 
