@@ -102,11 +102,11 @@ aarch64 교차 빌드 도중에는 aarch64용 실행 파일을 x86_64에서 잘�
 3. [Flake 개발 셸 구성](./03-nix-development-shell.md)
 4. [Conan recipe와 교차 프로필](./04-conan-profiles.md)
 5. [CMake 프로젝트와 spdlog 연결](./05-cmake-project.md)
-6. [DDS, IDL, publisher/subscriber](./06-dds-and-idl.md)
-7. [네이티브 빌드와 IDL 생성](./07-native-build.md)
+6. [DDS와 IDL 이해하기](./06-dds-and-idl.md)
+7. [x86_64 네이티브 빌드와 실행](./07-native-build.md)
 8. [aarch64-musl 정적 교차 빌드](./08-cross-build.md)
-9. [대상 배포와 장치 간 통신](./09-deploy-and-network.md)
-10. [문제 해결과 최종 체크리스트](./10-troubleshooting.md)
+9. [대상 장치 배포와 LAN 통신](./09-deploy-and-network.md)
+10. [문제 해결과 재현성 점검](./10-troubleshooting.md)
 
 ## 범위 밖의 내용
 
@@ -125,6 +125,6 @@ aarch64 교차 빌드 도중에는 aarch64용 실행 파일을 x86_64에서 잘�
 - [Nixpkgs 교차 컴파일](https://nixos.org/manual/nixpkgs/stable/#chap-cross)
 - [Conan 프로필](https://docs.conan.io/2/reference/config_files/profiles.html)
 - [Conan CMake 연동](https://docs.conan.io/2/tutorial/consuming_packages/build_simple_cmake_project.html)
-- [Cyclone DDS 0.10 문서](https://cyclonedds.io/docs/cyclonedds/0.10.5/)
+- [Cyclone DDS 0.10.2 문서](https://cyclonedds.io/docs/cyclonedds/0.10.2/)
 
 [문서 목록으로 돌아가기](../index.md)
