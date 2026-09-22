@@ -64,10 +64,10 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 
 ## 실습 자료
 
-- [할인 return 실험실](./assets/discounted-return/discounted-return-lab.html)
-- [Categorical 정책분포 실험실](./assets/pytorch-foundations/policy-distribution-lab.html)
-- [GAE 역방향 계산 실험실](./assets/advantage-estimation/gae-lab.html)
-- [PPO clipping 실험실](./assets/ppo-objective/ppo-clipping-lab.html)
+- [할인 return 실험실](./assets/mdp-value-and-math/discounted-return-lab.html)
+- [Categorical 정책분포 실험실](./assets/pytorch-for-policies/policy-distribution-lab.html)
+- [GAE 역방향 계산 실험실](./assets/policy-gradient-and-gae/gae-lab.html)
+- [PPO clipping 실험실](./assets/ppo-clipped-objective/ppo-clipping-lab.html)
 - [순수 PyTorch CartPole PPO](./examples/ppo_cartpole.py)
 - [PPO 핵심 수식 함수](./examples/ppo_components.py)
 - [학습 지표 SVG 생성기](./examples/plot_metrics.py)

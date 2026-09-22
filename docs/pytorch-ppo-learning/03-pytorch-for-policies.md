@@ -163,7 +163,7 @@ entropy = distribution.entropy()            # [B]
 
 직접 `softmax`를 계산한 뒤 `log`를 취할 수도 있지만, 분포 객체가 shape와 수치 안정성을 더 일관되게 처리한다.
 
-[Categorical 정책분포 실험실에서 logits와 entropy 비교하기](./assets/pytorch-foundations/policy-distribution-lab.html)
+[Categorical 정책분포 실험실에서 logits와 entropy 비교하기](./assets/pytorch-for-policies/policy-distribution-lab.html)
 
 ## Worked Example: shape 추적
 

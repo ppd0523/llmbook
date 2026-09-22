@@ -99,7 +99,7 @@ $$
 
 두 후보 중 더 작은 값, 즉 더 비관적인 목적을 선택한다.
 
-[PPO clipping 실험실에서 ratio·advantage·epsilon 바꾸기](./assets/ppo-objective/ppo-clipping-lab.html)
+[PPO clipping 실험실에서 ratio·advantage·epsilon 바꾸기](./assets/ppo-clipped-objective/ppo-clipping-lab.html)
 
 ### Advantage가 양수일 때
 

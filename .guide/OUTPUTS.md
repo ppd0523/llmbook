@@ -54,7 +54,8 @@ docs/
    ├─ 02-<chapter-slug>.md
    ├─ assets/
    │  ├─ common/
-   │  └─ <chapter-slug>/
+   │  ├─ <chapter-slug>/
+   │  └─ <project-slug>/
    └─ _work/
       ├─ 01_scope.md
       ├─ 02_research.md
@@ -79,7 +80,8 @@ docs/
 - `chapter.md`처럼 모든 장에 반복되는 일반 파일명은 사용하지 않는다.
 - 파일명은 MkDocs 자동 탐색의 정렬 순서와 생성 URL의 기준이다. 챕터 파일명과 문서의 첫 번째 `#` 제목은 같은 주제를 가리켜야 한다.
 - `mkdocs.yml`에 책과 챕터를 수동 `nav` 항목으로 반복 등록하지 않는다. 파일과 폴더 배치로 탐색 구조를 생성한다.
-- 챕터별 그림과 다운로드 파일은 `assets/<chapter-slug>/`, 여러 챕터가 공유하는 파일은 `assets/common/`에 둔다.
+- 챕터별 그림과 다운로드 파일은 `assets/<chapter-slug>/`, 여러 챕터가 공유하는 낱개 파일은 `assets/common/`에 둔다.
+- 여러 챕터가 함께 쓰는 예제 프로젝트는 `assets/<project-slug>/`에 폴더 하나로 둔다. `<project-slug>`는 챕터가 아니라 그 예제가 무엇인지를 나타내는 kebab-case 이름이다. 예제를 특정 챕터에 귀속시키지 않으려는 의도이므로 `<chapter-slug>` 규칙을 적용하지 않는다.
 - Markdown 내부 링크는 생성된 HTML URL이 아니라 대상 `.md` 파일을 가리키는 상대 경로로 작성한다.
 - `docs/index.md`는 전체 책 목록, 각 책의 `index.md`는 해당 책의 목차와 학습 경로를 제공하며 내부 작업 메모를 포함하지 않는다.
 - `_work/`는 내부 작업 산출물이며 MkDocs 게시 대상과 탐색 메뉴에서 제외한다.

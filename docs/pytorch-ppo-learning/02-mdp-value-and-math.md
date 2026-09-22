@@ -76,7 +76,7 @@ $$
 
 뒤에서부터 $G_t=r_t+\gamma G_{t+1}$로 계산하면 거듭제곱을 매번 직접 쓰지 않아도 된다.
 
-[할인 return 실험실에서 γ와 reward 열 바꾸기](./assets/discounted-return/discounted-return-lab.html)
+[할인 return 실험실에서 γ와 reward 열 바꾸기](./assets/mdp-value-and-math/discounted-return-lab.html)
 
 ## 확률의 최소 언어: 확률변수, 분포, 표본
 

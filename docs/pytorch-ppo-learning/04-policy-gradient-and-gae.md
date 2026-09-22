@@ -239,7 +239,7 @@ $c_t$는 continuation mask다. episode가 끝나면 다음 episode의 advantage�
 !!! important "마스크가 두 개인 이유"
     `truncated` transition은 시간 제한 때문에 episode를 reset하지만 MDP terminal은 아니다. 그래서 다음 가치로 bootstrap한다. 그러나 reset 뒤 새 episode의 advantage가 앞 episode로 섞이면 안 되므로 GAE 재귀는 끊는다.
 
-[GAE 실험실에서 terminated와 truncated 비교하기](./assets/advantage-estimation/gae-lab.html)
+[GAE 실험실에서 terminated와 truncated 비교하기](./assets/policy-gradient-and-gae/gae-lab.html)
 
 ## Worked Example: GAE를 뒤에서 계산하기
 
