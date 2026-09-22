@@ -1,0 +1,16 @@
+/* 탐색 메뉴의 책 번호를 표시로만 붙인다.
+   책 제목에 번호를 쓰지 않으므로 책을 추가·삭제·정렬해도 번호는 자동으로 다시 매겨진다.
+   사이드바 최상위의 md-nav__item--nested가 책 한 권이고, 그 안쪽 항목은 챕터다. */
+
+.md-nav--primary > .md-nav__list {
+  counter-reset: book;
+}
+
+.md-nav--primary > .md-nav__list > .md-nav__item--nested {
+  counter-increment: book;
+}
+
+.md-nav--primary > .md-nav__list > .md-nav__item--nested > .md-nav__link .md-ellipsis::before {
+  content: counter(book) ". ";
+  opacity: 0.7;
+}
