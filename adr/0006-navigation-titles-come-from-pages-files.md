@@ -15,3 +15,9 @@ MkDocs는 폴더에 `index.md`가 있어도 탐색 메뉴의 섹션 이름을 �
 `.pages`의 `title`에 콜론이 들어가면 YAML 파싱이 실패하므로 값을 따옴표로 감싼다. 책 제목에 콜론이 흔하다.
 
 `requirements.txt`의 직접 의존성이 `mkdocs-material` 하나에서 둘로 늘었다. 전이 의존성 `bracex`, `natsort`, `wcmatch`도 함께 고정했다.
+
+## 표시 위치
+
+책 번호는 세로로 나열될 때만 쓸모가 있다. 처음에는 `navigation.tabs`가 켜져 있어 최상위 항목인 책 13권이 상단 가로 탭으로 나왔고, 한 줄에 열세 권이 늘어서면 번호를 붙여도 찾는 데 도움이 되지 않았다. `navigation.tabs`와 `navigation.tabs.sticky`를 껐다. 함께 켜져 있던 `navigation.sections`도 껐다. 이 옵션은 최상위 섹션을 항상 펼친 묶음으로 그리므로, 책 13권과 챕터 100여 개가 한 번에 펼쳐진다. 지금은 왼쪽 사이드바에 번호가 붙은 책 13권이 세로로 나오고 각 책은 접힌 상태로 시작한다.
+
+`docs/index.md`의 책 목록도 순서 있는 목록으로 바꿔 같은 번호를 보여준다. 번호의 출처는 한 곳이며, 책을 추가하거나 순서를 바꾸면 `docs/index.md`, `docs/.pages`, 해당 책의 `.pages`를 함께 갱신한다.
