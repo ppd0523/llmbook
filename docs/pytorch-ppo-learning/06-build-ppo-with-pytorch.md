@@ -200,7 +200,7 @@ def action_and_value(self, observations, actions=None):
 | `values` | `[T]` | $V(s_t)$ | TD 잔차, value target |
 | `next_values` | `[T]` | $V(s_{t+1})$ | bootstrap |
 | `advantages` | `[T]` | GAE 결과 | policy loss |
-| `value_targets` | `[T]` | $A_t+V(s_t)$ | critic loss |
+| `value_targets` | `[T]` | $\hat A_t+V(s_t)$ | critic loss |
 
 $T$는 `rollout_steps`다.
 

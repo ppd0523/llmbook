@@ -33,6 +33,9 @@
 
 교재에 따라 행동 $a_t$ 뒤 받은 보상을 $R_{t+1}$로 쓴다. 이 책의 $r_t$와 **같은 사건을 다른 첨자로 표시한 것**이다. 코드를 수식과 비교할 때 가장 흔한 혼동이므로 어느 규약인지 먼저 확인한다.
 
+!!! warning "$r_t$는 보상이고 $r_t(\theta)$는 보상이 아니다"
+    이 책에서 괄호 없는 $r_t$는 **언제나 보상**이다. 5장에서 PPO가 쓰는 **확률비(probability ratio)** 는 모양이 닮았지만 전혀 다른 값이며, 이 책은 그것을 항상 $\theta$를 붙여 $r_t(\theta)$로 쓴다. 괄호 안의 $\theta$가 있는지가 두 기호를 가르는 유일한 표시다. PPO 논문도 확률비를 $r_t(\theta)$로 쓰므로 논문을 읽을 때도 같은 기준이 통한다.
+
 ## 이 장에서 가르치는 수학과 별도로 넘기는 수학
 
 확률변수·기댓값·분산, 함수·미분·gradient, 지수·로그처럼 PPO 수식을 읽는 데 바로 필요한 개념은 이 장에서 처음부터 설명한다. 선형대수 전체와 엄밀한 확률론·미적분 증명은 한 장에 책임 있게 담기 어려우므로 다음 키워드는 별도 선수학습으로 넘긴다.
@@ -205,15 +208,15 @@ $$
 한 transition에서 만든 TD target은 다음과 같다.
 
 $$
-y_t=r_t+\gamma(1-d_t)V_\phi(s_{t+1})
+y_t=r_t+\gamma b_tV_\phi(s_{t+1})
 $$
 
-$d_t=1$은 자연 terminal일 때다. 시간 제한 truncation에는 $d_t=0$으로 두어 final observation의 가치를 사용한다.
+$b_t$는 **bootstrap mask(부트스트랩 마스크)** 이며 다음 가치를 더할지 말지를 정하는 0 또는 1이다. 자연 terminal 여부를 $d_t\in\{0,1\}$로 쓰면 $b_t=1-d_t$가 되지만, 두 극성을 오가면 부호를 뒤집어 읽기 쉬우므로 이 책과 예제 코드는 앞으로 **항상 $b_t$ 쪽만** 쓴다. 자연 terminal이면 $b_t=0$이라 다음 가치를 더하지 않고, 시간 제한 truncation이면 $b_t=1$로 두어 final observation의 가치를 사용한다. 예제 코드의 변수명도 `bootstrap_mask`로 같다. 4장에서 GAE 재귀를 끊는 continuation mask $c_t$와 나란히 비교한다.
 
 **시간차 오차(temporal-difference error, TD error)** 는 TD target과 현재 가치 예측의 차이다. GAE 논문과 일부 구현은 같은 양을 **TD 잔차(TD residual)** 라 부른다. 이 책에서는 두 이름이 같은 $\delta_t$를 가리키며, 이후에는 GAE와의 연결을 강조할 때 “TD 잔차”라고 쓴다.
 
 $$
-\delta_t=r_t+\gamma(1-d_t)V_\phi(s_{t+1})-V_\phi(s_t)
+\delta_t=r_t+\gamma b_tV_\phi(s_{t+1})-V_\phi(s_t)
 $$
 
 $\delta_t>0$이면 관찰한 한 스텝 결과가 현재 가치 예측보다 좋았고, $\delta_t<0$이면 나빴다는 뜻이다. 4장에서 이 TD 잔차를 여러 스텝 연결해 GAE를 만든다.

@@ -40,6 +40,9 @@ r_t(\theta)=\frac{\pi_\theta(a_t\mid s_t)}{\pi_{old}(a_t\mid s_t)}
 =\exp(\log\pi_\theta-\log\pi_{old})
 $$
 
+!!! warning "$r_t$와 $r_t(\theta)$를 구별한다"
+    2장 기호표의 괄호 없는 $r_t$는 **보상**이었다. 이 장부터 나오는 확률비는 보상과 아무 관계가 없으며 **항상 $r_t(\theta)$** 처럼 $\theta$를 붙여 쓴다. 아래 표와 수식에서 괄호가 보이면 확률비, 보이지 않으면 보상이다.
+
 이 비율은 **importance sampling(중요도 표본추출)** 의 핵심 가중치다. 다른 분포에서 얻은 표본을 현재 분포의 기댓값에 맞게 재가중하는 방법이다. PPO에서는 완전한 importance-sampling 보정 전체를 사용하는 것이 아니라 old 정책이 고른 행동에 대한 확률비를 surrogate 목적에 넣는다.
 
 한 상태에서 old 정책이 `[왼쪽 0.8, 오른쪽 0.2]`, 새 정책이 `[왼쪽 0.6, 오른쪽 0.4]`라 하자.
@@ -53,9 +56,9 @@ $$
 
 | ratio | 의미 |
 |---:|---|
-| $r_t=1$ | 선택 행동의 확률이 old와 같다. |
-| $r_t=1.2$ | 선택 행동 확률이 20% 커졌다. |
-| $r_t=0.7$ | 선택 행동 확률이 30% 작아졌다. |
+| $r_t(\theta)=1$ | 선택 행동의 확률이 old와 같다. |
+| $r_t(\theta)=1.2$ | 선택 행동 확률이 20% 커졌다. |
+| $r_t(\theta)=0.7$ | 선택 행동 확률이 30% 작아졌다. |
 
 Rollout 직후 optimizer step 전에는 같은 actor를 사용하므로 ratio가 수치 오차 범위에서 1이어야 한다. 이것은 중요한 단위 검사다.
 
@@ -89,8 +92,8 @@ $$
 
 $$
 L_t^{clip}(\theta)=\min\left(
-r_t\hat A_t,
-\operatorname{clip}(r_t,1-\epsilon,1+\epsilon)\hat A_t
+r_t(\theta)\hat A_t,
+\operatorname{clip}(r_t(\theta),1-\epsilon,1+\epsilon)\hat A_t
 \right)
 $$
 
@@ -216,7 +219,7 @@ $$
 직접 구현에서 자주 쓰는 비음수 근사치는 다음 샘플 평균이다.
 
 $$
-\widehat{KL}\approx\mathbb E[(r_t-1)-\log r_t]
+\widehat{KL}\approx\mathbb E[(r_t(\theta)-1)-\log r_t(\theta)]
 $$
 
 갑자기 커지면 학습률, epoch 수, advantage scale, 데이터 정합성을 점검한다. `target_kl`을 넘으면 나머지 epoch를 조기 중단하는 구현도 있다.
@@ -227,7 +230,7 @@ PPO 논문에는 clipped surrogate를 쓰는 **PPO-Clip**과 KL 벌점 계수를
 
 $$
 \text{clipfrac}=\frac1N\sum_t
-\mathbf1[|r_t-1|>\epsilon]
+\mathbf1[|r_t(\theta)-1|>\epsilon]
 $$
 
 샘플 중 ratio가 clip 구간 밖으로 나간 비율이다.

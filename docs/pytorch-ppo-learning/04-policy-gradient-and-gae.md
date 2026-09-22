@@ -128,9 +128,12 @@ $$
 
 **Advantage** 는 선택한 행동이 그 상태의 평균적인 행동보다 얼마나 좋았는지를 나타낸다.
 
-- $A_t>0$: 선택 행동의 확률을 올린다.
-- $A_t<0$: 선택 행동의 확률을 내린다.
-- $A_t\approx0$: 정책 update 기여가 작다.
+!!! note "$A_t$는 참값이고 $\hat A_t$는 추정값이다"
+    위 정의의 $A_t=A^\pi(s_t,a_t)$는 $Q^\pi$와 $V^\pi$를 모두 아는 경우의 **참값**이다. 실제로는 둘 다 모르므로 코드는 rollout과 critic으로 만든 **추정값** $\hat A_t$를 쓴다. 이 책은 정의를 말할 때만 모자 없는 $A_t$를 쓰고, 계산해서 update에 넣는 값에는 항상 모자 붙인 $\hat A_t$를 쓴다. GAE가 내놓는 것도, PPO loss에 들어가는 것도 $\hat A_t$다. PPO 논문과 GAE 논문의 표기도 같다.
+
+- $\hat A_t>0$: 선택 행동의 확률을 올린다.
+- $\hat A_t<0$: 선택 행동의 확률을 내린다.
+- $\hat A_t\approx0$: 정책 update 기여가 작다.
 
 정책 gradient 추정은 다음이 된다.
 
@@ -217,7 +220,7 @@ $c_t$는 continuation mask다. episode가 끝나면 다음 episode의 advantage�
 | 계속 | 1 | 1 | 다음 가치와 다음 TD 잔차를 모두 사용 |
 | `terminated` | 0 | 0 | 다음 가치는 0, 재귀도 종료 |
 | `truncated` | 1 | 0 | final observation 가치 사용, 다음 episode 재귀는 차단 |
-| rollout 끝이지만 episode 계속 | 1 | rollout 밖 advantage는 0 | 마지막 다음 가치로 bootstrap하고 현재 batch에서 재귀 종료 |
+| rollout 끝이지만 episode 계속 | 1 | 1 | 마지막 다음 가치로 bootstrap한다. 두 마스크는 모두 1이고, 재귀가 $\hat A_{t+1}=0$에서 시작하기 때문에 batch 경계에서 저절로 끝난다. |
 
 !!! important "마스크가 두 개인 이유"
     `truncated` transition은 시간 제한 때문에 episode를 reset하지만 MDP terminal은 아니다. 그래서 다음 가치로 bootstrap한다. 그러나 reset 뒤 새 episode의 advantage가 앞 episode로 섞이면 안 되므로 GAE 재귀는 끊는다.
@@ -346,11 +349,11 @@ assert torch.isfinite(value_targets).all()
 1. $r=2$, $V(s)=1.5$, $V(s')=2$, $\gamma=0.9$, 계속 transition의 $\delta$를 계산하라.
 2. 1번이 `terminated=True`라면 $\delta$를 다시 계산하라.
 3. `truncated=True`일 때 bootstrap mask와 continuation mask를 써라.
-4. $\delta=[1,2]$, $\gamma\lambda=0.5$, 마지막에 자연 종료일 때 $A_1,A_0$을 계산하라.
+4. $\delta=[1,2]$, $\gamma\lambda=0.5$, 마지막에 자연 종료일 때 $\hat A_1,\hat A_0$을 계산하라.
 5. policy entropy가 학습 초기에 바로 0에 가까워졌다면 어떤 위험을 의심할 수 있는가?
 
 ??? note "정답 확인"
-    1번: $2+0.9(2)-1.5=2.3$. 2번: $2-1.5=0.5$. 3번: bootstrap 1, continuation 0. 4번: $A_1=2$, $A_0=1+0.5(2)=2$. 5번: 정책이 탐색 전에 거의 결정론적으로 붕괴했을 수 있다.
+    1번: $2+0.9(2)-1.5=2.3$. 2번: $2-1.5=0.5$. 3번: bootstrap 1, continuation 0. 4번: $\hat A_1=2$, $\hat A_0=1+0.5(2)=2$. 5번: 정책이 탐색 전에 거의 결정론적으로 붕괴했을 수 있다.
 
 ## 대학 강의와 참고문헌
 
