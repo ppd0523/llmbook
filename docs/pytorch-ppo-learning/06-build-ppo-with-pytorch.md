@@ -44,12 +44,15 @@ cd docs\pytorch-ppo-learning
 python -m unittest discover -s tests -v
 ```
 
-테스트는 다음 네 계약을 확인한다.
+테스트는 `examples/ppo_components.py`의 다음 네 계약을 확인한다.
 
 1. discounted return의 역방향 계산
 2. 자연 종료에서 다음 가치 제거
 3. 시간 제한에서 bootstrap 유지와 GAE 재귀 차단
 4. advantage 부호별 PPO clipping
+
+!!! warning "테스트가 덮는 범위를 정확히 알아 둔다"
+    학습 코드 `ppo_cartpole.py`는 `ppo_components`의 `generalized_advantage_estimate()`와 `explained_variance()`를 그대로 호출하므로 2·3번은 **학습 경로를 직접** 검증한다. 그러나 clipping은 `update_model()` 안에 같은 식으로 다시 작성되어 있고 `discounted_returns()`는 학습 코드가 호출하지 않는다. 즉 1·4번 테스트는 **수식 구현이 맞다는 것까지만** 고정하고, 학습 경로가 그 수식을 쓰는지는 확인하지 않는다. 학습 경로의 clipping은 첫 update 전 ratio 검사와 7장의 clip fraction으로 확인한다.
 
 짧은 end-to-end smoke test를 실행한다.
 
@@ -92,7 +95,7 @@ CartPole은 확률적 초기 상태와 행동 샘플링 때문에 실행마다 �
 ```text
 1. 현재 정책으로 rollout_steps만큼 수집
 2. rollout의 GAE와 value target 계산
-3. advantage 표준화
+3. advantage 표준화 (4번 update 함수 안에서 rollout 전체를 한 번)
 4. 여러 epoch × mini-batch로 actor와 critic update
 5. 로그 기록 후 다음 rollout으로 이동
 ```
@@ -127,6 +130,8 @@ CartPole은 확률적 초기 상태와 행동 샘플링 때문에 실행마다 �
 | `device` | `auto` | CPU·CUDA 선택 |
 
 ```python
+seed_everything(config.seed)
+device = select_device(config.device)
 env = gym.make(config.env_id)
 observation, _ = env.reset(seed=config.seed)
 env.action_space.seed(config.seed)
@@ -146,6 +151,8 @@ optimizer = torch.optim.Adam(
 ```python
 if not isinstance(env.action_space, gym.spaces.Discrete):
     raise TypeError("이 교육용 구현은 Discrete action space만 지원합니다.")
+if not isinstance(env.observation_space, gym.spaces.Box):
+    raise TypeError("이 교육용 구현은 Box observation space만 지원합니다.")
 ```
 
 이 코드는 모든 환경에 일반적인 PPO가 아니다. `Categorical`을 사용하는 discrete action 교육용 구현이다. 연속 행동은 8장의 `TanhNormal` 구조가 필요하다.
@@ -165,7 +172,7 @@ class ActorCritic(nn.Module):
 
 분리된 네트워크는 계산량이 조금 늘지만 초심자가 두 손실의 역할과 gradient를 구분하기 쉽다.
 
-각 `Linear`의 weight는 **orthogonal initialization(직교 초기화)** 로 시작한다. 행 또는 열 방향이 서로 겹치지 않도록 초기 weight를 구성해 신호 크기가 층을 지나며 지나치게 찌그러지는 것을 줄이는 초기화 방법이다. 학습의 필수 정의는 아니고 흔한 안정화 선택이다. Actor 마지막 층의 scale을 `0.01`로 작게 두면 초기 logits가 0 근처여서 두 행동 확률이 거의 균등하게 시작한다. Critic 마지막 층은 `1.0`을 사용한다. 이 숫자들은 이론적으로 유일한 값이 아니라 실험 가능한 구현 설정이다.
+각 `Linear`의 weight는 **orthogonal initialization(직교 초기화)** 로 시작한다. 행 또는 열 방향이 서로 겹치지 않도록 초기 weight를 구성해 신호 크기가 층을 지나며 지나치게 찌그러지는 것을 줄이는 초기화 방법이다. 학습의 필수 정의는 아니고 흔한 안정화 선택이다. Actor 마지막 층의 scale을 `0.01`로 작게 두면 초기 logits가 0 근처여서 두 행동 확률이 거의 균등하게 시작한다. Critic 마지막 층은 `1.0`을 사용한다. 이 숫자들은 이론적으로 유일한 값이 아니라 OpenAI baselines 계열 구현에서 굳어진 관례이며, [The 37 Implementation Details of Proximal Policy Optimization](https://iclr-blog-track.github.io/2022/03/25/ppo-implementation-details/)이 은닉층 $\sqrt2$, 정책 출력층 `0.01`, 가치 출력층 `1.0`으로 정리한 것과 같다.
 
 `action_and_value()`는 수집과 update에서 같은 확률 계산을 재사용한다.
 
@@ -252,7 +259,7 @@ advantages, value_targets = generalized_advantage_estimate(
 
 ## Advantage 표준화
 
-Update 전에 현재 rollout 전체에서 표준화한다.
+`update_model()`의 첫 부분에서, mini-batch로 나누기 전에 현재 rollout 전체를 한 번 표준화한다.
 
 ```python
 advantages = rollout["advantages"]
@@ -275,8 +282,8 @@ $$
 각 epoch에서 index를 새로 섞는다.
 
 ```python
-indices = torch.arange(batch_size, device=device)
-permutation = indices[torch.randperm(batch_size, device=device)]
+indices = torch.arange(batch_size, device=rollout["observations"].device)
+permutation = indices[torch.randperm(batch_size, device=indices.device)]
 ```
 
 Mini-batch마다 old 행동의 새 로그확률을 구한다.
@@ -332,7 +339,7 @@ optimizer.step()
 ```python
 approx_kl = ((ratio - 1.0) - log_ratio).mean()
 
-if np.mean(epoch_kl_values) > config.target_kl:
+if epoch_kl_values and np.mean(epoch_kl_values) > config.target_kl:
     break
 ```
 

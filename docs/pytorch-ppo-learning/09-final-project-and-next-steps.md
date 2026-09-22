@@ -74,7 +74,7 @@ python examples\ppo_cartpole.py --smoke-test
 
 다음 게이트를 모두 통과한 뒤 여러 seed를 실행한다.
 
-- GAE와 clipping 단위 테스트가 통과한다.
+- GAE와 clipping 단위 테스트가 통과한다. clipping 테스트가 덮는 범위는 [6장의 주의](./06-build-ppo-with-pytorch.md)를 따른다.
 - environment step이 유효한 action과 종료 신호를 반환한다.
 - 첫 update 전 ratio가 1에 가깝다.
 - loss와 gradient가 finite다.

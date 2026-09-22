@@ -316,7 +316,7 @@ advantage와 value target은 rollout 데이터에서 계산한 target이므로 a
 | $\gamma$ | 문제의 미래 reward를 얼마나 중요하게 볼지 |
 | $\lambda$ | advantage 추정에서 여러 시간 길이를 어떻게 섞을지 |
 
-보통 시작값으로 $\gamma=0.99$, $\lambda=0.95$를 자주 보지만 환경 시간 규모에 맞게 실험해야 한다.
+보통 시작값으로 $\gamma=0.99$, $\lambda=0.95$를 자주 본다. PPO 논문의 MuJoCo 실험(Table 3)과 Atari 실험(Table 5)이 모두 이 조합을 사용했다. 다른 값도 흔하므로 예를 들어 Spinning Up은 $\lambda=0.97$을 기본값으로 둔다. 환경의 시간 규모에 맞게 실험해야 하는 값이다.
 
 ## Entropy는 탐색 정도를 보여준다
 

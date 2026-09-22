@@ -104,7 +104,7 @@ python -m unittest discover -s tests -v
 - advantage가 정확히 0인 경우
 - ratio가 정확히 $1-\epsilon$, $1+\epsilon$인 경우
 
-단위 테스트는 학습 성공을 보장하지 않지만 수식 구현 오류를 빠르게 배제한다.
+단위 테스트는 학습 성공을 보장하지 않지만 수식 구현 오류를 빠르게 배제한다. 단 clipping 테스트의 대상은 `ppo_components.clipped_surrogate()`이고 학습 경로는 같은 식을 `update_model()` 안에 다시 쓰므로, 학습 코드의 clipping은 아래 3·4단계 검사로 확인한다.
 
 ## 3단계: Tensor 불변조건
 
@@ -179,7 +179,7 @@ $$
 - 0: 평균 예측과 비슷한 수준
 - 음수: 단순 평균보다도 나쁜 예측 가능
 
-학습 초기에 낮은 것은 정상일 수 있다. 또 target 분산 $\operatorname{Var}(y)$가 0에 매우 가까우면 분모가 작아 EV가 수치적으로 불안정하거나 정의하기 어려워진다. 짧은 rollout에서 target이 거의 같은 값이면 return이 좋아도 EV가 음수가 될 수 있다. **높은 return과 낮은 EV는 논리적 모순이 아니다.** EV는 정책 성능이 아니라 그 batch에서 critic이 target의 변동을 설명한 정도이므로 value loss, target 분산, 여러 update의 추세를 함께 본다.
+학습 초기에 낮은 것은 정상일 수 있다. 또 target 분산 $\operatorname{Var}(y)$가 0에 매우 가까우면 분모가 작아 EV가 수치적으로 불안정해진다. 예제의 `explained_variance()`는 분산이 정확히 0이면 정의할 수 없다는 뜻으로 `nan`을 반환하므로, 로그의 EV 칸에 `nan`이 보이면 버그가 아니라 이 경우다. 짧은 rollout에서 target이 거의 같은 값이면 return이 좋아도 EV가 음수가 될 수 있다. **높은 return과 낮은 EV는 논리적 모순이 아니다.** EV는 정책 성능이 아니라 그 batch에서 critic이 target의 변동을 설명한 정도이므로 value loss, target 분산, 여러 update의 추세를 함께 본다.
 
 ## 증상별 진단
 

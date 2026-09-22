@@ -277,9 +277,11 @@ replay_buffer = ReplayBuffer(
 
 **Storage**는 tensor를 실제로 보관하는 공간이고, **sampler**는 그 공간에서 어떤 index를 꺼낼지 정하는 규칙이다. `LazyTensorStorage`는 첫 데이터가 들어올 때 shape와 저장 형식을 정하며, `SamplerWithoutReplacement`는 한 epoch 안에서 같은 index를 중복해서 뽑지 않고 섞는다.
 
-그러나 DQN처럼 오래된 데이터를 모아 재사용하는 off-policy replay가 아니다. 한 rollout만 넣어 여러 PPO epoch의 mini-batch로 섞고, 다음 collector batch를 받기 전에 비운다.
+그러나 DQN처럼 오래된 데이터를 모아 재사용하는 off-policy replay가 아니다. 한 rollout만 넣어 여러 PPO epoch의 mini-batch로 섞고, 다음 collector batch를 받기 전에 비운다. 예제는 안전하게 채우기 전과 다 쓴 뒤 두 번 `empty()`를 호출한다.
 
 ```python
+replay_buffer.empty()
+
 with torch.no_grad():
     advantage(batch)
 replay_buffer.extend(batch.reshape(-1).cpu())
@@ -313,12 +315,12 @@ Advantage와 value target은 rollout마다 한 번 고정한다. 다음 collecto
 
 위 개념을 하나로 조립한 코드는 [examples/torchrl_ppo.py](./examples/torchrl_ppo.py)에 있다.
 
-환경을 준비한다.
+환경을 준비한다. 3장에서 만든 `.venv-ppo`가 이미 있으면 생성 줄은 건너뛰고 활성화부터 실행한다.
 
 ```powershell
 cd docs\pytorch-ppo-learning
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+python -m venv .venv-ppo
+.\.venv-ppo\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 

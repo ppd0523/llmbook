@@ -77,7 +77,7 @@ $$
 
 ## Clipped surrogate objective
 
-$\epsilon$을 clip 폭이라 하자. 보통 첫 실험에서 0.2를 자주 사용한다.
+$\epsilon$을 clip 폭이라 하자. 보통 첫 실험에서 0.2를 자주 사용한다. PPO 논문은 MuJoCo 벤치마크에서 $\epsilon$을 0.1·0.2·0.3으로 비교해 0.2가 가장 좋았다고 보고하며(Schulman et al. 2017, Table 1), [OpenAI Spinning Up](https://spinningup.openai.com/en/latest/algorithms/ppo.html)의 기본값도 0.2다. 같은 논문의 Atari 실험은 0.1을 썼으므로 환경에 따라 다시 실험할 값이다.
 
 `clip(x, lower, upper)`는 $x$가 아래 경계보다 작으면 아래 경계, 위 경계보다 크면 위 경계, 사이면 $x$ 그대로를 반환한다.
 
