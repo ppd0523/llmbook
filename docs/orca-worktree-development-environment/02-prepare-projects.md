@@ -29,12 +29,15 @@ Python 예제의 핵심 파일은 다음과 같다.
 | `uv.lock` | 해결된 패키지 버전과 배포 파일 기록 | 예 |
 | `main.py` | Rich를 불러와 준비 결과 출력 | 예 |
 | `setup-worktree.sh` | 새 워크트리의 uv 동기화 명령 | 예 |
+| `.env.example`, `.worktreeinclude` | 실습 변수의 예시와 Orca의 작업별 복사 목록 | 예 |
+| `.env` | 이 컴퓨터에서 사용할 로컬 값 | 아니요 |
 | `.venv/` | 이 작업 폴더의 Python 실행 환경 | 아니요 |
 
 uv는 `.python-version`을 버전 요청으로 읽고, 프로젝트의 기본 가상환경을 `.venv`에 만든다. `uv.lock`은 `pyproject.toml`과 함께 Git에 넣는 것이 공식 권장 방식이다. 여기의 `3.14`는 패치 버전을 고정하지 않으므로 실제 `python --version` 결과는 실행 시점에 기록한다. [uv Python 버전](https://docs.astral.sh/uv/concepts/python-versions/), [uv 프로젝트 구조](https://docs.astral.sh/uv/concepts/projects/layout/)
 
 ```bash
 cd "$HOME/orca-worktree-lab/python-demo"
+cp .env.example .env
 uv python install 3.14
 uv sync --locked
 uv run --locked python main.py
@@ -52,12 +55,12 @@ Python worktree ready (rich 14.3.3)
 
 ```bash
 git init -b main
-git add .python-version .gitignore README.md pyproject.toml uv.lock main.py setup-worktree.sh
+git add .python-version .gitignore .env.example .worktreeinclude README.md pyproject.toml uv.lock main.py setup-worktree.sh
 git status --short
 git commit -m "Initialize Python worktree demo"
 ```
 
-`git status --short`의 추가 대상에 `.venv/`가 없어야 한다. `.gitignore`에 이 경로가 들어 있고 uv도 프로젝트 환경을 Git에 넣지 않도록 한다. [uv 프로젝트 구조](https://docs.astral.sh/uv/concepts/projects/layout/)
+`git status --short`의 추가 대상에 `.venv/`와 `.env`가 없어야 한다. `.gitignore`에 두 경로가 들어 있다. `.env.example`과 `.worktreeinclude`는 추적한다. [uv 프로젝트 구조](https://docs.astral.sh/uv/concepts/projects/layout/), [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
 
 ## 2.3 Node.js v24 프로젝트
 
@@ -70,12 +73,15 @@ Node 예제도 잠금 파일과 설치 결과를 분리한다.
 | `package-lock.json` | npm이 설치할 정확한 패키지 집합 | 예 |
 | `index.mjs` | 패키지를 불러와 준비 결과 출력 | 예 |
 | `setup-worktree.sh` | 새 워크트리의 nvm·npm 준비 명령 | 예 |
+| `.env.example`, `.worktreeinclude` | 실습 변수의 예시와 Orca의 작업별 복사 목록 | 예 |
+| `.env` | 이 컴퓨터에서 사용할 로컬 값 | 아니요 |
 | `node_modules/` | 이 작업 폴더의 npm 설치 결과 | 아니요 |
 
 `nvm`은 현재 셸에서 Node 버전을 고른다. `.nvmrc`의 `24`는 v24 계열의 요청이며 패치 버전은 고정하지 않는다. `nvm`이 셸에 아직 로드되지 않았다면 설치할 때 지정한 `NVM_DIR`의 `nvm.sh`를 불러온다. 아래는 일반적인 `~/.nvm` 설치 경로의 예다. [nvm README](https://github.com/nvm-sh/nvm)
 
 ```bash
 cd "$HOME/orca-worktree-lab/node-demo"
+cp .env.example .env
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 . "$NVM_DIR/nvm.sh"
 nvm use 24
@@ -93,12 +99,12 @@ Node worktree ready
 
 ```bash
 git init -b main
-git add .nvmrc .gitignore README.md package.json package-lock.json index.mjs setup-worktree.sh
+git add .nvmrc .gitignore .env.example .worktreeinclude README.md package.json package-lock.json index.mjs setup-worktree.sh
 git status --short
 git commit -m "Initialize Node worktree demo"
 ```
 
-`node_modules/`가 추가 대상에 없어야 한다. `package-lock.json`은 추적하지만 설치된 패키지 디렉터리는 새 worktree에서 다시 구성한다.
+`node_modules/`와 `.env`가 추가 대상에 없어야 한다. `package-lock.json`은 추적하지만 설치된 패키지 디렉터리는 새 worktree에서 다시 구성한다. Git 명령으로 만든 3·4장의 워크트리에는 `.env`가 자동 복사되지 않는다. Orca의 `.worktreeinclude` 복사는 5장에서 확인한다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
 
 ## 2.4 기준 상태를 기록한다
 

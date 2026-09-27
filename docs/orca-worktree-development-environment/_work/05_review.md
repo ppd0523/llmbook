@@ -8,6 +8,7 @@
 - Orca의 시작 ref, 외부 워크트리 표시, Shared Paths, `.worktreeinclude`, setup hook은 [Worktrees](https://www.onorca.dev/docs/model/worktrees)와 [Agent hooks](https://www.onorca.dev/docs/agents/hooks-memory)에서 확인했다. CLI의 `--setup`은 [CLI reference](https://www.onorca.dev/docs/cli/reference)와 로컬 CLI 1.4.214 상태를 확인했다.
 - uv의 캐시·동기화·오프라인·가상환경 경로는 [uv cache](https://docs.astral.sh/uv/concepts/cache/), [sync](https://docs.astral.sh/uv/concepts/projects/sync/), [Python venv](https://docs.python.org/3.14/library/venv.html)에 근거했다.
 - npm `ci`의 삭제 후 재설치, 잠금 파일 검사와 캐시 경로는 [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)와 [npm config](https://docs.npmjs.com/cli/v11/using-npm/config/)를 확인했다. `nvm`의 셸 함수 동작은 [nvm README](https://github.com/nvm-sh/nvm)를 확인했다.
+- 후속 보강의 Git 무시 파일 복사 조건은 [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees), `.env` 로드 명령은 [uv 환경 파일](https://docs.astral.sh/uv/configuration/files/#environment-variable-files)과 [Node CLI](https://nodejs.org/api/cli.html#--env-filefile)에 대조했다.
 
 ## 실행 검증
 
@@ -21,6 +22,8 @@
 | Node 한 브랜치의 Chalk 5.6.2 추가 | 변경 브랜치에서 Chalk 로드 성공. 다른 브랜치의 `import('chalk')`는 예상대로 `ERR_MODULE_NOT_FOUND`였다. |
 | 두 `setup-worktree.sh`의 새 복사본 실행 | Python은 `.venv`를 만들고 Rich 14.3.3을 실행했다. Node는 nvm으로 v24를 선택하고 `npm ci`를 완료했다. |
 | MkDocs | README 절차로 로컬 가상환경을 준비해 strict 빌드가 성공했다. CI와 같은 Python 3.14.3의 별도 가상환경에서도 `python -m mkdocs build --strict`가 성공했다. |
+| 후속 `.env` 로드 명령 | 비밀이 아닌 `WORKTREE_LABEL=local`로 `uv run --env-file`과 Node v24 `--env-file`을 실행해 모두 정상 로드됨을 확인했다. |
+| 두 예제의 로컬 파일 구성 | 새 복사본에서 `.env.example`을 `.env`로 복사하고 Git 초기 커밋을 만들었다. `.env`는 무시되고 `.env.example`·`.worktreeinclude`는 추적됐다. 일반 `git worktree add`로 만든 작업에는 `.env`가 없었다. |
 
 ## 발견한 문제와 수정
 
@@ -33,6 +36,7 @@
 - Orca GUI에서 임시 저장소를 등록하고 실제 setup hook을 실행하지는 않았다. 공식 문서가 보장하지 않는 hook의 정확한 셸·시작 디렉터리·실패 후 재시도 동작은 본문에서 단정하지 않고 독자가 생성 로그로 확인하도록 했다.
 - 성능 수치는 이 컴퓨터의 작은 예제에만 해당하므로 보편적 절감률로 제시하지 않았다. 3~5개 실제 Orca 에이전트의 동시 설치 시간은 책의 측정 절차로 독자가 직접 확인해야 한다.
 - Linux·Windows 명령은 공식 문서의 차이만 설명했고 해당 OS에서 예제를 실행하지 않았다.
+- Orca `.worktreeinclude`의 실제 GUI 복사는 실행하지 않았다. 파일 존재·Git 무시 여부와 새 작업의 링크 상태를 확인하는 절차를 본문에 제시했다.
 
 ## 결론
 

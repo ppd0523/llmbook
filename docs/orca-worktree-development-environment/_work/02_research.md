@@ -55,3 +55,10 @@
 - Linux에서는 uv 캐시와 환경의 파일시스템, nvm 쉘 초기화를 확인한다. Windows에서는 uv/npm 캐시 경로와 Python venv의 Scripts, nvm의 WSL 지원 또는 fnm의 네이티브 지원을 짧게 비교한다. [uv Cache](https://docs.astral.sh/uv/concepts/cache/), [npm Config](https://docs.npmjs.com/cli/v11/using-npm/config/), [Python venv](https://docs.python.org/3.14/library/venv.html), [nvm README](https://github.com/nvm-sh/nvm/blob/master/README.md), [fnm README](https://github.com/Schniz/fnm)
 
 **집필 금지 단정:** “캐시 공유로 설치가 생략된다”, “Shared Paths는 항상 독립 사본이다”, “nvm과 fnm의 버전 파일 탐색은 같다”. 각각 동기화·재구성 비용, 링크 fallback, fnm의 local 기본값을 빠뜨린다. [uv Sync](https://docs.astral.sh/uv/concepts/projects/sync/), [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/), [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees), [fnm Configuration](https://github.com/Schniz/fnm/blob/master/docs/configuration.md)
+
+## 2026-09-27 보강: 패키지 밖의 로컬 파일
+
+- **확인:** Orca `.worktreeinclude`는 기본 체크아웃에 있고 Git에서 무시된 리터럴 경로를 새 작업 폴더로 복사한다. 누락·추적된 경로는 복사하지 않으며 이미 Shared Paths로 준비한 경로는 재복사하지 않는다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
+- **확인:** Worktree Shared Paths는 macOS APFS 복제가 가능하면 복제하고 그렇지 않으면 심볼릭 링크로 연결할 수 있다. 따라서 작업별로 수정할 `.env`와 개인 스크립트의 독립성을 무조건 보장하는 수단으로 설명하지 않는다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
+- **확인:** `uv run --env-file`과 Node의 `node --env-file`은 환경 파일 값을 실행 프로세스에 전달한다. 파일을 복사하는 것과 로드하는 것은 별개다. [uv configuration files](https://docs.astral.sh/uv/configuration/files/#environment-variable-files), [Node CLI](https://nodejs.org/api/cli.html#--env-filefile)
+- **판단:** 팀 공통 빌드·테스트 명령과 hook 진입 스크립트는 추적하고, 개인별 값만 Git 무시 파일로 둔다. `.env`의 실제 비밀값을 여러 워크트리에 복제할 때는 에이전트의 접근 범위와 사본 수를 고려한다. [Git ignore](https://git-scm.com/docs/gitignore), [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)

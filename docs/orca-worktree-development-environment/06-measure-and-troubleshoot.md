@@ -6,7 +6,7 @@
 
 ## 6.1 비교할 대상을 먼저 고정한다
 
-새 워크트리의 전체 준비 시간에는 Git 체크아웃, Orca setup hook, `uv`·`npm` 실행이 모두 들어간다. 2장에서 Python 3.14와 Node v24를 한 번 준비한 뒤 **같은 커밋과 잠금 파일**에서 새 작업을 만들어야 캐시 재사용을 비교할 수 있다. Rich 15나 Chalk를 추가한 브랜치는 별도 집합으로 기록한다. 공식 문서상 uv는 사용자 캐시를 사용하고 npm도 사용자 캐시를 사용하지만, 둘 다 새 작업 폴더에 설치 결과를 만들어야 한다. [uv 캐시](https://docs.astral.sh/uv/concepts/cache/), [npm 캐시](https://docs.npmjs.com/cli/v11/commands/npm-cache/)
+새 워크트리의 전체 준비 시간에는 Git 체크아웃, Orca의 로컬 파일 복사, setup hook, `uv`·`npm` 실행이 모두 들어간다. 2장에서 Python 3.14와 Node v24를 한 번 준비한 뒤 **같은 커밋과 잠금 파일**에서 새 작업을 만들어야 캐시 재사용을 비교할 수 있다. Rich 15나 Chalk를 추가한 브랜치는 별도 집합으로 기록한다. 공식 문서상 uv는 사용자 캐시를 사용하고 npm도 사용자 캐시를 사용하지만, 둘 다 새 작업 폴더에 설치 결과를 만들어야 한다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees), [uv 캐시](https://docs.astral.sh/uv/concepts/cache/), [npm 캐시](https://docs.npmjs.com/cli/v11/commands/npm-cache/)
 
 | 기록할 값 | Python에서 확인 | Node.js에서 확인 |
 |---|---|---|
@@ -52,6 +52,8 @@ npm start
 | 오프라인 설치만 실패 | 변경된 잠금 파일, 실제 캐시 위치 | 필요한 새 패키지를 온라인에서 한 번 받은 뒤 같은 워크트리에서 다시 확인한다. |
 | 캐시가 따뜻한데 느림 | 명령별 `real`, 동시 작업 수, 캐시와 설치 경로의 파일시스템 | 다운로드가 아닌 파일 배치나 경쟁인지 구별한다. 필요하면 병렬 설치 수를 줄여 다시 잰다. |
 | 다른 브랜치의 패키지가 보임 | `pwd`, Git 루트, `test -L .venv`, `test -L node_modules` | 작업 폴더나 설치 결과 공유를 해제하고 각 브랜치의 잠금 파일로 다시 설치한다. |
+| 새 워크트리에 `.env`나 개인 스크립트가 없음 | `git check-ignore -v <경로>`, `.worktreeinclude`, 기본 작업 폴더의 원본 | Orca 작업별 복사 설정을 확인한다. 일반 `git worktree add`였다면 별도 준비가 필요하다. |
+| `.env`는 있는데 변수가 적용되지 않음 | 실행 명령의 환경 파일 옵션 | Python은 `uv run --env-file`, Node v24는 `node --env-file`처럼 명시적으로 읽는다. |
 
 uv는 캐시와 설치 대상이 서로 다른 파일시스템에 있으면 빠른 링크 대신 복사로 물러날 수 있다. macOS에서 `df -P "$(uv cache dir)" .venv`로 두 경로의 볼륨을 확인한다. Node는 `npm config get cache`가 각 워크트리에서 같은지 확인한다. 같은 컴퓨터·물리 디스크라도 설정이나 볼륨이 다르면 가정한 캐시 경로가 아닐 수 있다. [uv 캐시](https://docs.astral.sh/uv/concepts/cache/#cache-directory), [npm 설정](https://docs.npmjs.com/cli/v11/using-npm/config/)
 

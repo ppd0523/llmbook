@@ -19,7 +19,7 @@ Orca에서 같은 저장소의 작업을 에이전트 세 명에게 나누어 �
 
 같은 로컬 브랜치를 여러 워크트리에서 동시에 체크아웃하는 것은 Git이 기본적으로 막는다. 병렬 에이전트에는 작업별 브랜치를 주고, 시작 커밋과 변경 파일을 확인한다. 브랜치 이름이 다르다고 설치 결과까지 분리되는 것은 아니며, 설치 경로도 따로 두어야 한다. [Git worktree 문서](https://git-scm.com/docs/git-worktree)
 
-## 1.2 여섯 층을 따로 본다
+## 1.2 일곱 층을 따로 본다
 
 | 층 | Python 실습 | Node.js 실습 | 기본 범위 |
 |---|---|---|---|
@@ -28,9 +28,12 @@ Orca에서 같은 저장소의 작업을 에이전트 세 명에게 나누어 �
 | 설치된 런타임 | uv가 찾거나 설치한 Python | nvm에 설치된 Node | 사용자 계정에서 재사용 가능 |
 | 다운로드 캐시 | `uv cache dir` | `npm config get cache` | 보통 사용자 계정에서 재사용 |
 | 패키지 설치 결과 | `.venv/` | `node_modules/` | 워크트리별로 준비 |
+| Git 무시 로컬 파일 | `.env`, 개인 도구 스크립트 | `.env`, 개인 도구 스크립트 | Git·패키지 캐시 밖에서 별도 준비 |
 | 셸의 선택 상태 | 실행 명령의 Python 경로 | `nvm use`가 바꾼 `PATH` | 실행 중인 셸별 |
 
 `nvm`은 Node 런타임을 고르는 도구이며 프로젝트의 npm 패키지를 설치하지 않는다. `uv`는 프로젝트의 Python 선택과 의존성 동기화를 수행한다. npm은 잠금 파일을 읽어 `node_modules`를 구성한다. 도구의 역할을 나누면 "Node는 이미 설치했는데 패키지가 없다"는 상황이 자연스럽다. [nvm README](https://github.com/nvm-sh/nvm), [uv 프로젝트 구조](https://docs.astral.sh/uv/concepts/projects/layout/), [npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/)
+
+`.env`나 Git에서 무시한 개인 도구 스크립트도 새 워크트리에는 없다. 이들은 Python·npm 패키지가 아니므로 `uv sync`와 `npm ci`의 캐시가 복원하지 않는다. 공통 명령과 작업별 로컬 값을 어떻게 나눌지는 [5.6절](./05-orca-parallel-worktrees.md#56-env)에서 다룬다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
 
 ## 1.3 다운로드와 설치는 다른 시간이다
 

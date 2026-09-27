@@ -17,10 +17,10 @@ Orca의 병렬 Git worktree에서 Python·Node.js 개발환경을 빠르게 준�
 | 챕터 | 중심 질문 | 핵심 개념 | 독자가 수행할 실습·확인 |
 |---|---|---|---|
 | 01 작업 공간과 캐시 | 같은 저장소인데 새 작업 폴더에 의존성이 없는 이유는? | Git 공통 저장소, 작업별 파일, 사용자별 런타임·다운로드 캐시, 작업별 설치 결과 | 경로·브랜치·잠금 파일·캐시 위치를 구분하는 표 작성 |
-| 02 두 예제 준비 | 잠금 파일과 버전 요청을 어떻게 준비하는가? | `.python-version`, `uv.lock`, `.nvmrc`, `package-lock.json`, Git 초기 커밋 | 독립된 두 예제를 복사해 실행하고 Git 저장소로 초기화 |
+| 02 두 예제 준비 | 잠금 파일과 버전 요청을 어떻게 준비하는가? | `.python-version`, `uv.lock`, `.nvmrc`, `package-lock.json`, `.env.example`, `.worktreeinclude`, Git 초기 커밋 | 독립된 두 예제를 복사해 실행하고 Git 저장소로 초기화 |
 | 03 Python과 uv | 두 워크트리가 설치 파일을 공유하지 않아도 어떻게 빨리 준비되는가? | uv cache, `.venv`, CoW, `--locked`, `--offline`, editable 경로 | 새 워크트리에서 동기화·실행·오프라인 재현, 환경 경로 확인 |
 | 04 Node.js와 nvm·npm | Node는 있는데 `node_modules`가 없는 이유는? | 셸별 nvm 선택, npm cache, `npm ci`, 설치 스크립트 | 새 워크트리에서 `nvm use 24`, `npm ci`, 오프라인 실행; 비대화식 셸 점검 |
-| 05 Orca 병렬 작업 | 에이전트 3~5개가 같은 시작점과 다른 잠금 파일로 일할 때 무엇이 충돌하는가? | Orca hook, 별도 브랜치, 변경된 lockfile, Shared Paths의 clone·symlink | 두 저장소에 hook 설정, 병렬 워크트리 생성, 한 브랜치의 의존성 변경, 공유 경로 판단 |
+| 05 Orca 병렬 작업 | 에이전트 3~5개가 같은 시작점과 다른 잠금 파일로 일할 때 무엇이 충돌하는가? | Orca hook, 별도 브랜치, 변경된 lockfile, Shared Paths의 clone·symlink, `.worktreeinclude`의 작업별 복사 | 두 저장소에 hook 설정, 병렬 워크트리 생성, 한 브랜치의 의존성 변경, Git 무시 로컬 파일·공유 경로 판단 |
 | 06 측정·진단·정리 | 새 워크트리 준비 시간이 왜 줄지 않는지 어떻게 알아내는가? | warm cache, 캐시 경로, 파일시스템, hook 실패, fnm 차이, 자원 정리 | 시간과 경로를 기록하고 원인별 조치 선택, 작업 결과 확인 후 Orca 워크트리 정리 |
 
 ## 개념 도입 순서
@@ -34,6 +34,7 @@ Orca의 병렬 Git worktree에서 Python·Node.js 개발환경을 빠르게 준�
 | Copy-on-Write | 03 | 복제 직후 데이터를 공유하고 쓰기 시 분리하는 파일시스템 동작으로 짧게 설명; 보장 조건 표시 |
 | 비대화식 셸 | 04 | 대화형 셸 시작 파일을 자동으로 읽지 않을 수 있는 hook 실행 맥락으로 설명 |
 | Orca Shared Paths | 05 | APFS 복제와 심볼릭 링크 대체 경로를 비교; `.venv`·`node_modules` 기본 실습에 사용하지 않음 |
+| Git 무시 로컬 파일 | 01·05 | `.env`·개인 스크립트는 패키지 캐시 밖이라는 점을 먼저 표시하고, `.worktreeinclude` 복사와 명시적 환경 파일 로드를 05에서 설명 |
 
 ## 예제·연습 대응
 

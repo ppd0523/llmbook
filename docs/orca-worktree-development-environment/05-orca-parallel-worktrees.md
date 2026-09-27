@@ -2,7 +2,7 @@
 
 ## 학습 목표
 
-이 장을 마치면 Orca에 두 예제 저장소를 등록하고, 새 워크트리가 생성될 때 잠금 파일에 맞춰 환경을 준비하며, 3~5개 에이전트가 동시에 작업할 때 발생하는 충돌을 작업 파일·설치 결과·캐시·Git 이력의 경계에서 설명할 수 있다.
+이 장을 마치면 Orca에 두 예제 저장소를 등록하고, 새 워크트리가 생성될 때 잠금 파일과 로컬 설정에 맞춰 환경을 준비하며, 3~5개 에이전트가 동시에 작업할 때 발생하는 충돌을 작업 파일·설치 결과·캐시·Git 이력의 경계에서 설명할 수 있다.
 
 ## 5.1 하나의 작업에는 하나의 워크트리와 브랜치
 
@@ -88,10 +88,57 @@ Python 가상환경은 이동 가능한 묶음으로 설계되지 않았고, uv 
 
 이미 공유 설정이 있는 저장소라면 먼저 `test -L .venv`, `test -L node_modules`, `readlink .venv`, `readlink node_modules`로 심볼릭 링크 여부를 살핀다. 링크가 아니어도 APFS 복제나 일반 복사가 있었는지는 별도 확인이 필요하다. **링크가 아니라는 사실만으로 안전한 새 환경이라고 판단하지 않는다.**
 
+## 5.6 패키지 밖의 도구 스크립트와 .env
+
+빌드·테스트 명령이 개인 도구 스크립트에만 있고 Git에서 무시된다면 새 워크트리는 그 명령을 알 수 없다. `.env`도 마찬가지다. `uv sync`와 `npm ci`는 패키지를 준비할 뿐, Git 무시 파일을 복원하지 않는다. 파일의 **역할**에 따라 준비 방법을 선택한다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
+
+| 파일의 역할 | 권장 위치와 방법 | 이유 |
+|---|---|---|
+| 팀 공통 빌드·테스트 명령, setup 진입점 | Git에 추적한 `scripts/`, `Makefile` 또는 프로젝트 명령 | 모든 브랜치에서 동일한 절차로 시작한다. 이 책의 `setup-worktree.sh`도 추적 파일이다. |
+| 작업마다 바꿀 `.env`, 개인 설정, 무시된 보조 스크립트 | 기본 작업 폴더에서 Orca `.worktreeinclude`로 **작업별 복사** | 한 에이전트의 수정이 다른 워크트리의 파일을 곧바로 바꾸지 않는다. |
+| 여러 작업이 읽기만 하는 큰 로컬 자원 | 사용자가 관리하는 공통 경로를 명시하거나 Shared Paths의 실제 방식을 확인 | 심볼릭 링크로 연결될 수 있으므로 쓰기 작업과 섞지 않는다. |
+
+공통 명령 전체를 Git 밖에 두기보다, **재현 가능한 명령은 추적**하고 컴퓨터마다 다른 경로·값만 Git 무시 파일로 남긴다. 비밀 값이 필요한 경우에도 추적하는 `.env.example`에는 키 이름과 무해한 예시만 둔다. `.env`는 Git에서 무시한다. 프로젝트가 실제로 어떤 값이 필요한지 알려 주면서 값 자체는 커밋하지 않는 구성이다. [Git ignore 문서](https://git-scm.com/docs/gitignore)
+
+2장의 두 예제는 `.gitignore`에서 `.env`를 무시하고, 추적된 `.worktreeinclude`에는 아래 한 줄이 있다. 기본 작업 폴더에는 `.env.example`에서 만든 **비밀이 아닌** `.env`가 이미 있다. 새 Orca 워크트리에서 이 파일의 작업별 사본을 확인한다. `.worktreeinclude`는 리터럴 경로만 지원하며, 원본이 없거나 추적된 경로는 복사하지 않는다. 같은 경로를 Shared Paths에도 등록했다면 공유 설정이 우선할 수 있으므로 중복 등록하지 않는다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
+
+```text
+# .worktreeinclude — 이 파일 자체는 Git에 추적
+.env
+```
+
+```bash
+# 기본 작업 폴더에서, 내용을 출력하지 않고 준비 상태만 확인
+git check-ignore -v .env
+test -f .env
+git ls-files .worktreeinclude
+```
+
+새 Orca 워크트리를 만든 뒤에는 파일의 존재와 링크 여부를 확인한다. `.worktreeinclude`의 복사는 **생성 당시의 사본**이므로 나중에 원본을 바꿔도 기존 작업 폴더가 자동 갱신된다고 가정하지 않는다. 일반 `git worktree add`는 Orca의 `.worktreeinclude`를 처리하지 않는다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees), [Git worktree 문서](https://git-scm.com/docs/git-worktree)
+
+```bash
+# 새 워크트리에서, 파일 내용은 표시하지 않는다
+test -f .env && test ! -L .env
+```
+
+개인 도구 스크립트 `tools/local-test.sh`도 복사하려면 그 **리터럴 경로**를 `.gitignore`와 `.worktreeinclude`에 추가해 커밋하고, 기본 작업 폴더에 파일을 준비한다. `git check-ignore -v tools/local-test.sh`와 `test -f tools/local-test.sh`로 원본을 먼저 확인한다. Orca setup hook이 이 무시된 스크립트에 의존한다면 파일 준비 순서를 해당 버전에서 확인한다. 가장 단순한 시작점은 이 책의 예제처럼 hook 진입 스크립트를 Git에 넣는 것이다. [Orca Worktrees](https://www.onorca.dev/docs/model/worktrees)
+
+`.env`의 **복사만으로** 실행 셸에 변수가 적용되지는 않는다. Python 예제라면 `uv run --locked --env-file .env python main.py`, Node v24 예제라면 `node --env-file=.env index.mjs`처럼 실행 명령에서 명시한다. 어떤 빌드·테스트 명령이 `.env`를 읽는지도 같은 방식으로 확인한다. [uv 환경 파일](https://docs.astral.sh/uv/configuration/files/#environment-variable-files), [Node.js 명령줄 옵션](https://nodejs.org/api/cli.html#--env-filefile)
+
+앞서 넣은 `WORKTREE_LABEL=local`이 실제 프로세스에 전달되는지 **값을 출력하지 않고** 확인할 수도 있다. 첫 줄은 Python 저장소, 둘째 줄은 Node 저장소에서 실행한다. Node 명령은 해당 터미널에서 `nvm use 24`를 실행한 뒤 사용한다.
+
+```bash
+uv run --locked --env-file .env python -c 'import os; assert os.getenv("WORKTREE_LABEL")'
+node --env-file=.env -e 'if (!process.env.WORKTREE_LABEL) process.exit(1)'
+```
+
+실제 인증 정보가 든 `.env`를 복사하면 워크트리 수만큼 사본이 생기고 각 작업의 에이전트가 읽을 수 있다. 이 방법을 쓰기 전에 그 접근 범위가 적절한지 판단한다. 진단 로그에는 파일의 존재 여부만 남기고 내용과 변수 값을 출력하지 않는다. 다른 경로에서 값을 공급하는 팀은 그 경로를 setup 절차에 명시한다.
+
 ## 직접 해보기
 
-`py-change`가 Rich 15를 설치한 직후 `py-check-a`에서 Rich 14가 사라졌다. 두 워크트리의 `pwd`, `git rev-parse --show-toplevel`, `test -L .venv`, `uv cache dir`를 비교해 보자. 어느 결과라면 공유 캐시는 정상이고, 어느 결과라면 두 작업이 설치 결과를 공유한 것인가?
+1. `py-change`가 Rich 15를 설치한 직후 `py-check-a`에서 Rich 14가 사라졌다. 두 워크트리의 `pwd`, `git rev-parse --show-toplevel`, `test -L .venv`, `uv cache dir`를 비교해 보자. 어느 결과라면 공유 캐시는 정상이고, 어느 결과라면 두 작업이 설치 결과를 공유한 것인가?
+2. 3·4장에서 Git 명령으로 만든 워크트리에는 `.env`가 없는데 5장의 새 Orca 워크트리에는 있다. 두 생성 경로의 차이를 설명하고, Orca 작업에서 `.env`가 심볼릭 링크인지 확인해 보자.
 
-**확인:** 같은 `uv cache dir`는 정상이다. 두 워크트리의 `.venv`가 같은 실제 경로를 가리키거나 에이전트가 같은 작업 폴더에서 실행됐다면 작업 격리가 깨진다. 이 경우 각 워크트리에서 별도 환경을 만들고 잠금 파일 기준으로 다시 동기화한다.
+**확인:** 1번에서 같은 `uv cache dir`는 정상이다. 두 워크트리의 `.venv`가 같은 실제 경로를 가리키거나 에이전트가 같은 작업 폴더에서 실행됐다면 작업 격리가 깨진다. 2번에서 Git 자체는 `.worktreeinclude`를 처리하지 않고 Orca가 무시 파일을 복사한다. `test -f .env && test ! -L .env`로 Orca 작업의 독립 사본을 확인한다.
 
 [6장: 준비 시간 측정과 문제 해결 →](./06-measure-and-troubleshoot.md)

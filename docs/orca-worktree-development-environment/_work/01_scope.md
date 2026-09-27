@@ -10,7 +10,7 @@ Orca에서 여러 에이전트가 서로 다른 Git worktree를 병렬로 사용
 
 - 대상 독자: Git, Python, Node.js 프로젝트를 사용해 봤지만 Git worktree와 Orca 병렬 작업은 처음인 개발자.
 - 선행지식: Git의 commit·branch, `uv`와 `nvm`의 기본 목적, `pyproject.toml`과 `package.json`의 역할, 터미널 명령 실행.
-- 이 책에서 설명할 개념: Git worktree의 파일 경계, 사용자별 다운로드 캐시와 작업별 설치 결과의 차이, 잠금 파일, Orca setup hook, 병렬 설치 충돌, 캐시 적중과 소요 시간 측정.
+- 이 책에서 설명할 개념: Git worktree의 파일 경계, 사용자별 다운로드 캐시와 작업별 설치 결과의 차이, Git 무시 로컬 파일, 잠금 파일, Orca setup hook, 병렬 설치 충돌, 캐시 적중과 소요 시간 측정.
 - 기존 NixOS-WSL 책과 Hermes Agent 책은 선택 읽기 자료이며 필수 선행 학습이 아니다.
 
 ## 학습 목표
@@ -25,9 +25,9 @@ Orca에서 여러 에이전트가 서로 다른 Git worktree를 병렬로 사용
 
 ## 포함·제외 범위
 
-- 포함: macOS 실습, Linux·Windows에서 달라지는 경로와 동작의 짧은 설명, Orca 저장소 등록·워크트리 생성·에이전트 실행·setup hook·검증·정리, `uv` 프로젝트 방식(`pyproject.toml`·`uv.lock`), `nvm`·npm(`.nvmrc`·`package-lock.json`), fnm과 nvm의 핵심 차이, Orca Shared Paths의 `.venv`·`node_modules` 동작과 위험.
+- 포함: macOS 실습, Linux·Windows에서 달라지는 경로와 동작의 짧은 설명, Orca 저장소 등록·워크트리 생성·에이전트 실행·setup hook·검증·정리, `uv` 프로젝트 방식(`pyproject.toml`·`uv.lock`), `nvm`·npm(`.nvmrc`·`package-lock.json`), fnm과 nvm의 핵심 차이, Orca Shared Paths의 `.venv`·`node_modules` 동작과 위험, Git 무시 스크립트·`.env`의 복사와 명시적 로드.
 - 실습: 외부 서비스를 호출하지 않는 독립된 Python·Node 예제 두 개. 동일한 잠금 파일과 브랜치별 의존성 변경을 모두 다룬다. 캐시가 준비되면 오프라인으로 실행·검증할 수 있도록 한다.
-- 제외: Orca·Git·uv·nvm·Node·Python 설치 절차, Rust 빌드, pnpm·Yarn 실습, 포트·데이터베이스·비밀 설정, 전체 운영체제 구축, PDF 등 추가 변환.
+- 제외: Orca·Git·uv·nvm·Node·Python 설치 절차, Rust 빌드, pnpm·Yarn 실습, 포트·데이터베이스·실제 비밀값 구성, 전체 운영체제 구축, PDF 등 추가 변환. `.env`의 파일 수명주기는 다루되 실제 인증값을 예제에 넣지 않는다.
 - 버전: `.python-version`에는 `3.14`, `.nvmrc`에는 `24`를 기록해 같은 계열의 최신 패치를 허용한다. Node v24는 집필 시점의 LTS 계열이다. 패치 버전에 따른 재현성 한계를 설명한다.
 - 중점: 새 워크트리의 준비 시간. 네트워크 다운로드, 로컬 캐시에서의 설치, 디스크 사용을 구분하되 특정 시간 단축을 보장하지 않는다.
 
@@ -50,3 +50,5 @@ Orca에서 여러 에이전트가 서로 다른 Git worktree를 병렬로 사용
 6. 준비 시간·오프라인 검증·문제 해결·워크트리 정리
 
 사용자와 grill-me 문답으로 이 범위를 확정했다. 마지막 요청에 따라 병렬 에이전트가 워크트리를 만들고 개발할 때 생기는 의존성 관련 문제를 깊이 다룬다.
+
+2026-09-27 후속 질문에 따라 패키지 관리자 밖의 Git 무시 스크립트와 `.env` 처리 범위를 1·5·6장에 추가했다. 비밀값 자체의 설정은 여전히 예제 밖이다.
