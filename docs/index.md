@@ -11,6 +11,7 @@
 1. [Nix·Conan·CMake로 Cyclone DDS C++ 교차 개발 환경 만들기](./nix-cpp-cyclonedds/index.md)
 1. [LazyVim으로 다중 언어 개발 환경 구축하기](./lazyvim-development-environment/index.md)
 1. [Hermes Agent 실전 운영 가이드](./hermes-agent-guide/index.md)
+1. [Orca 워크트리 개발환경: uv와 nvm으로 의존성 관리](./orca-worktree-development-environment/index.md)
 1. [로보틱스 기구학 기초](./robotics-kinematics-foundations/index.md)
 1. [매니퓰레이터 순기구학과 수치 역기구학](./robotics-manipulator-kinematics/index.md)
 1. [휴머노이드 전신 역기구학과 동적 균형](./humanoid-balance-and-whole-body-ik/index.md)

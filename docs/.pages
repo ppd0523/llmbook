@@ -9,6 +9,7 @@ nav:
   - nix-cpp-cyclonedds
   - lazyvim-development-environment
   - hermes-agent-guide
+  - orca-worktree-development-environment
   - robotics-kinematics-foundations
   - robotics-manipulator-kinematics
   - humanoid-balance-and-whole-body-ik
