@@ -12,9 +12,9 @@ baseline: Nixpkgs 26.05, Conan 2.28, Cyclone DDS 0.10.2, spdlog 1.17.0
 완성한다. 마지막에는 x86_64 개발 PC에서 만든 완전 정적 aarch64 실행 파일을 Nix가 없는
 Linux 장치에서 실행한다.
 
-완성된 예제는 [`assets/cyclonedds-cross-demo/`](./assets/cyclonedds-cross-demo/README.md)에
+완성된 예제는 [예제 프로젝트 `cyclonedds-cross-demo`](./assets/cyclonedds-cross-demo/README.md)에
 있다. 설명을 읽으며 직접 파일을 만들거나 예제를 별도 작업 디렉터리에 복사해서 사용할
-수 있다.
+수 있다. 예제 경로와 명령은 `conanfile.py`와 `CMakeLists.txt`가 있는 프로젝트 루트를 기준으로 한다.
 
 ## 학습 목표
 

@@ -66,8 +66,9 @@ ppo-project/
 
 ## 2단계: 작은 검사부터 통과한다
 
+예제 프로젝트 루트에서 실행한다.
+
 ```powershell
-cd docs\pytorch-ppo-learning
 python -m unittest discover -s tests -v
 python examples\ppo_cartpole.py --smoke-test
 ```

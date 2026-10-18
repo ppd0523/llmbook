@@ -71,6 +71,8 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 
 ## 실습 자료
 
+예제 프로젝트 루트는 `requirements.txt`, `examples/`, `tests/`가 있는 폴더다. 이 책의 예제 경로와 명령은 이 루트를 기준으로 한다.
+
 - [할인 return 실험실](./assets/mdp-value-and-math/discounted-return-lab.html)
 - [Categorical 정책분포 실험실](./assets/pytorch-for-policies/policy-distribution-lab.html)
 - [GAE 역방향 계산 실험실](./assets/policy-gradient-and-gae/gae-lab.html)

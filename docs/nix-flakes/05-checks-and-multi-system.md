@@ -195,7 +195,7 @@ checks = forAllSystems (
 
 지금까지의 출력을 합치면 다음과 같다.
 
-파일: `docs/nix-flakes/assets/flake-greeter/flake.nix` (전체)
+파일: `flake.nix` (`flake-greeter` 프로젝트 루트 기준, 전체)
 
 ```nix
 {
@@ -288,7 +288,7 @@ checks = forAllSystems (
 }
 ```
 
-같은 파일이 [`assets/flake-greeter/flake.nix`](./assets/flake-greeter/flake.nix)에
+같은 파일이 [`flake.nix`](./assets/flake-greeter/flake.nix)에
 있다.
 
 ## 5.7 검증 순서

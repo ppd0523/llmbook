@@ -14,7 +14,7 @@
 
 ## 환경 설치
 
-이 책 폴더에서 가상환경을 만든다. Windows PowerShell 예다.
+`requirements.txt`, `examples/`, `tests/`가 있는 예제 프로젝트 루트에서 가상환경을 만든다. Windows PowerShell 예다.
 
 ```powershell
 py -3.12 -m venv .venv-ppo

@@ -88,7 +88,7 @@ nix.settings.experimental-features = [
 `flake-greeter`는 실행할 때 필요한 `cowsay`를 런타임 의존성(runtime dependency)으로
 선언하며 `nix run`으로 바로 실행할 수 있다.
 
-완성된 파일은 [`assets/flake-greeter/`](./assets/flake-greeter/README.md)에 있다.
+완성된 파일은 [예제 프로젝트 `flake-greeter`](./assets/flake-greeter/README.md)에 있다. 이 책의 예제 경로와 명령은 `flake.nix`가 있는 프로젝트 루트를 기준으로 한다.
 
 ## 읽는 순서
 

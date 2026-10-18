@@ -15,8 +15,10 @@
 `~/.config/nvim/`에 복사한다. 첫 실행에서 생성되는 `lazy-lock.json`은 예제에 포함하지
 않는다. 정상 구성을 확인한 뒤 자신의 설정 저장소에 commit한다.
 
+`init.lua`가 있는 이 예제 프로젝트 루트에서 실행한다.
+
 ```console
-$ cp -a docs/lazyvim-development-environment/assets/example-config/. ~/.config/nvim/
+$ cp -a . ~/.config/nvim/
 $ nvim
 ```
 

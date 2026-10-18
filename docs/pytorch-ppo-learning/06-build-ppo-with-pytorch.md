@@ -14,6 +14,8 @@
 
 ## 예제 구조
 
+다음은 `requirements.txt`가 있는 예제 프로젝트 루트를 기준으로 한 구조다.
+
 ```text
 examples/
 ├─ ppo_components.py   # return, GAE, clipped objective, explained variance
@@ -29,10 +31,9 @@ requirements.txt
 
 ## 먼저 빠른 검증을 실행한다
 
-책 폴더로 이동하고 가상환경을 활성화한다.
+예제 프로젝트 루트에서 가상환경을 활성화한다.
 
 ```powershell
-cd docs\pytorch-ppo-learning
 .\.venv-ppo\Scripts\Activate.ps1
 ```
 

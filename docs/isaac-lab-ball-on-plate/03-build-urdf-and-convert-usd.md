@@ -60,7 +60,7 @@ I_{zz}=\frac{1}{2}mr^2
 
 ## 3.4 XML 정적 검사
 
-Ubuntu 대상 PC뿐 아니라 현재 문서 작성 PC에서도 XML 문법은 검사할 수 있다.
+Ubuntu 대상 PC뿐 아니라 현재 문서 작성 PC에서도 XML 문법은 검사할 수 있다. `ball_on_plate_lab` 프로젝트 루트에서 실행한다.
 
 ```bash
 python - <<'PY'
@@ -98,10 +98,10 @@ USD_DIR=/absolute/path/to/ball_on_plate_lab/source/ball_on_plate_lab/ball_on_pla
 
 `--fix-base`는 베이스를 세계에 고정한다. 위치 드라이브와 PD 게인은 정책의 정규화 행동을 목표 각도로 해석하기 위한 것이다. 공식 [URDF 자산 가져오기](https://isaac-sim.github.io/IsaacLab/v3.0.0-beta2/source/how-to/import_new_asset.html)와 태그의 [convert_urdf.py](https://github.com/isaac-sim/IsaacLab/blob/v3.0.0-beta2.patch1/scripts/tools/convert_urdf.py)를 기준으로 한 명령이다.
 
-Isaac Sim 6 임포터는 출력 인자를 단일 파일이 아니라 출력 디렉터리로 사용하고, 로봇 이름에서 루트 USD 파일명을 정한다. 터미널의 `Generated USD file:` 줄을 복사해 둔다. 이 URDF에서는 보통 다음 경로다.
+Isaac Sim 6 임포터는 출력 인자를 단일 파일이 아니라 출력 디렉터리로 사용하고, 로봇 이름에서 루트 USD 파일명을 정한다. 터미널의 `Generated USD file:` 줄을 복사해 둔다. 이 URDF에서는 보통 `ball_on_plate_lab` 프로젝트 루트 기준으로 다음 경로다.
 
 ```text
-assets/usd/ball_on_plate/ball_on_plate.usd
+source/ball_on_plate_lab/ball_on_plate_lab/assets/usd/ball_on_plate/ball_on_plate.usd
 ```
 
 경로가 다르면 환경 변수를 지정한다.

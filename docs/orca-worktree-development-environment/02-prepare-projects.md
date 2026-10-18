@@ -6,14 +6,14 @@
 
 ## 2.1 실습을 시작하는 위치
 
-책 저장소의 예제 파일은 [Python 예제](./assets/python-demo/README.md)와 [Node.js 예제](./assets/node-demo/README.md)에 있다. 아래 명령은 `llmbook` 저장소 루트에서 시작한다. 두 예제를 **서로 다른 Git 저장소**로 복사해야 Orca가 각각의 worktree를 독립적으로 관리할 수 있다. `llmbook`의 `assets/` 폴더 안에서 `git init`을 실행하지 않는다.
+실습 파일은 [Python 예제](./assets/python-demo/README.md)와 [Node.js 예제](./assets/node-demo/README.md)에서 준비한다. Python 프로젝트 루트는 `pyproject.toml`이 있는 폴더이고, Node.js 프로젝트 루트는 `package.json`이 있는 폴더다. 이후 파일 경로는 각 프로젝트 루트를 기준으로 한다. 두 예제를 **서로 다른 Git 저장소**로 복사해야 Orca가 각각의 worktree를 독립적으로 관리할 수 있다. 아래 `<python-project-root>`와 `<node-project-root>`는 준비한 예제의 실제 절대 경로로 바꾼다.
 
 ```bash
 mkdir -p "$HOME/orca-worktree-lab"
-cp -R docs/orca-worktree-development-environment/assets/python-demo \
-  "$HOME/orca-worktree-lab/python-demo"
-cp -R docs/orca-worktree-development-environment/assets/node-demo \
-  "$HOME/orca-worktree-lab/node-demo"
+cd "<python-project-root>"
+cp -R . "$HOME/orca-worktree-lab/python-demo"
+cd "<node-project-root>"
+cp -R . "$HOME/orca-worktree-lab/node-demo"
 ```
 
 대상 폴더가 이미 있다면 다른 빈 경로를 선택한다. 새 worktree의 준비 시간을 비교할 때 기존 `.venv`나 `node_modules`가 섞이면 측정이 달라진다. 두 예제 모두 외부 서비스를 호출하지 않는다. 패키지 설치가 끝난 뒤의 프로그램 실행은 로컬에서 가능하다.

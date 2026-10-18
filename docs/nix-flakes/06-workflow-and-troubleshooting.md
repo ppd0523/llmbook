@@ -8,11 +8,11 @@
 
 ## 6.1 종합 실습 준비
 
-저장소 루트에서 완성형 예제를 작업 디렉터리로 복사한다.
+[완성형 예제](./assets/flake-greeter/README.md)의 `flake.nix`가 있는 프로젝트 루트에서 시작한다. 작업용 복사본을 만들려면 아직 존재하지 않는 대상 경로를 사용한다. 아래는 `~/flake-greeter`에 복사하는 예다.
 
 ```console
-$ cp -R docs/nix-flakes/assets/flake-greeter ./flake-greeter
-$ cd flake-greeter
+$ cp -R . "$HOME/flake-greeter"
+$ cd "$HOME/flake-greeter"
 $ git init
 $ git add flake.nix README.md
 ```

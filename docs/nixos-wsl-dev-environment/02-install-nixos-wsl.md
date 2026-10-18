@@ -174,33 +174,15 @@ $ ssh -T git@github.com
 
 ## 2.8 제공 예제를 구성 디렉터리로 복사하기
 
-이 안내서의 [`assets/example-config`](assets/example-config/README.md)가 개인 구성 저장소의 시작점이다. 안내서 저장소를 내려받은 위치를 `<guide-root>`라고 하면 다음처럼 복사한다.
+[예제 구성 프로젝트](assets/example-config/README.md)를 준비하고, `flake.nix`와 `hosts/`, `modules/`가 있는 프로젝트 루트에서 시작한다. 이 책의 구성 파일 경로는 이 루트를 기준으로 한다. 예제 프로젝트 전체를 개인 구성 저장소 위치로 복사한다. `~/.config/nixos`가 이미 존재하면 덮어쓰지 말고 내용을 먼저 확인한다.
 
 ```console
 $ mkdir -p ~/.config
-$ cp -R <guide-root>/docs/nixos-wsl-dev-environment/assets/example-config \
-    ~/.config/nixos
+$ cp -R . ~/.config/nixos
 $ cd ~/.config/nixos
 ```
 
-예를 들어 안내서를 Windows의 `C:\Users\me\llmBook`에 내려받았다면 WSL 경로는 `/mnt/c/Users/me/llmBook`이다.
-
-```console
-$ cp -R /mnt/c/Users/me/llmBook/docs/nixos-wsl-dev-environment/assets/example-config \
-    ~/.config/nixos
-```
-
-위 로컬 경로 방식과 다음 clone 방식 중 하나만 사용한다. GitHub에서 이 안내서를 보고 있다면 먼저 안내서 저장소를 clone한 뒤 같은 디렉터리를 복사해도 된다.
-
-```console
-$ git clone <guide-repository-url> /tmp/nixos-wsl-guide
-$ mkdir -p ~/.config
-$ cp -R /tmp/nixos-wsl-guide/docs/nixos-wsl-dev-environment/assets/example-config \
-    ~/.config/nixos
-$ cd ~/.config/nixos
-```
-
-`~/.config/nixos`가 이미 존재하면 덮어쓰지 말고 내용을 먼저 확인한다. 예제의 기본 사용자 이름은 NixOS-WSL 초기 사용자와 같은 `nixos`이므로 첫 적용에서는 바꾸지 않는다. 사용자 이름 변경은 정상 부팅과 첫 push를 확인한 뒤 9장의 절차로 수행한다.
+예제의 기본 사용자 이름은 NixOS-WSL 초기 사용자와 같은 `nixos`이므로 첫 적용에서는 바꾸지 않는다. 사용자 이름 변경은 정상 부팅과 첫 push를 확인한 뒤 9장의 절차로 수행한다.
 
 ## 2.9 로컬 저장소 초기화와 첫 `flake.lock` 생성
 

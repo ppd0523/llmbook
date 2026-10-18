@@ -315,10 +315,9 @@ Advantage와 value target은 rollout마다 한 번 고정한다. 다음 collecto
 
 위 개념을 하나로 조립한 코드는 [examples/torchrl_ppo.py](./examples/torchrl_ppo.py)에 있다.
 
-환경을 준비한다. 3장에서 만든 `.venv-ppo`가 이미 있으면 생성 줄은 건너뛰고 활성화부터 실행한다.
+예제 프로젝트 루트에서 환경을 준비한다. 3장에서 만든 `.venv-ppo`가 이미 있으면 생성 줄은 건너뛰고 활성화부터 실행한다.
 
 ```powershell
-cd docs\pytorch-ppo-learning
 python -m venv .venv-ppo
 .\.venv-ppo\Scripts\Activate.ps1
 python -m pip install -r requirements.txt

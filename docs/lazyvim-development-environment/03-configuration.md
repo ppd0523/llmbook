@@ -157,11 +157,11 @@ Python extra의 Ruff language server는 diagnostics와 code action을 제공한�
 
 ## 3.6 예제 설정 적용
 
-이 저장소를 clone한 directory의 root에서 다음 명령을 실행하면
-[완성 예제](./assets/example-config/README.md)를 Starter 위에 복사할 수 있다.
+[완성 예제](./assets/example-config/README.md)의 `init.lua`가 있는 프로젝트 루트에서
+다음 명령을 실행하면 예제 설정을 Starter 위에 복사할 수 있다. 이 절의 예제 경로는 이 루트를 기준으로 한다.
 
 ```console
-$ cp -a docs/lazyvim-development-environment/assets/example-config/. ~/.config/nvim/
+$ cp -a . ~/.config/nvim/
 $ nvim
 ```
 
