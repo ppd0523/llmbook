@@ -32,7 +32,7 @@ title: 매니퓰레이터 순기구학과 수치 역기구학
 - [6R 순기구학 실습: 관절별 누적 변환과 TCP 관찰하기](./assets/six-dof-forward-kinematics/forward-kinematics-lab.html)
 - [2R 자코비안·수치 IK 실습: 특이점과 반복 경로 비교하기](./assets/jacobian-numerical-inverse-kinematics/numerical-ik-lab.html)
 
-모든 실습은 외부 라이브러리 없이 동작한다. 각 장의 Worked Example을 푼 뒤, 같은 값을 입력해 수식과 그림이 일치하는지 확인해 보자.
+모든 실습은 외부 라이브러리 없이 동작한다. 각 장의 풀이 예제를 푼 뒤, 같은 값을 입력해 수식과 그림이 일치하는지 확인해 보자.
 
 ## 세 권으로 이어지는 학습 경로
 
