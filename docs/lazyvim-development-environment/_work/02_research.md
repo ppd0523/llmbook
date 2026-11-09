@@ -1,9 +1,7 @@
 ---
 title: LazyVim 개발 환경 조사 노트
-version: 1.0
 status: reviewed
 owner: agent
-updated: 2026-07-22
 target_reader: 터미널, Git, vi 기초를 알고 LazyVim은 처음인 개발자
 topic: LazyVim 다중 언어 개발 환경의 공식 구성과 검증 근거
 ---
@@ -36,6 +34,8 @@ topic: LazyVim 다중 언어 개발 환경의 공식 구성과 검증 근거
 | 공식 저장소 | CodeLLDB | <https://github.com/vadimcn/codelldb> | Linux host와 glibc 조건 | 높음 |
 
 확인 기준일은 2026-07-22다. LazyVim과 plugin은 빠르게 변경되므로 본문은 exact release보다 공식 문서의 현재 요구사항과 `lazy-lock.json`을 기준으로 한다.
+
+이 표와 3절의 기술 주장은 공통 구간(1~3장, 8장)과 JavaScript·TypeScript, Python, Rust 구간(4~6장)을 다룬다. C++ 구간(7장, 3장·8장의 C++ 항목)이 인용하는 LazyVim Clangd extra, clangd 설치·기능 문서, CMake `CMAKE_EXPORT_COMPILE_COMMANDS`, CodeLLDB manual은 본문 추가 읽을거리에 있으며 이 조사의 확인 범위에 들지 않는다.
 
 ## 2. 핵심 정의
 
@@ -78,13 +78,14 @@ topic: LazyVim 다중 언어 개발 환경의 공식 구성과 검증 근거
 | JS/TS 작은 CLI | vtsls, Prettier, ESLint, js-debug | Node.js, npm | LSP·format·debug 모두 확인 | TypeScript 직접 실행에는 tsx 또는 ts-node 필요 |
 | Python 작은 CLI | Pyright, Ruff, `.venv`, debugpy | Python 3, venv | interpreter 선택 문제 재현 | adapter Python과 project Python을 혼동 가능 |
 | Rust 작은 binary | rust-analyzer, rustfmt, CodeLLDB | rustup, Cargo | Cargo target discovery 확인 | 오래된 glibc에서 CodeLLDB binary 문제 가능 |
+| C++ CMake project | clangd, `compile_commands.json`, clang-format, CodeLLDB | C++ compiler, CMake | 실제 compile option으로 분석 확인 | compile database가 없거나 오래되면 diagnostics가 실제 build와 어긋남 |
 | 고장 주입 표 | 계층별 진단 | health/log commands | 증상과 원인을 연결 | 명령 이름의 버전 변경 가능 |
 
 ## 5. 논쟁점 또는 주의점
 
 - 쟁점: LSP·formatter·adapter를 Mason에서 전역 설치할지 프로젝트가 직접 관리할지 선택이 필요하다.
 - 서로 다른 설명 방식: 모든 도구를 Mason으로 설치하는 방식은 입문이 쉽고, project manager/Nix로 고정하는 방식은 재현성이 높다.
-- 이 자료에서 채택할 설명: 입문 경로는 Mason으로 editor tool을 설치하되, runtime과 library, Prettier/ESLint 설정, Python dependency, Rust toolchain은 프로젝트가 소유한다고 명시한다.
+- 이 자료에서 채택할 설명: 입문 경로는 Mason으로 editor tool을 설치하되, runtime과 library, Prettier/ESLint 설정, Python dependency, Rust toolchain, C++ compiler·CMake는 프로젝트가 소유한다고 명시한다.
 - 채택 이유: 독자가 LazyVim 계층을 먼저 학습하면서도 Mason package가 application dependency를 대신한다고 오해하지 않게 한다.
 - 쟁점: ESLint와 Prettier가 동시에 format하면 결과가 반복 변경될 수 있다.
 - 이 자료에서 채택할 설명: ESLint auto-format은 끄고 diagnostics/code action을 담당시키며 Prettier를 JS/TS formatter로 지정한다.
@@ -93,7 +94,8 @@ topic: LazyVim 다중 언어 개발 환경의 공식 구성과 검증 근거
 
 ## 6. 출처 필요 항목
 
-- 없음. 최종 원고에 포함할 기술 주장은 위 공식 출처로 확인했다.
+- 공통 구간과 JavaScript·TypeScript, Python, Rust 구간의 기술 주장은 위 공식 출처로 확인했다.
+- C++ 구간(7장, 3장·8장의 C++ 항목)의 기술 주장은 이 조사에서 공식 출처와 대조하지 않았다.
 
 ## 7. 조사 요약
 
@@ -107,4 +109,4 @@ topic: LazyVim 다중 언어 개발 환경의 공식 구성과 검증 근거
 - [x] 정의와 기술 주장의 출처가 기록되어 있다.
 - [x] 공식 문서와 공식 구현체를 우선 출처로 사용했다.
 - [x] 버전 의존적 내용에는 확인 날짜 또는 요구 버전이 기록되어 있다.
-- [x] 출처 없는 최종 주장이 남아 있지 않다.
+- [ ] 출처 없는 최종 주장이 남아 있지 않다. 공통 구간과 JS·TS, Python, Rust 구간은 충족하고, C++ 구간(7장, 3장·8장의 C++ 항목)은 본문 추가 읽을거리의 출처와 대조하지 않았다.

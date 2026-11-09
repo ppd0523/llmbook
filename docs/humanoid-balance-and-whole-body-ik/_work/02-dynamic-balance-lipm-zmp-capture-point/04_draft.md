@@ -1,8 +1,7 @@
 ---
 stage: 04_draft
-chapter: 06-dynamic-balance-lipm-zmp-capture-point
+chapter: 02-dynamic-balance-lipm-zmp-capture-point
 status: complete
-updated: 2026-08-12
 ---
 
 # 휴머노이드 동적 균형의 기초: LIPM, ZMP와 캡처 포인트
@@ -35,7 +34,7 @@ updated: 2026-08-12
 
 ## 학습 전 확인
 
-이 장은 [5단계: 휴머노이드 보행을 위한 전신 역기구학](./05-humanoid-whole-body-inverse-kinematics.md)까지 학습했다고 가정한다. 특히 다음 내용을 다시 확인하자.
+이 장은 [5단계: 휴머노이드 보행을 위한 전신 역기구학](./01-humanoid-whole-body-inverse-kinematics.md)까지 학습했다고 가정한다. 특히 다음 내용을 다시 확인하자.
 
 - 전신 구성은 부유 베이스와 모든 구동 관절값을 포함한다.
 - CoM은 링크별 질량중심의 질량 가중 평균이다.

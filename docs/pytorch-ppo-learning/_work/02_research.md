@@ -1,9 +1,7 @@
 ---
 title: PyTorch PPO 입문 조사 노트
-version: 1.1
 status: final
 owner: agent
-updated: 2026-09-22
 target_reader: 강화학습과 PyTorch 초심자
 topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 ---
@@ -85,7 +83,7 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 | GAE 실험실 | reward, value, $\gamma$, $\lambda$와 역방향 재귀 | 인터랙티브 HTML | 종료 마스크를 눈에 보이게 표시한다. |
 | PPO clipping 실험실 | ratio와 advantage 부호별 min 선택 | 인터랙티브 HTML | clip이 항상 ratio를 잘라 쓰는 것으로 오해하지 않게 두 항을 함께 표시한다. |
 | PPO dataflow | 수집→고정→GAE→여러 epoch→폐기 | 정적 SVG | on-policy 경계를 굵게 표시한다. |
-| 디버깅 의사결정도 | 로그 증상에서 점검 순서 | 정적 SVG와 HTML | 단일 지표로 결론 내리지 않도록 조합을 사용한다. |
+| 디버깅 의사결정도 | 로그 증상에서 점검 순서 | 정적 SVG | 단일 지표로 결론 내리지 않도록 조합을 사용한다. |
 | TorchRL 대응도 | 직접 구현의 객체와 TorchRL 클래스 | 정적 SVG | high-level trainer는 experimental임을 구분한다. |
 
 ## 6. 논쟁점과 채택한 설명
@@ -113,9 +111,9 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 - [x] 버전 의존 정보에 확인 날짜와 버전을 기록했다.
 - [x] 초고로 넘길 미검증 핵심 주장이 없다.
 
-## 9. 2차 조사: 공개 지식체계와 초심자 경로 대조
+## 9. 공개 지식체계와 초심자 경로 대조
 
-2026-08-21에 “정의 없이 처음 등장하는 용어가 없는가, PPO까지 필요한 다리가 빠지지 않았는가”를 기준으로 다시 조사했다.
+2026-08-21에 “정의 없이 처음 등장하는 용어가 없는가, PPO까지 필요한 다리가 빠지지 않았는가”를 기준으로 조사했다.
 
 | 대조 자료 | 공개 학습 흐름·핵심 범위 | 이 책에 요구되는 보강 |
 |---|---|---|
@@ -128,7 +126,7 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 | Hugging Face Deep RL Course | DRL 소개 → Q-learning/DQN → PyTorch policy gradient → actor–critic → PPO | 실습 중심 자료처럼 각 추상 개념 뒤에 실행·계산·퀴즈를 둔다. Q-learning을 생략한 이유와 후속 경로를 눈에 띄게 표시한다. |
 | PyTorch Learn the Basics | tensor → model → autograd → optimization → save/load | 3장에 layer, parameter, activation, forward pass, loss, learning rate, optimizer를 정의한다. Dataset/DataLoader는 on-policy rollout에 직접 쓰지 않으므로 차이를 설명한다. |
 
-## 10. 2차 조사에서 확정한 필수 용어 묶음
+## 10. 필수 용어 묶음
 
 ### 10.1 외부 학습으로 분리하는 선수지식
 
@@ -158,7 +156,7 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 - 공개 강의는 설명 순서와 과제 구조의 근거로 사용한다.
 - 서로 다른 표기 관례인 $R_{t+1}$과 이 책의 $r_t$를 처음에 명시해 시간 index 혼동을 막는다.
 
-## 12. 잔차 용어 보강 조사
+## 12. 잔차 용어 조사
 
 | 근거 | 확인한 내용 | 본문 반영 |
 |---|---|---|
@@ -169,12 +167,11 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 
 원문 링크: <https://incompleteideas.net/book/the-book-2nd.html>, <https://arxiv.org/abs/1506.02438>, <https://arxiv.org/abs/1812.03201>, <https://arxiv.org/abs/1512.03385>
 
+## 13. 1차 출처 대조
 
-## 13. 3차 개정: 1차 출처 재검증 (2026-09-22)
-
-버전 번호는 갱신하지 않기로 결정했다. 설치·실행이 불가능한 환경에서 확인하지 않은 버전을
-적으면 검증 기록이 거짓이 되기 때문이다. 대조 대상은 수식 정의, 부호 규약, 하이퍼파라미터
-기본값, API 시그니처로 한정했다.
+2026-09-22에 본문 주장을 1차 출처와 대조했다. 대조 대상은 수식 정의, 부호 규약,
+하이퍼파라미터 기본값, API 시그니처로 한정한다. 2절의 기준 버전은 실행으로 확인한
+조합을 유지한다. 설치·실행하지 않은 버전을 적으면 검증 기록이 거짓이 되기 때문이다.
 
 | 본문 주장 | 대조한 1차 출처 | 결과 |
 |---|---|---|
@@ -188,8 +185,8 @@ topic: PPO-Clip, PyTorch, Gymnasium, TorchRL
 | `auto_register_policy_transforms=True` | TorchRL 0.14 `Collector` 문서 | 실재. 기본값은 0.14까지 `None`이고 0.15에서 `True`로 바뀔 예정. 본문 정확 |
 | `entropy_coeff`, `critic_coeff` | TorchRL 0.14 `ClipPPOLoss` 문서 | 철자 일치(`_coef` 아님). 본문 정확 |
 
-8장의 TorchRL API 이름이 구버전 관례(`SyncDataCollector`, `entropy_coef`)와 달라 오류를
-의심했으나, 대조 결과 **본문이 최신 API를 정확히 쓰고 있었다**. 수정하지 않았다.
+8장의 TorchRL API 이름은 구버전 관례(`SyncDataCollector`, `entropy_coef`)와 다르지만,
+대조 결과 **본문이 최신 API를 정확히 쓴다**.
 
 남은 한계: 위 대조는 모두 문서 기준이다. 고정 버전(PyTorch 2.13.0, Gymnasium 1.3.0,
-TorchRL 0.13.3)에서 실제로 import되고 동작하는지는 이번 개정에서 실행하지 못했다.
+TorchRL 0.13.3)에서 실제로 import되고 동작하는지는 이 대조에서 실행하지 않았다.

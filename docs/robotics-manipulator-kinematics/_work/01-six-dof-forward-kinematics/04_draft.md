@@ -1,8 +1,7 @@
 ---
 stage: 04_draft
-chapter: 03-six-dof-forward-kinematics
+chapter: 01-six-dof-forward-kinematics
 status: complete
-updated: 2026-08-11
 ---
 
 # 3단계 초안 메모

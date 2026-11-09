@@ -1,6 +1,5 @@
 ---
 title: Home Manager 가이드 퇴고 구성
-updated: 2026-08-11
 ---
 
 # 구성 설계

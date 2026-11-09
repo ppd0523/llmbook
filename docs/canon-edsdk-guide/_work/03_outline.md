@@ -1,9 +1,7 @@
 ---
 title: 구성 설계
-version: 1.0
 status: complete
 owner: agent
-updated: 2026-08-12
 target_reader: EDSDK를 처음 접하는 기술 담당자
 topic: Canon EDSDK 기능 중심 카메라 제어
 ---

@@ -1,9 +1,7 @@
 ---
 title: 최종 산출물 구성과 출판 검수
-version: 1.0
 status: final
 owner: agent
-updated: 2026-09-22
 target_reader: C++와 Linux 명령을 조금 써 봤지만 빌드 시스템과 교차 컴파일을 직접 구성해 본 적 없는 개발자
 topic: Nix·Conan·CMake로 만드는 Cyclone DDS C++ 교차 개발 환경
 ---
@@ -12,7 +10,7 @@ topic: Nix·Conan·CMake로 만드는 Cyclone DDS C++ 교차 개발 환경
 
 ## 1. 최종 산출물
 
-MkDocs 챕터형 Markdown 학습자료. 경로는 `docs/nix-cpp-cyclonedds/`이고 게시 사이트는 이 본문에서 상시 파생된다. 출판 변환 산출물은 만들지 않았다.
+MkDocs 챕터형 Markdown 학습자료. 경로는 `docs/nix-cpp-cyclonedds/`이고 게시 사이트는 이 본문에서 상시 파생된다. 출판 변환 산출물은 만들지 않는다.
 
 ## 2. 검수 결과
 

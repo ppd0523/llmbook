@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 1.0
 status: final
 owner: agent
-updated: 2026-07-24
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake의 입출력과 재현 가능한 개발 워크플로
 ---
@@ -98,7 +96,7 @@ topic: Nix Flake의 입출력과 재현 가능한 개발 워크플로
 ## 7. 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고 경로: `docs/nix-flakes/_work/07_final.md`
+- 기준 원고 경로: 챕터 본문 `docs/nix-flakes/NN-<chapter-slug>.md`. `_work/07_final.md`는 기준 원고를 확정한 기록이다.
 - 내부 작업 산출물 위치: `docs/nix-flakes/_work/`
 - 최종 산출물 형식: MkDocs 챕터형 Markdown 학습자료
 - 최종 산출물 경로: `docs/nix-flakes/`

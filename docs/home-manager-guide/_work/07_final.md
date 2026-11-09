@@ -1,11 +1,10 @@
 ---
-title: Home Manager 가이드 최종 Markdown 기준 원고
-updated: 2026-08-11
+title: Home Manager 가이드 기준 원고 확정 기록
 ---
 
-# 최종 기준 원고 구성
+# 기준 원고 확정
 
-최종 기준 원고는 단일 파일이 아니라 다음 MkDocs 챕터 묶음이다.
+기준 원고는 이 파일이 아니라 다음 MkDocs 진입점과 챕터 본문이다. 이 파일은 그 구성을 확정한 기록이다.
 
 - `index.md`
 - `01-mental-model.md`

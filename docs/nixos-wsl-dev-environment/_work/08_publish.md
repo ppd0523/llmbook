@@ -1,9 +1,7 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 2.0
 status: complete
 owner: agent
-updated: 2026-09-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -14,14 +12,17 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 
 - 목차: `index.md`
 - 본문: 책 폴더 바로 아래의 `NN-<chapter-slug>.md` 챕터 파일 9개
-- 기준 원고: `_work/07_final.md`
+- 기준 원고: 9개 챕터 본문 자체([adr/0001](../../../adr/0001-chapter-body-is-the-canonical-manuscript.md)). `_work/07_final.md`는 이를 확정한 기록이다.
 - 복제 가능한 사용자·시스템 구성: `assets/example-config/`
 - Python·Node.js·Rust 프로젝트 환경: `assets/example-dev-shell/`
 - 사이트 구성: 저장소 루트의 `mkdocs.yml`
+- 공개 URL: 챕터 파일명 기준(`/nixos-wsl-dev-environment/01-mental-model/`)이다. 옛 `/nixos-wsl-dev-environment/01_mental_model/chapter/` 형식 URL은 살리지 않는다. 리다이렉트를 넣지 않고 `requirements.txt`의 고정 목록에 `mkdocs-redirects`도 두지 않으므로, 그 경로로 들어오는 링크는 404가 된다.
 
 ## 2. 공통 검수
 
-- [x] `index.md`의 목차가 9개 장에 연결된다.
+- [x] `index.md`의 읽는 순서 아홉 항목이 01~09 챕터 파일에 각각 연결되고, 읽기 순서 번호 01~09가 중복 없이 한 번씩 쓰인다.
+- [x] 챕터 사이 이전·다음 링크와 목차 링크, 챕터의 `assets/` 링크가 현재 파일을 가리킨다.
+- [x] `docs/home-manager-guide/06-troubleshooting.md`의 교차 링크가 9장을, 두 예제 asset README의 챕터 링크가 현재 챕터 파일을 가리킨다.
 - [x] 각 챕터에 코드 블록 밖 H1이 하나만 있다.
 - [x] Markdown 코드 펜스가 모두 짝을 이룬다.
 - [x] 깨진 상대 링크가 없다.
@@ -36,7 +37,7 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 
 - [x] `modules/home/lazyvim.nix`가 Neovim, lazy.nvim, 공통 요구사항만 제공한다.
 - [x] `init.lua` 생성과 `lua/`·`stylua.toml`·기본 lock 링크의 소유권이 겹치지 않는다.
-- [x] 수정된 standalone Home Manager 구성이 사용자 NixOS-WSL에서 정상 평가된다.
+- [ ] standalone Home Manager 구성이 실제 NixOS-WSL에서 정상 평가된다: 평가를 통과한 구성이지만 현재 파일 기준으로 다시 확인하지 않았다(`_work/05_review.md` 4절).
 - [x] 공통 Neovim 설정에서 Mason을 비활성화한다.
 - [x] 프로젝트 `.lazy.lua`가 Python, TypeScript, Rust extra를 각각 선택한다.
 - [x] 세 프로젝트 모두 `.lazy-lock.json`을 추적 대상으로 제공한다.
@@ -47,6 +48,8 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - [x] JSON, TOML, Nix 괄호 정적 검사가 통과한다.
 
 ## 4. 출판 검사 결과
+
+현재 본문과 예제 기준 결과다. 검사 항목의 세부 범위는 `_work/05_review.md` 4절에 있다.
 
 | 검사 | 결과 |
 |---|---|
@@ -60,35 +63,22 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 
 ## 5. 실행 환경 한계
 
-작성 호스트에는 Nix와 Neovim이 없지만 수정한 standalone Home Manager 구성은 사용자
-NixOS-WSL에서 정상 평가되었다. NixOS 전체 build, Home Manager switch, Lua runtime
-검증 범위와 실제 환경에서 실행할 명령은 `_work/05_review.md`와 본문의 각 실습에
-남겼다. 상태를 바꾸는 전환보다 `build`를 먼저 수행하며, 프로젝트 플러그인은 최초
+작성 호스트에는 Nix와 Neovim이 없다. standalone Home Manager 구성은 실제
+NixOS-WSL에서 평가를 통과한 구성이지만 현재 파일 기준으로 다시 확인하지 않았다.
+NixOS 전체 build, Home Manager switch, Lua runtime 검증 범위와 실제 환경에서 실행할
+명령은 `_work/05_review.md`와 본문의 각 실습에 남겼다. 2.8절 예제 복사 명령
+`cp -R . ~/.config/nixos`는 예제 README의 `~/.config/nixos` 복사 설명과, 5장
+`nix run .#home-manager -- switch --flake .#nixos` bootstrap 명령은 3장의
+`apps.${system}.home-manager` 출력과 예제 README 명령과 문자열 대조로만 맞췄다. 실제
+실행 검증은 대상 NixOS-WSL에서 수행해야 한다. 상태를 바꾸는 전환보다 `build`를 먼저 수행하며, 프로젝트 플러그인은 최초
 `:Lazy sync` 후 생성된 `.lazy-lock.json` diff를 검토한다.
 
 ## 6. 최종 결론
 
 - 배포 대상은 `index.md`, 9개 챕터, 두 예제 asset 디렉터리다.
 - Home Manager는 최소 LazyVim 기반을, 각 프로젝트는 `.lazy.lua`와
-  `.lazy-lock.json`을 소유하는 최종 구조로 정리했다.
-- Neovim 설정의 경로별 소유권 분리는 사용자 NixOS-WSL의 Home Manager 평가를 통과했다.
+  `.lazy-lock.json`을 소유한다.
+- Neovim 설정의 경로별 소유권 분리는 실제 NixOS-WSL의 Home Manager 평가를 통과한
+  구성이며, 현재 파일 기준 재평가는 하지 않았다.
 - Markdown 사이트는 MkDocs strict build 기준으로 출판 가능하다.
 - NixOS와 Neovim 실행 검증은 실제 대상 환경에서 완료해야 한다.
-
-
-## 7. 개정 검수 (2026-09-22)
-
-챕터 파일 배치를 `NN-<chapter-slug>.md`로 바꾼 뒤 다시 실행한 게이트다.
-
-- [x] `python -m mkdocs build --strict`가 통과한다.
-- [x] `index.md`의 읽는 순서 아홉 항목이 01~09 챕터 파일에 각각 연결된다.
-- [x] 챕터 사이 이전·다음 링크와 목차 링크가 새 파일명을 가리킨다.
-- [x] 챕터의 `assets/` 링크가 한 단계 올라온 기준 경로에 맞는다.
-- [x] `docs/home-manager-guide/06-troubleshooting.md`의 교차 링크가 9장을 가리킨다.
-- [x] 두 예제 asset README의 챕터 링크가 새 파일명을 가리킨다.
-- [x] 저장소 전체에 `chapter.md`를 가리키는 링크가 남아 있지 않다.
-- [x] 읽기 순서 번호 01~09가 중복 없이 한 번씩 쓰인다.
-
-실행하지 못한 것은 이전과 같다. 작성 호스트에 Nix와 Neovim이 없으므로
-이번 개정에서 고친 2.8절 복사 경로와 5장 bootstrap 명령은 명령 문자열
-대조로만 확인했고 실제 실행 검증은 대상 NixOS-WSL에서 수행해야 한다.

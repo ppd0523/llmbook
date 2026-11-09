@@ -1,9 +1,7 @@
 ---
 title: LazyVim 개발 환경 가이드 기술 검증
-version: 1.0
 status: reviewed
 owner: agent
-updated: 2026-07-22
 target_reader: 터미널, Git, vi 기초를 알고 LazyVim은 처음인 개발자
 topic: LazyVim 다중 언어 개발 환경의 정확성 검토
 ---
@@ -18,6 +16,7 @@ topic: LazyVim 다중 언어 개발 환경의 정확성 검토
 - 용어: plugin과 external executable, debug adapter와 project interpreter.
 - 출처: LazyVim·Mason·Ruff·rustup·Neovim·WSL·CodeLLDB 공식 문서.
 - 가정: Linux/WSL 사용자 공간, 언어 runtime 설치 완료, network 사용 가능.
+- 범위 밖: 7장(C++)과 3장·8장의 C++ 항목(`lang.clangd` extra, `clangd` Mason package, `compile_commands.json`, clang-format, C++ CodeLLDB 구성)은 이 기록의 기술 검증 범위에 들지 않는다.
 
 ## 2. 검증 결과
 
@@ -25,7 +24,7 @@ topic: LazyVim 다중 언어 개발 환경의 정확성 검토
 |---|---|---|---|---|
 | 설치 | Neovim 요구 버전 | 배포판 package가 0.11.2보다 낮을 수 있음 | 설치 명령을 고정하지 않고 version gate를 먼저 제시 | 반영 |
 | 공통 설정 | extra import 순서 | DAP 관련 언어 spec은 nvim-dap이 없으면 optional | `dap.core`를 언어 extra보다 먼저 import | 반영 |
-| 공통 설정 | Mason package 이름 | registry 이름과 executable 이름이 다른 package가 있음 | 공식 registry의 `codelldb`, `debugpy`, `eslint-lsp`, `js-debug-adapter`, `prettier`, `pyright`, `ruff`, `vtsls` 사용 | 반영 |
+| 공통 설정 | Mason package 이름 | registry 이름과 executable 이름이 다른 package가 있음 | 공식 registry의 `codelldb`, `debugpy`, `eslint-lsp`, `js-debug-adapter`, `prettier`, `pyright`, `ruff`, `vtsls` 사용. 예제의 `clangd`는 이 검증에 들지 않는다 | 반영 |
 | JS/TS | TypeScript current-file debug | project-local `tsx`는 기본 shell PATH에 없음 | temporary PATH 또는 project launch config 필요를 명시 | 반영 |
 | JS/TS | formatter 중복 | ESLint와 Prettier가 모두 format 가능 | ESLint auto-format을 끄고 Prettier를 owner로 지정 | 반영 |
 | Python | 두 Python process | debugpy adapter Python과 program Python을 혼동할 수 있음 | `.venv` activation/selection과 adapter 역할을 분리 | 반영 |
@@ -39,23 +38,23 @@ topic: LazyVim 다중 언어 개발 환경의 정확성 검토
 
 | 가정 | 타당성 | 근거 | 본문 반영 여부 |
 |---|---|---|---|
-| 독자는 사용할 언어 runtime을 설치했다 | OS 설치를 범위에서 제외하라는 요구와 일치 | 사용자 요구 | 반영 |
+| 독자는 사용할 언어 runtime을 설치했다 | OS·runtime 설치를 범위에서 제외한 결정과 일치 | `01_scope.md` 제외 범위 | 반영 |
 | Mason을 입문용 external tool manager로 쓴다 | LazyVim 기본 통합과 공식 extras가 Mason을 사용 | LazyVim/Mason 공식 문서 | 반영 |
 | 프로젝트가 runtime/library/config를 소유한다 | ESLint server가 workspace library를 우선하고 formatter가 project config를 읽음 | Mason registry, Prettier extra | 반영 |
 | Linux와 WSL에서 같은 Lua config를 쓴다 | plugin과 Mason은 두 환경에서 동작 | 공식 문서 | 반영 |
-| OS 특이 문제는 짧게만 다룬다 | 사용자 범위와 일치 | 사용자 요구 | 반영 |
+| OS 특이 문제는 짧게만 다룬다 | 운영체제 경계 결정과 일치 | `01_scope.md` 운영체제 경계 | 반영 |
 
 ## 4. 실행/정적 검증
 
-- 실행한 검증: 공식 starter `init.lua`, `lua/config/lazy.lua`, `options.lua`, `stylua.toml`을 2026-07-22에 원격 원문과 대조했다.
-- registry 검증: 예제의 Mason package 8개가 공식 Mason registry에 존재하는지 확인했다.
-- source 대조: TypeScript, Python, Rust, DAP core extra의 실제 plugin spec과 option을 공식 페이지에서 확인했다.
-- Lua 정적 검증: `luaparser 4.1.0`으로 예제 설정의 Lua 파일 6개를 모두 parse했다.
-- 출판 검증: `mkdocs-material 9.7.6` 환경에서 `mkdocs build --strict`가 성공했다.
-- 문서 정적 검증: 최종 산출물의 상대 Markdown 링크, 파일별 단일 H1, 미완성 표식을 검사했다.
-- 파일 경로 검증: 최종 챕터의 파일-content 코드 블록 13개에 `파일:` 또는 `파일(일부):` 경로가 바로 앞에 있는지 검사했다. 1장, 2장, 7장의 블록은 명령·출력·흐름도이므로 대상이 없었다.
+- 실행한 검증: 공식 starter `init.lua`, `lua/config/lazy.lua`, `options.lua`, `stylua.toml`을 2026-07-22에 원격 원문과 대조했다. 현재 예제의 주석과 오류 메시지는 한국어로 옮겨져 starter 원문과 문자열이 다르며, 코드 구조의 대조는 현재 파일 기준으로 다시 확인하지 않았다.
+- registry 검증: 예제의 Mason package 9개 중 `clangd`를 제외한 8개가 공식 Mason registry에 존재하는지 확인했다. `clangd`는 현재 예제 기준으로 확인하지 않았다.
+- source 대조: TypeScript, Python, Rust, DAP core extra의 실제 plugin spec과 option을 공식 페이지에서 확인했다. Clangd extra는 대조하지 않았다.
+- Lua 정적 검증: `luaparser 4.1.0`(uv, Python 3.14)으로 현재 예제 설정의 Lua 파일 6개를 모두 parse했다.
+- 출판 검증: MkDocs 1.6.1, `mkdocs-material 9.7.6`(uv, Python 3.14) 환경에서 `python -m mkdocs build --strict`가 성공한다.
+- 문서 정적 검증: 현재 본문의 상대 Markdown 링크(엄격 빌드), 파일별 단일 H1, 미완성 표식을 검사했다.
+- 파일 경로 검증: 최종 챕터의 파일-content 코드 블록 20개(3장 4개, 4장 5개, 5장 3개, 6장 1개, 7장 7개)에 `파일:` 또는 `파일(일부):` 경로가 바로 앞에 있는지 검사했다. 1장, 2장, 8장의 블록은 명령·출력·흐름도이므로 대상이 아니다.
 - 제한: 현재 작성 host에는 Neovim/Linux runtime이 없어 plugin download, LSP attach, breakpoint session은 실행하지 못했다.
-- 보완: 최종 문서에 language별 smoke test와 기대 상태를 넣고, 실행하지 못한 결과를 성공했다고 단정하지 않는다.
+- 보완: 최종 문서는 language별 smoke test와 기대 상태를 제시하고, 실행하지 못한 결과를 성공했다고 단정하지 않는다.
 
 ## 5. 출처 검증
 
@@ -74,6 +73,7 @@ topic: LazyVim 다중 언어 개발 환경의 정확성 검토
 - plugin과 registry package는 최신 revision에서 변경될 수 있다. 문서에 기준일과 공식 source 확인 경로를 둔다.
 - TypeScript project-local executable은 shell PATH 정책에 따라 달라진다. 임시 PATH와 launch config 두 경로를 설명한다.
 - WSL distribution과 오래된 Linux의 glibc 차이는 문서 환경에서 재현하지 않았다.
+- 7장(C++)의 clangd extra 구성, compile database 탐색, clang-format 동작, CodeLLDB launch 설정은 공식 출처와 대조한 기록이 없고, CMake build도 실행하지 않았다.
 - 외부 network, proxy, certificate 문제는 Mason log 확인까지만 다루고 조직별 network 설정은 제외한다.
 
 ## 7. 검증 결론

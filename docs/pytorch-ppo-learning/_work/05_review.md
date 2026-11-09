@@ -1,9 +1,7 @@
 ---
 title: PyTorch PPO 학습 자료 검토 기록
-version: 0.9
 status: final
 owner: agent
-updated: 2026-09-22
 target_reader: 강화학습과 PyTorch 초심자
 topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ---
@@ -14,9 +12,9 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 
 | 질문 | 판정 | 근거와 조치 |
 |---|---|---|
-| 독자가 초심자로 유지되는가? | 통과 | 1장에서 환경 언어를 정의하고, 2장에서 수학을 작은 수로 재구성했다. |
+| 독자가 초심자로 유지되는가? | 통과 | 1장에서 환경 언어를 정의하고, 2장에서 수학을 작은 수로 설명한다. |
 | 최종 목표가 PyTorch PPO인가? | 통과 | 6장에서 직접 구현, 8장에서 TorchRL 활용, 9장에서 독립 실험을 요구한다. |
-| ONNX가 중심에 남아 있는가? | 통과 | ONNX 내용은 제거했다. |
+| ONNX 변환이 범위 밖에 있는가? | 통과 | 본문에 ONNX 내용이 없다. |
 | 방대한 선수지식을 억지로 압축했는가? | 통과 | Q-learning·DQN, 연속 확률변수 변환, 고급 PPO를 후속 키워드로 분리했다. |
 | 대학 과정 순서가 반영됐는가? | 통과 | Stanford·Berkeley·MIT의 MDP→평가/TD→정책경사/actor–critic 흐름과 대응표가 있다. |
 
@@ -25,7 +23,7 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 | 항목 | 발견 가능 오류 | 판정·조치 |
 |---|---|---|
 | Gymnasium 종료 | `done` 하나로 합침 | 수집 시 `terminated`, `truncated`를 따로 저장한다. |
-| Truncation GAE | bootstrap과 재귀를 같은 mask로 처리 | bootstrap에는 `~terminated`, GAE 재귀에는 `~(terminated | truncated)`를 썼다. |
+| Truncation GAE | bootstrap과 재귀를 같은 mask로 처리 | bootstrap에는 `~terminated`, GAE 재귀에는 `~(terminated | truncated)`를 쓴다. |
 | Policy gradient 부호 | maximize objective를 optimizer에 그대로 전달 | 구현에서 최소화 loss로 음수를 취한다. |
 | PPO ratio | 새 정책으로 old log probability 재계산 | 수집 순간 값을 buffer에 저장한다. |
 | Negative advantage clipping | 양수와 같은 직관을 적용 | 부호별 표와 interactive graph로 별도 설명한다. |
@@ -54,7 +52,7 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 - Advantage를 update 전에 한 번 계산하고 정규화한다.
 - 각 PPO epoch에서 shuffled mini-batch를 사용한다.
 - Gradient clipping, target KL early stop, explained variance를 포함한다.
-- Checkpoint load 시 state dictionary와 config를 검증한다.
+- Checkpoint에 model·optimizer state dictionary와 config를 함께 저장하고, 평가용 load는 `load_state_dict`로 model state를 복원한다. 저장된 config는 자동 비교하지 않으며 6장 오류표가 현재 `Config`와의 수동 비교를 안내한다.
 
 ### TorchRL 예제
 
@@ -96,9 +94,11 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 - 수식은 MathJax 표기를 사용한다.
 - `_work` 내부 문서는 MkDocs build에서 제외된다.
 - 장 사이 이전·목차·다음 링크가 이어진다.
-- `docs/index.md`에 책 진입 링크가 추가됐다.
+- `docs/index.md`에 책 진입 링크가 있다.
 
-## 8. 남은 출판 게이트
+## 8. 출판 게이트
+
+각 게이트의 실행 결과는 `08_publish.md`에 있다.
 
 1. Python syntax와 단위 테스트
 2. 직접 구현 smoke training과 checkpoint reload
@@ -108,33 +108,33 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 6. MkDocs strict build
 7. `TODO`, placeholder, 내부 절대 경로 유출 확인
 
-## 9. 2차 초심자 감사 결과
+## 9. 초심자 관점 감사
 
-초판은 알고리즘과 코드가 정확하고 실행 가능했지만, “강화학습과 신경망을 모두 처음 배운다”는 독자 정의에 비해 설명이 압축된 곳이 있었다.
+“강화학습과 신경망을 모두 처음 배운다”는 독자 정의에 비춰 설명이 압축되기 쉬운 곳과 본문의 처리는 다음과 같다.
 
-| 위치 | 발견한 학습성 결함 | 심각도 | 처리 방향 |
+| 위치 | 초심자가 막히는 지점 | 중요도 | 본문 처리 |
 |---|---|---:|---|
-| 목차 | 공개 과정에서 무엇을 포함·개요·생략했는지 한눈에 보이지 않음 | 높음 | 공개 과정과의 범위 대응표 추가 |
-| 1장 | deep RL, 탐색–활용, 신용 할당, episodic/continuing, horizon이 없음 | 높음 | bandit→sequential decision 예와 함께 정의 |
-| 1장 | PPO가 전체 RL 알고리즘 지도에서 어디에 있는지 늦게 드러남 | 높음 | model-free/on-policy/policy optimization actor–critic으로 위치 표시 |
-| 1장 | `Discrete(2)`, action space, step, terminal이 설명보다 먼저 쓰임 | 높음 | Gym 코드 전에 API·공간·시간 용어 설명 |
-| 2장 | 기댓값·분산·gradient가 한 문단 설명에 그침 | 높음 | 확률변수·표본평균·편미분·학습률·목적/손실까지 숫자 예제로 확장 |
-| 2장 | $V$, $Q$, $A$의 관계와 prediction/control 차이가 약함 | 높음 | 동일 상태의 행동 표와 $V=\sum\pi Q$, $A=Q-V$ 예제 추가 |
-| 2장 | tabular/function approximation, model/experience 차이가 후속 키워드로만 등장 | 중간 | PPO 신경망으로 넘어가기 위한 개념 다리 추가 |
-| 3장 | 신경망을 모른다고 가정했지만 `Linear`, `Tanh`, MLP, parameter를 바로 사용 | 매우 높음 | 선형변환→활성화→층→forward→loss→optimizer 전체 루프 설명 |
-| 3장 | softmax, probability distribution, sampling, log probability 설명이 짧음 | 높음 | logits 수치 예와 범주분포 계산 추가 |
-| 4장 | 로그미분 트릭에서 policy gradient 식으로 큰 도약 | 매우 높음 | trajectory 확률부터 환경 dynamics 항이 사라지는 과정까지 단계별 유도 |
-| 4장 | baseline이 평균 gradient를 바꾸지 않는 이유를 주장만 함 | 높음 | 행동 확률 합이 1이라는 짧은 증명 추가 |
-| 4장 | GAE가 TD residual의 지수합이라는 결과만 제시 | 높음 | 1-step, 2-step advantage와 $\lambda$ 혼합의 연결 설명 |
-| 5장 | importance ratio와 surrogate objective가 정의 없이 전문용어로 등장 | 매우 높음 | 분포 보정 수치 예, surrogate의 역할, clip 함수 정의 추가 |
-| 5장 | KL·trust region이 진단 절에서 갑자기 등장 | 높음 | discrete KL 식, 비대칭성, PPO-Clip과 TRPO의 차이 추가 |
-| 6장 | unit/smoke/end-to-end test와 hyperparameter의 의미가 암묵적 | 중간 | 테스트 층과 기본 설정 전수 표 추가 |
-| 6·9장 | 최종 프로젝트는 CSV·곡선을 요구하지만 예제는 콘솔만 출력 | 높음 | `--metrics-csv`와 표준 라이브러리 SVG plot 예제 추가 |
-| 7장 | explained variance가 target 분산이 작을 때 불안정할 수 있다는 경고 없음 | 높음 | 완벽한 return과 음수 EV가 공존할 수 있는 조건 설명 |
-| 7·9장 | seed, 재현성, protocol, ablation, confidence interval이 무정의 또는 늦음 | 높음 | 실험 용어 절과 동일 평가 protocol 설명 추가 |
-| 8장 | 연속 확률에서 확률과 밀도의 차이, Normal·loc·scale이 생략됨 | 매우 높음 | bounded continuous action 분포를 숫자·단위와 함께 설명 |
-| 8장 | storage/sampler/collector/transform이 클래스 이름 위주 | 높음 | 각 객체가 읽고 쓰는 데이터와 수명을 단계별 표로 설명 |
-| 9장 | IID, selection bias, correlation이 앞 설명 없이 사용 | 중간 | 일상어 풀이와 용어 사전 추가 |
+| 목차 | 공개 과정에서 무엇을 포함·개요·생략했는지 한눈에 보기 어려움 | 높음 | 공개 과정과의 범위 대응표 |
+| 1장 | deep RL, 탐색–활용, 신용 할당, episodic/continuing, horizon | 높음 | bandit→sequential decision 예와 함께 정의 |
+| 1장 | PPO가 전체 RL 알고리즘 지도에서 어디에 있는지 | 높음 | model-free/on-policy/policy optimization actor–critic으로 위치 표시 |
+| 1장 | `Discrete(2)`, action space, step, terminal을 모른 채 Gym 코드를 만남 | 높음 | Gym 코드 전에 API·공간·시간 용어 설명 |
+| 2장 | 기댓값·분산·gradient는 한 문단 설명으로 익히기 어려움 | 높음 | 확률변수·표본평균·편미분·학습률·목적/손실까지 숫자 예제 |
+| 2장 | $V$, $Q$, $A$의 관계와 prediction/control 차이 | 높음 | 동일 상태의 행동 표와 $V=\sum\pi Q$, $A=Q-V$ 예제 |
+| 2장 | tabular/function approximation, model/experience 차이는 후속 키워드만으로 연결되지 않음 | 중간 | PPO 신경망으로 넘어가기 위한 개념 다리 |
+| 3장 | 신경망을 모르는 독자는 `Linear`, `Tanh`, MLP, parameter를 바로 쓸 수 없음 | 매우 높음 | 선형변환→활성화→층→forward→loss→optimizer 전체 루프 설명 |
+| 3장 | softmax, probability distribution, sampling, log probability | 높음 | logits 수치 예와 범주분포 계산 |
+| 4장 | 로그미분 트릭에서 policy gradient 식으로의 도약 | 매우 높음 | trajectory 확률부터 환경 dynamics 항이 사라지는 과정까지 단계별 유도 |
+| 4장 | baseline이 평균 gradient를 바꾸지 않는 이유 | 높음 | 행동 확률 합이 1이라는 짧은 증명 |
+| 4장 | GAE가 TD residual의 지수합이 되는 이유 | 높음 | 1-step, 2-step advantage와 $\lambda$ 혼합의 연결 설명 |
+| 5장 | importance ratio와 surrogate objective는 정의 없이는 전문용어임 | 매우 높음 | 분포 보정 수치 예, surrogate의 역할, clip 함수 정의 |
+| 5장 | KL·trust region이 진단 절에서 처음 나오면 갑작스러움 | 높음 | discrete KL 식, 비대칭성, PPO-Clip과 TRPO의 차이 |
+| 6장 | unit/smoke/end-to-end test와 hyperparameter의 의미 | 중간 | 테스트 층과 기본 설정 전수 표 |
+| 6·9장 | 최종 프로젝트가 요구하는 CSV·곡선을 만들 도구 | 높음 | `--metrics-csv`와 표준 라이브러리 SVG plot 예제 |
+| 7장 | explained variance는 target 분산이 작을 때 불안정할 수 있음 | 높음 | 완벽한 return과 음수 EV가 공존할 수 있는 조건 설명 |
+| 7·9장 | seed, 재현성, protocol, ablation, confidence interval | 높음 | 실험 용어 절과 동일 평가 protocol 설명 |
+| 8장 | 연속 확률에서 확률과 밀도의 차이, Normal·loc·scale | 매우 높음 | bounded continuous action 분포를 숫자·단위와 함께 설명 |
+| 8장 | storage/sampler/collector/transform은 클래스 이름만으로 역할을 알 수 없음 | 높음 | 각 객체가 읽고 쓰는 데이터와 수명을 단계별 표로 설명 |
+| 9장 | IID, selection bias, correlation | 중간 | 일상어 풀이와 용어 사전 |
 
 ## 10. 건너뛰기 판정
 
@@ -151,56 +151,57 @@ topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 
 누락과 의도적 생략을 구분했다. 의도적 생략은 본문에서 주제명, 필요한 이유, 권장 선행 키워드, 돌아올 시점을 함께 안내한다.
 
+## 11. 수치·기호·코드 대조
 
-## 11. 3차 개정: 기술 재검증과 코드 대조 (2026-09-22)
+대조일: 2026-09-22. 현재 본문과 예제에서는 아래 수치 검산의 2장 return·두 상태 가치·연습문제,
+4장 GAE 역방향 계산·연습문제, 5장 policy loss 예제, 기호 규약 표, 예제 코드 대조 지점 목록을
+2026-11-09에 다시 확인했다. 5장 연습문제, 6장 로그 예시와 발췌 전체의 한 줄 대조는 현재 본문
+기준으로 다시 확인하지 않았다.
 
-### 수치 재검산
+### 수치 검산
 
-본문의 모든 손계산을 다시 검산했다. **수치 오류는 없었다.** 2장 return 예제, 두 상태 가치,
+본문의 모든 손계산을 검산했고 **수치 오류는 없다.** 2장 return 예제, 두 상태 가치,
 4장 GAE 역방향 계산과 연습문제 답, 5장 clipping 예제와 policy loss, 6장 로그 예시가 모두
-정확했다.
+정확하다.
 
-### 기호 정합성에서 찾은 실제 결함
+### 기호 규약
 
-| 결함 | 위치 | 처리 |
+| 기호 | 규약 | 위치 |
 |---|---|---|
-| $r_t$가 보상과 probability ratio를 동시에 지칭 | 2장 기호표 ↔ 5장 ratio 절 | ratio는 항상 $r_t(\theta)$로 표기. 2·5장에 충돌 경고 추가 |
-| $A_t$와 $\hat A_t$ 혼용 | 4장 정의·불릿·연습문제, 6장 buffer 표 | 참값/추정 구분을 4장에 명문화하고 오용 지점 교정 |
-| bootstrap mask 극성 충돌 | 2장 $(1-d_t)$ ↔ 4장 $b_t$ | 예제 코드의 `bootstrap_mask`와 같은 $b_t$로 통일 |
-| 마스크 표의 $c_t$ 열에 산문 | 4장 "rollout 끝이지만 episode 계속" 행 | 예제 코드 확인 결과 두 마스크 모두 1이고 재귀는 $\hat A_{t+1}=0$에서 시작해 batch 경계에서 끝난다. 표를 그대로 수정 |
+| $r_t$와 $r_t(\theta)$ | 맨 $r_t$는 보상, probability ratio는 항상 $r_t(\theta)$로 표기 | 2장 기호표, 5장 ratio 절. 2·5장에 충돌 경고가 있다 |
+| $A_t$와 $\hat A_t$ | $A_t$는 참값, $\hat A_t$는 추정치 | 4장 정의에 구분을 명문화하고 4장 불릿·연습문제, 6장 buffer 표에서 따른다 |
+| bootstrap mask | 예제 코드의 `bootstrap_mask`와 같은 $b_t$ | 2장의 $(1-d_t)$는 유도와 정리 불릿에만 남는다 |
+| 마스크 표의 "rollout 끝이지만 episode 계속" 행 | 두 마스크 모두 1이고 재귀는 $\hat A_{t+1}=0$에서 시작해 batch 경계에서 끝난다 | 4장. 예제 코드로 확인 |
 
-### 본문과 예제 코드의 어긋남
+### 본문과 예제 코드의 대조
 
 `examples/ppo_components.py`, `examples/ppo_cartpole.py`, `examples/torchrl_ppo.py`,
-`tests/test_ppo_components.py`를 읽고 본문 발췌와 한 줄씩 대조했다.
+`tests/test_ppo_components.py`를 읽고 본문 발췌와 한 줄씩 대조했다. 본문 발췌는 예제 코드와
+일치한다. 대조에서 확인한 지점은 다음과 같다.
 
-- **테스트 커버리지 과장**: 6장은 단위 테스트가 네 계약을 확인한다고 썼다. 실제로는
-  `ppo_cartpole.py`가 `generalized_advantage_estimate()`와 `explained_variance()`만
-  가져다 쓰고, clipping은 `update_model()` 안에 다시 작성했으며 `discounted_returns()`는
-  호출하지 않는다. 6·7·9장 서술을 실제 범위로 축소했다.
-- `train()` 발췌가 실제 첫 두 줄(`seed_everything`, `select_device`)을 생략 표시 없이 빼고 있었다.
-- `build_model()` 발췌가 observation space 검사를 빼고 있었다.
-- mini-batch index의 `device` 인자가 실제 코드와 달랐다.
-- KL 조기 중단 발췌에 빈 목록 가드 `epoch_kl_values and`가 빠져 있었다.
-- advantage 표준화 위치를 "update 전"이라 썼으나 실제로는 `update_model()` 첫 부분이다.
-- `explained_variance()`가 target 분산 0에서 `nan`을 반환하는데 7장이 이를 적지 않았다.
-- TorchRL 예제가 `empty()`를 두 번 호출하는데 8장 발췌는 뒤쪽만 보여 주었다.
-- 가상환경 이름이 3·6장은 `.venv-ppo`, 8장은 `.venv`였다. 8장을 따랐다면 다른 환경이 생긴다.
+- **테스트 커버리지 범위**: `ppo_cartpole.py`는 `generalized_advantage_estimate()`와
+  `explained_variance()`만 가져다 쓰고, clipping은 `update_model()` 안에 다시 작성하며
+  `discounted_returns()`는 호출하지 않는다. 6·7·9장은 단위 테스트가 확인하는 범위를 이
+  실제 범위로 서술한다.
+- `train()` 발췌의 첫 두 줄(`seed_everything`, `select_device`)과 `build_model()`의
+  observation space 검사처럼, 생략 표시 없이 줄을 빼지 않는다.
+- mini-batch index의 `device` 인자와 KL 조기 중단의 빈 목록 가드 `epoch_kl_values and`가
+  실제 코드와 같다.
+- advantage 표준화 위치는 `update_model()` 첫 부분이다.
+- `explained_variance()`는 target 분산 0에서 `nan`을 반환하며 7장이 이를 적는다.
+- TorchRL 예제는 `empty()`를 두 번 호출하며 8장 발췌도 두 호출을 보여 준다.
+- 가상환경 이름은 3·6·8장 모두 `.venv-ppo`다.
 
-### 실행하지 못한 검증 (중요)
+### 실행하지 않은 검증 (중요)
 
-이번 개정에서는 **예제를 한 번도 실행하지 않았다.** 이유:
+이 대조에서는 **예제를 실행하지 않았다.** 대조는 본문과 코드를 읽어 비교한 것이다.
 
-- 저장소의 `.venv`는 NixOS에서 만든 Linux venv여서 현재 Windows 셸에서 사용할 수 없다.
-- `torch==2.13.0`, `gymnasium==1.3.0`, `torchrl==0.13.3`은 설치되어 있지 않다.
-- 본문 산문 퇴고가 목적이고 예제 코드는 읽기 전용으로 합의했으므로, 실행이 확인하는 것은
-  "이전 사이클에서 통과한 게이트가 여전히 통과한다"뿐이다.
+현재 예제 코드에 적용한 검증은 Python 구문 검사뿐이다. 단위 테스트, 직접 구현 smoke·full
+학습, checkpoint reload, CSV·주기 평가, metric plot, TorchRL smoke는 현재 예제 코드에 다시
+실행하지 않았다. 따라서 `08_publish.md`의 2026-08-21·2026-09-08 실행 게이트 결과는 그
+실행일의 예제 코드에 대한 기록이며 현재 본문과 예제의 실행 증거로 인용하지 않는다.
 
-따라서 `_work/08_publish.md`의 2026-08-21·2026-09-08 실행 게이트 결과는 **이번 개정에서
-재확인되지 않았다.** 예제 코드 자체는 한 줄도 바꾸지 않았으므로 그 결과가 무효가 되지는
-않지만, 이번 개정의 증거로 인용할 수는 없다.
-
-### 후속 작업으로 분리한 항목
+### 남은 작업
 
 `ppo_cartpole.py`의 `update_model()`이 clipping을 인라인하는 대신
 `ppo_components.clipped_surrogate()`를 호출하도록 바꾸면 단위 테스트가 학습 경로를 직접

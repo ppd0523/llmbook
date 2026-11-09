@@ -1,8 +1,7 @@
 ---
 stage: 01_scope
-chapter: 06-dynamic-balance-lipm-zmp-capture-point
+chapter: 02-dynamic-balance-lipm-zmp-capture-point
 status: complete
-updated: 2026-08-12
 ---
 
 # 6단계 작성 범위 정의
@@ -44,15 +43,14 @@ updated: 2026-08-12
 
 이 장을 마치면 독자는 다음을 할 수 있어야 한다.
 
-1. 자세·상태·궤적을 구분하고 이산 위치 표에서 속도와 가속도를 근사한다.
+1. 자세·상태와 경로·궤적을 구분하고, 이산 위치 표에서 속도와 가속도를 근사한다.
 2. 전신 CoM 가속도와 외력 합의 관계를 뉴턴 법칙으로 적는다.
-3. 지면반력, CoP와 ZMP의 물리적 의미와 적용 조건을 설명한다.
-4. LIPM의 가정에서 \(\ddot x=\frac gh(x-p)\)를 유도한다.
-5. CoM 상태에서 요구 CoP와 캡처 포인트를 계산한다.
-6. CoM 투영과 캡처 포인트의 지지 구간 포함 여부를 서로 다른 판단으로 비교한다.
-7. 단일·이중 지지와 충돌을 연속 구간·이산 사건으로 구분한다.
-8. 축소 모형의 출력이 5단계 전신 IK의 과제 목표로 전달되는 흐름을 설명한다.
-9. LIPM의 결과를 사용할 수 없는 상황을 조건에서 판별한다.
+3. 지면반력, 압력중심과 영모멘트점의 차이와 적용 조건을 설명한다.
+4. 선형 역진자 모형의 가정에서 \(\ddot x=\frac gh(x-p)\)를 유도한다.
+5. 원하는 CoM 가속도에 필요한 요구 CoP를 계산하고 실현 가능성을 판단한다.
+6. CoM 위치·속도에서 캡처 포인트를 계산하고 현재 발에서 멈출 수 있는지 판단한다.
+7. 접촉 중 연속 운동과 착지 순간의 이산 변화를 구분한다.
+8. 축소 모형의 한계와 전신 IK로 목표를 전달하는 흐름을 설명한다.
 
 ## 4. 포함 범위
 
@@ -81,8 +79,8 @@ updated: 2026-08-12
 
 ## 6. 최종 산출물 형식
 
-- 기준 원고: Markdown
-- 기준 원고 경로: docs/humanoid-balance-and-whole-body-ik/_work/02-dynamic-balance-lipm-zmp-capture-point/07_final.md
+- 기준 원고 형식: Markdown
+- 기준 원고 경로: docs/humanoid-balance-and-whole-body-ik/02-dynamic-balance-lipm-zmp-capture-point.md(공개 장 본문. 확정 기록은 _work/02-dynamic-balance-lipm-zmp-capture-point/07_final.md)
 - 공개 장: docs/humanoid-balance-and-whole-body-ik/02-dynamic-balance-lipm-zmp-capture-point.md
 - 실습: docs/humanoid-balance-and-whole-body-ik/assets/dynamic-balance-lipm-zmp-capture-point/dynamic-balance-lab.html
 - 최종 형식: MkDocs 챕터형 Markdown과 독립 실행형 HTML

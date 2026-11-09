@@ -1,8 +1,7 @@
 ---
 stage: 01_scope
-chapter: 04-jacobian-numerical-inverse-kinematics
+chapter: 02-jacobian-numerical-inverse-kinematics
 status: complete
-updated: 2026-08-12
 ---
 
 # 4단계 범위 정의
@@ -64,7 +63,7 @@ updated: 2026-08-12
 
 ## 최종 산출물
 
-- 기준 원고: `docs/robotics-manipulator-kinematics/_work/02-jacobian-numerical-inverse-kinematics/07_final.md`
+- 기준 원고: 공개 장 본문 `docs/robotics-manipulator-kinematics/02-jacobian-numerical-inverse-kinematics.md`(확정 기록은 `_work/02-jacobian-numerical-inverse-kinematics/07_final.md`)
 - 공개 장: `docs/robotics-manipulator-kinematics/02-jacobian-numerical-inverse-kinematics.md`
 - 인터랙티브 실습: `docs/robotics-manipulator-kinematics/assets/jacobian-numerical-inverse-kinematics/numerical-ik-lab.html`
 - 책 색인: `docs/robotics-manipulator-kinematics/index.md`

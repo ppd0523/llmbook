@@ -1,14 +1,12 @@
 ---
-title: 퇴고 계획 및 반영 내역
-version: 1.1
+title: 퇴고 기록
 status: final
 owner: agent
-updated: 2026-08-11
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake 학습성 개선
 ---
 
-# 퇴고 계획 및 반영 내역
+# 퇴고 기록
 
 ## 1. 퇴고 목표
 
@@ -19,18 +17,18 @@ topic: Nix Flake 학습성 개선
 - 예제 개선: 하나의 `flake-greeter`를 여섯 장에서 점진적으로 완성한다.
 - 연습문제 개선: 회상보다 변형·실패 재현·복구를 우선한다.
 
-## 2. 변경 계획과 반영
+## 2. 위험 구간과 본문의 대응
 
-| 위치 | 변경 전 문제 | 변경 방향 | 반영 |
-|---|---|---|---|
-| 1장 | Flake를 재현성이라는 추상어로만 설명할 위험 | input→lock→outputs→commands 흐름도 추가 | 완료 |
-| 2장 | lock 생성과 갱신 명령 혼동 | `lock`과 `update`를 별도 절차로 비교 | 완료 |
-| 3장 | “package 설치” 범위가 모호 | 임시 셸·개발 셸·프로필·시스템 표 추가 | 완료 |
-| 4장 | dev shell에서 되는 것을 runtime 검증으로 오해 | `runtimeInputs`와 직접 build 결과 실행 추가 | 완료 |
-| 5장 | 다중 system 선언을 실제 지원으로 오해 | 평가와 플랫폼별 build를 분리 | 완료 |
-| 5장 | formatter의 과거 속성명 사용 위험 | stable의 `pkgs.nixfmt` 채택 | 완료 |
-| 6장 | 오류 메시지 나열에 그칠 위험 | 소스 수집·평가·build·실행 단계로 분류 | 완료 |
-| 전체 | 외부 예제에 의존 | 복제 가능한 asset과 실제 lock file 포함 | 완료 |
+| 위치 | 위험 | 본문의 대응 |
+|---|---|---|
+| 1장 | Flake를 재현성이라는 추상어로만 설명할 위험 | input→lock→outputs→commands 흐름도 |
+| 2장 | lock 생성과 갱신 명령 혼동 | `lock`과 `update`를 별도 절차로 비교 |
+| 3장 | “package 설치” 범위가 모호 | 임시 셸·개발 셸·프로필·시스템 비교 표 |
+| 4장 | dev shell에서 되는 것을 runtime 검증으로 오해 | `runtimeInputs`와 build 결과 직접 실행 |
+| 5장 | 다중 system 선언을 실제 지원으로 오해 | 평가와 플랫폼별 build를 분리 |
+| 5장 | formatter의 과거 속성명 사용 위험 | stable의 `pkgs.nixfmt` 사용 |
+| 6장 | 오류 메시지 나열에 그칠 위험 | 소스 수집·평가·build·실행 단계로 분류 |
+| 전체 | 외부 예제에 의존 | 복제 가능한 asset과 실제 lock file 포함 |
 
 ## 3. 구조 점검
 
@@ -49,20 +47,20 @@ topic: Nix Flake 학습성 개선
 - [x] Git 미추적, output 누락, app 경로, lock update 오류가 포함된다.
 - [x] Worked Example과 직접 풀이 문제가 함께 배치된다.
 
-## 5. 반영 내역
+## 5. 학습 장치와 이유
 
-| 변경 항목 | 반영 위치 | 이유 |
+| 장치 | 위치 | 이유 |
 |---|---|---|
 | 명령 지도 | `index.md` | 전체 학습 경로를 먼저 보여 주기 위해 |
 | system 하드코딩 후 리팩터링 | 1~5장 | 추상화를 늦춰 초심자의 인지 부하를 줄이기 위해 |
-| `cowsay` 개발 셸 | 3장 | 사용자 요청과 즉각적인 실행 결과를 연결하기 위해 |
+| `cowsay` 개발 셸 | 3장 | package 선언과 즉각적인 실행 결과를 연결하기 위해 |
 | runtime dependency 실패 설명 | 4장 | 개발 환경과 배포 결과를 구분하기 위해 |
 | functional check | 5장 | 평가 성공보다 강한 검증을 보여 주기 위해 |
 | 검증 사다리 | 6장 | 오류 단계에 맞는 명령을 선택하게 하기 위해 |
 | x86_64-darwin release 경고 | 5장 | 현재 stable의 버전 의존성을 드러내기 위해 |
 | 결과 예시 우선 배치 | 1장 | `nix flake show` 결과를 먼저 제시해 output tree의 목적을 선명하게 하기 위해 |
 | 새 용어의 첫 설명 보강 | 전체 챕터 | package, app, formatter, check, runtime dependency를 문맥 안에서 짧게 정의하기 위해 |
-| 최종 과제의 기대 동작 명시 | 6장 | 이름 있는 JSON app의 입력·출력·런타임 의존성을 명확하게 하기 위해 |
+| 최종 과제의 기대 동작 명시 | 6장 | 이름 있는 JSON app의 입력·기대 출력·runtime dependency를 명확하게 하기 위해 |
 
 ## 6. 교정 전 확인
 
@@ -74,10 +72,3 @@ topic: Nix Flake 학습성 개선
 ## 7. 남은 TODO
 
 - 없음
-
-## 8. 2026-08-11 추가 퇴고
-
-- [x] 결과 예시가 추상 설명보다 먼저 나오도록 1장 도입을 재배치했다.
-- [x] 새 용어를 처음 쓰는 문장에서 필요성, 한 문장 정의, 필요한 영문 표기를 함께 제시했다.
-- [x] 최종 과제가 요구하는 JSON app의 입력, 기대 출력, runtime dependency를 명시했다.
-- [x] 기존 기술 검증 범위를 바꾸지 않았으며, 기술적 주장은 검증 기록과 공식 출처를 유지했다.

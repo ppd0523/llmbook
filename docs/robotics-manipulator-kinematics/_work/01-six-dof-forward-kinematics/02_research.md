@@ -1,8 +1,7 @@
 ---
 stage: 02_research
-chapter: 03-six-dof-forward-kinematics
+chapter: 01-six-dof-forward-kinematics
 status: complete
-updated: 2026-08-11
 ---
 
 # 3단계 조사 기록

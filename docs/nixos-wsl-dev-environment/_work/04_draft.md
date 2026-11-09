@@ -1,9 +1,7 @@
 ---
 title: NixOS-WSL 개발 환경 구축 초고
-version: 0.5
 status: draft
 owner: agent
-updated: 2026-07-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
@@ -444,10 +442,10 @@ $ home-manager switch --rollback
 
 ## 11. TODO
 
-- [ ] Nix 구문 및 Home Manager 옵션 정적 검토
-- [ ] Windows 호스트에서 가능한 Markdown/링크 검사
-- [ ] 초고를 8개 장으로 분할
-- [ ] 검토 지적 반영과 최종 배포 기록 작성
+- [x] Nix 구문 및 Home Manager 옵션 정적 검토: Nix 파일 괄호 정적 검사와 Home Manager 옵션 출처 확인은 05_review 3·4절
+- [x] Windows 호스트에서 가능한 Markdown/링크 검사: 05_review 4절, MkDocs strict build
+- [x] 초고를 장으로 분할: 현재 책은 9개 장(`01-mental-model.md`~`09-operations-and-troubleshooting.md`)이다.
+- [x] 검토 지적 반영과 최종 배포 기록 작성: 06_revision, 07_final, 08_publish
 
 ## 12. 초고 자가 점검
 
@@ -455,4 +453,4 @@ $ home-manager switch --rollback
 - [x] Nix를 모르는 독자가 기존 버전 관리자 개념과 연결할 수 있다.
 - [x] OS, 사용자, 프로젝트의 소유권 경계를 명시했다.
 - [x] 복원과 업데이트를 구분했다.
-- [ ] 실제 NixOS 환경에서 평가 및 빌드 검증이 필요하다.
+- [ ] 실제 NixOS 환경에서 평가 및 빌드 검증: standalone Home Manager 평가만 확인했고 `nix flake check`, `nixos-rebuild build`, Home Manager `switch`는 남아 있다(05_review 5절).

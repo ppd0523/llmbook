@@ -1,9 +1,7 @@
 ---
 title: 구성 설계
-version: 1.4
 status: complete
 owner: agent
-updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---

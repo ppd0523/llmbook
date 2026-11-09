@@ -1,17 +1,15 @@
 ---
-title: 출판 전 최종 Markdown 원고
-version: 1.1
+title: 기준 원고 확정 기록
 status: final
 owner: agent
-updated: 2026-08-11
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake 입문
 ---
 
-# Nix Flake 입문: 출판 전 최종 원고
+# Nix Flake 입문: 기준 원고 확정 기록
 
-이 자료의 최종 원고는 MkDocs 챕터형 산출물이므로 아래 일곱 파일을 하나의 원고
-집합으로 확정한다.
+이 자료의 기준 원고는 이 파일이 아니라 MkDocs 진입점과 챕터 본문이다. 이 파일은 아래
+일곱 파일을 하나의 원고 집합으로 확정한 기록이다.
 
 1. `index.md`
 2. `01-mental-model.md`
@@ -65,7 +63,7 @@ packages.<system>.default
 packages.<system>.flake-greeter
 ```
 
-개발 셸은 Nixpkgs의 `cowsay`와 `nixfmt`를 제공한다. package는
+개발 셸은 Nixpkgs의 `cowsay`와 `nixfmt`, 그리고 이 Flake의 기본 package를 제공한다. package는
 `writeShellApplication`으로 생성하며 `cowsay`를 runtime dependency로 선언한다.
 app은 package의 Store 실행 파일을 가리키고, greeting check는 실제 출력에 지정한
 문자열이 있는지 검사한다.
@@ -83,7 +81,7 @@ nix flake check
 nix flake check --all-systems --no-build
 ```
 
-## 2026-08-11 최종 교정
+## 서술 방식과 검증 상태
 
 - 1장은 `nix flake show` 결과를 먼저 보여 준 뒤 input, output, output schema를 설명한다.
 - package, app, formatter, check, runtime dependency는 처음 등장할 때 한국어 정의와 영문
@@ -92,7 +90,7 @@ nix flake check --all-systems --no-build
 
 NixOS WSL의 Nix 2.34.8에서 x86_64-linux의 평가·build·dev shell·app·check가
 통과했다. 네 system의 output schema는 `--all-systems --no-build`로 평가됐다.
-Nixpkgs revision은 `flake.lock`에 고정했다.
+Nixpkgs revision은 `flake.lock`에 고정한다.
 
 ## 흔한 오류의 최종 분류
 

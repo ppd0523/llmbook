@@ -1,9 +1,7 @@
 ---
 title: 구성 설계
-version: 1.0
 status: final
 owner: agent
-updated: 2026-07-24
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: 여섯 장으로 배우는 Nix Flake
 ---
@@ -35,12 +33,12 @@ Flake의 경계
 
 | 번호 | 챕터 | 목적 | 필요한 선행개념 | 산출되는 이해 |
 |---|---|---|---|---|
-| 1 | Flake의 역할과 구조 | `flake.nix`를 입출력 함수로 읽는다. | Nix 속성 집합 | Flake, reference, output tree |
-| 2 | 입력과 잠금 파일 | URL과 잠긴 revision을 구분한다. | input/output | lock 생성·갱신·복원 |
-| 3 | 개발 셸과 `cowsay` | Nixpkgs package를 프로젝트 환경에 넣는다. | system 축 | `devShells`, `mkShellNoCC` |
+| 1 | Flake의 역할과 출력 트리 | `flake.nix`를 입출력 함수로 읽는다. | Nix 속성 집합 | Flake, reference, output tree |
+| 2 | 입력과 `flake.lock` | URL과 잠긴 revision을 구분한다. | input/output | lock 생성·갱신·복원 |
+| 3 | 개발 셸에 `cowsay` 추가하기 | Nixpkgs package를 프로젝트 환경에 넣는다. | system 축 | `devShells`, `mkShellNoCC` |
 | 4 | 패키지와 앱 | 작은 CLI를 빌드하고 실행한다. | derivation 기초 | `packages`, `apps`, `writeShellApplication` |
-| 5 | 검사와 여러 시스템 | formatter와 test를 출력으로 제공한다. | package/app | `checks`, `formatter`, `genAttrs` |
-| 6 | 운영과 문제 해결 | 전체 예제를 갱신하고 실패를 분류한다. | 앞의 모든 장 | 검증·업데이트·복구 루프 |
+| 5 | 검사, formatter, 여러 시스템 | formatter와 test를 출력으로 제공한다. | package/app | `checks`, `formatter`, `genAttrs` |
+| 6 | 운영 워크플로와 문제 해결 | 전체 예제를 갱신하고 실패를 분류한다. | 앞의 모든 장 | 검증·업데이트·복구 루프 |
 
 ## 5. 개념 의존성
 

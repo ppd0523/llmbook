@@ -1,9 +1,7 @@
 ---
 title: 기술 검증
-version: 1.0
 status: final
 owner: agent
-updated: 2026-07-24
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake 예제와 명령 검증
 ---
@@ -95,11 +93,11 @@ nix run path:/mnt/c/Users/dhyeon/llmBook/docs/nix-flakes/assets/flake-greeter \
 | 현재 stable formatter 속성은 `pkgs.nixfmt` | Nixpkgs stable release notes | 버전 변경 근거 |
 | `cowsay`는 Nixpkgs에서 사용 가능한 예제 package | nix.dev 첫 단계 | 공식 튜토리얼 |
 
-## 6. 발견 사항과 반영
+## 6. 발견 사항과 처리
 
-| 발견 | 반영 |
+| 발견 | 처리 |
 |---|---|
-| `x86_64-darwin`은 Nixpkgs 26.05가 마지막 지원 release라는 평가 경고 | 5장에 release 이동 시 지원 목록 재검토 안내 추가 |
+| `x86_64-darwin`은 Nixpkgs 26.05가 마지막 지원 release라는 평가 경고 | 5장이 release 이동 시 지원 목록 재검토를 안내한다 |
 | 다른 system의 build는 현재 x86_64-linux host에서 실행하지 않음 | 전체 system 평가는 `--no-build`, 실제 build는 플랫폼별 CI로 구분 |
 | 병렬 app/dev shell 검증 중 Nix eval cache SQLite busy 메시지가 한 번 발생했으나 ignored 처리 | 예제 기능과 무관하며 각 명령 종료 상태 0 확인 |
 | MkDocs build가 `site/`를 생성 | `site/`는 기존 `.gitignore` 대상이며 최종 산출물에 포함하지 않음 |

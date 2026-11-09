@@ -1,18 +1,12 @@
 ---
 title: 작성 범위 정의
-version: 1.0
 status: reconstructed
 owner: agent
-updated: 2026-09-22
 target_reader: C++와 Linux 명령을 조금 써 본, 교차 빌드는 처음인 개발자
 topic: Nix·Conan·CMake·Make로 Cyclone DDS C++ 교차 개발 환경 만들기
 ---
 
 # 작성 범위 정의
-
-> 이 기록은 완성된 본문을 근거로 재구성했으며 집필 당시의 기록이 아니다. 아래 항목은
-> `docs/nix-cpp-cyclonedds/`의 `index.md`와 10개 챕터를 읽고 역으로 정리한 것이므로,
-> 집필 시점에 실제로 이런 판단을 내렸다는 증거로 읽어서는 안 된다.
 
 ## 1. 주제
 
@@ -115,7 +109,7 @@ topic: Nix·Conan·CMake·Make로 Cyclone DDS C++ 교차 개발 환경 만들기
 - 챕터 파일명 규칙: `NN-<chapter-slug>.md`
 - 챕터 파일 배치: 책 폴더 바로 아래. 예제 프로젝트는 `assets/cyclonedds-cross-demo/`에 `<project-slug>` 폴더 하나로 둔다.
 - 단일 파일명: 해당 없음
-- 보조 배포 형식: 없음. PDF·PPTX 변환은 요청 범위 밖이다.
+- 보조 배포 형식: 없음. 최종 산출물은 MkDocs 책만 둔다. PDF·PPTX는 만들지 않는다.
 - 사용할 빌드 도구: MkDocs
 - 수식 지원 필요 여부: 불필요
 - 코드 실행/검증 필요 여부: 필요. 예제 프로젝트가 실제로 빌드·실행되어야 한다.

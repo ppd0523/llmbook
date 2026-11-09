@@ -1,9 +1,7 @@
 ---
 title: PyTorch PPO 입문 작성 범위 정의
-version: 1.0
 status: final
 owner: agent
-updated: 2026-08-21
 target_reader: 강화학습과 PyTorch를 처음 배우는 Python 초심 개발자
 topic: 순수 PyTorch PPO 구현과 TorchRL 사용
 ---
@@ -108,7 +106,7 @@ Python 언어 자체, 미적분 전 과정, 선형대수 전 과정은 한 챕�
 ## 7. 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고 경로: `docs/pytorch-ppo-learning/_work/07_final.md`
+- 기준 원고 경로: 챕터 본문 `docs/pytorch-ppo-learning/NN-<chapter-slug>.md`. MkDocs 챕터형이므로 최종 산출물이 곧 기준 원고이고, `_work/07_final.md`는 그 확정 기록이다.
 - 내부 작업 산출물 위치: `docs/pytorch-ppo-learning/_work/`
 - 최종 산출물 형식: MkDocs 챕터형 Markdown 학습자료
 - 최종 산출물 경로: `docs/pytorch-ppo-learning/`
@@ -143,7 +141,7 @@ Python 언어 자체, 미적분 전 과정, 선형대수 전 과정은 한 챕�
 - [x] 최종 형식, 경로, 챕터 수, 파일명 규칙이 명시되어 있다.
 - [x] 최종 실습 과제와 성공 기준이 드러난다.
 
-## 10. 2차 퇴고에서 확정한 선수지식 경계
+## 10. 선수지식 경계
 
 - 외부 필수 선수는 Python 기초 문법과 터미널 실행뿐이다.
 - 확률변수, 조건부확률, 기댓값, 분산, 미분, gradient, chain rule은 PPO에 필요한 범위만 2장 안에서 가르친다.

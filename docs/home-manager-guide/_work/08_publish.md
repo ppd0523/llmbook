@@ -1,6 +1,5 @@
 ---
 title: Home Manager 가이드 출판 검수
-updated: 2026-08-11
 ---
 
 # 최종 산출물 검수
@@ -20,8 +19,8 @@ updated: 2026-08-11
 - [x] 최종 챕터에 내부 메모와 미검증 표시가 없다.
 - [x] 외부 기술 근거는 Home Manager와 Nix 공식 문서 링크로 제공한다.
 
-`mkdocs build --strict`는 현재 Windows 실행 환경에 MkDocs 실행 파일이 없어 수행하지
-못했다. 대신 최종 챕터의 상대 Markdown 링크, 제목 계층, 공백 오류를 정적으로
-검사했다.
+`python -m mkdocs build --strict`는 현재 저장소에서 통과한다(MkDocs 1.6.1,
+Material 9.7.6, uv와 Python 3.14로 실행). 이 빌드는 링크와 문서 구조를 확인할 뿐,
+본문의 명령을 실제 NixOS에서 실행한 결과는 아니다.
 
-변환 산출물은 요청되지 않았으므로 PDF·HTML 별도 변환 검수는 수행하지 않았다.
+최종 산출물은 MkDocs 책만 둔다. PDF·HTML 별도 변환은 만들지 않으므로 변환 검수도 하지 않는다.

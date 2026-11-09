@@ -1,8 +1,7 @@
 ---
 stage: 03_outline
-chapter: 06-dynamic-balance-lipm-zmp-capture-point
+chapter: 02-dynamic-balance-lipm-zmp-capture-point
 status: complete
-updated: 2026-08-12
 ---
 
 # 6단계 구성 설계
@@ -50,8 +49,9 @@ updated: 2026-08-12
 | 16 | 전신 IK 연결 | 축소 계획을 5단계 과제로 변환 | WBIK |
 | 17 | 적용 한계 | 과도한 일반화 방지 | LIPM 가정 |
 | 18 | 인터랙티브 실습 | 파라미터 변화 관찰 | 핵심 수식 |
-| 19 | 흔한 실수·연습 | 진단과 검산 | 전체 |
-| 20 | 요약·다음 학습 | 개념 회수 | 전체 |
+| 19 | 흔한 실수 | 진단 | 전체 |
+| 20 | 직접 해보기 | 검산과 평가 | 전체 |
+| 21 | 요약·다음 학습 | 개념 회수 | 전체 |
 
 ## 5. 용어 의존성
 

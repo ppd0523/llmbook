@@ -1,47 +1,34 @@
 ---
-title: 퇴고 계획 및 반영 내역
-version: 0.2
+title: 퇴고 기준
 status: final
 owner: agent
-updated: 2026-08-30
 target_reader: Nix 입문자
 topic: Nix 기초 학습자료 퇴고
 ---
 
-# 퇴고 계획 및 반영 내역
+# 퇴고 기준
 
 ## 1. 퇴고 목표
 
-- 구조 개선: 책 소개에서 기준 버전과 Git source 주의를 먼저 제시한다.
-- 학습성 개선: source·Store·generation·activation의 경계를 반복되는 실제 작업 흐름으로 연결한다.
-- 정확성 개선: Home Manager build와 switch의 효과를 분리한다.
-- 정확성 개선: Home Manager Bash 별칭 예제에 필요한 module 활성화를 추가한다.
-- 복구성 개선: Home Manager의 공개 CLI가 제공하는 직전 generation rollback을 먼저
+- 구조: 책 소개(`index.md`)에서 기준 버전·experimental 주의와 Git source 주의를 먼저 제시한다.
+- 학습성: source·Store·generation·activation의 경계를 반복되는 실제 작업 흐름으로 연결한다.
+  1장은 선언성만으로 입력이 고정되지 않음을, 3장은 generation 롤백 뒤 Git source의 후속
+  조치를, 4장은 registry가 재현에 주는 영향을 다룬다.
+- 정확성: 6장은 Home Manager build와 switch의 효과를 분리한다.
+- 정확성: 6장의 Home Manager Bash 별칭 예제는 module 활성화를 함께 정의해 별칭이 실제
+  `.bashrc`에 반영되게 한다.
+- 복구성: 6장은 Home Manager의 공개 CLI가 제공하는 직전 generation rollback을 먼저
   안내한다.
-- 정확성 개선: 새 Git 파일과 tracked 수정 파일의 Flake 평가 조건을 분리한다.
-- 버전 적합성: Home Manager Git option과 `stateVersion` 예제를 26.05 기준으로 갱신한다.
-- 중복 제거: 기존 장의 상세 설명은 유지하고, 보강 문단은 각 장의 판단 지점에만 둔다.
+- 정확성: 책 소개와 4·7·8장은 새 Git 파일과 tracked 수정 파일의 Flake 평가 조건을 분리한다.
+- 버전 적합성: 2·6장의 Home Manager Git option과 6장의 `stateVersion` 예제는 26.05 기준을
+  따른다. `stateVersion`은 기존 구성에 현재 release 값을 복사하지 않도록 경고한다.
+- 일관성: 5장은 module과 definition의 경계를 모순 없이 설명한다. 8장은 Store 결과를 직접
+  수정하지 않고 source를 고쳐 재적용하는 원칙을 둔다.
+- 중복 제거: 각 장의 상세 설명은 유지하고, 보강 문단은 각 장의 판단 지점에만 둔다.
 
-## 2. 반영 내역
+## 2. 품질 점검
 
-| 변경 항목 | 반영 위치 | 이유 |
-|---|---|---|
-| 버전·experimental 주의 | `index.md` | 예제의 기준과 현재 release 확인 기준을 분명히 함 |
-| source와 lockfile의 관계 | 1장 | 선언성만으로 입력이 고정되지 않는다는 설명 보강 |
-| Store 결과와 Git source 복구 | 3장 | generation 롤백 뒤의 후속 조치 명시 |
-| registry·stage 주의 | 4장 | 재현과 Flake source 포함을 구체화 |
-| Home Manager build·switch 분리 | 6장 | generation에 관한 부정확한 표현 수정 |
-| Home Manager `switch --rollback` | 6장 | 직전 generation 복구를 공개 CLI 명령으로 단순화 |
-| Home Manager Bash 활성화 | 6장 | 예제 별칭이 실제 `.bashrc`에 반영되도록 누락 수정 |
-| 새 파일과 tracked 파일의 stage 절차 | 책 소개, 4·7·8장 | Flake source 포함과 commit 준비를 구분 |
-| Home Manager Git option | 2·6장 | 현재 option 경로를 사용하도록 예제 갱신 |
-| `stateVersion` 적용 조건 | 6장 | 기존 구성에 현재 release 값을 복사하지 않도록 경고 |
-| module·definition 경계 | 5장 | 모순된 문장을 바로잡고 예제 함수 문맥 보강 |
-| 관리 파일 수정 위치 | 8장 | Store 결과를 직접 수정하지 않는 원칙 강화 |
-
-## 3. 품질 점검
-
-- [x] 기술 검증에서 나온 수정 사항을 반영했다.
-- [x] 새 용어의 첫 설명과 표기법이 기존 장 전체에서 일관된다.
+- [x] 기술 검증 결과가 본문과 일치한다.
+- [x] 새 용어의 첫 설명과 표기법이 모든 장에서 일관된다.
 - [x] 연습문제는 앞선 본문만으로 풀 수 있다.
 - [x] 최종 산출물에 내부 작업 메모와 미검증 표시가 없다.

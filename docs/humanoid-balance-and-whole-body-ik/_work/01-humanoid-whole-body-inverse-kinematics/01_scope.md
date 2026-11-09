@@ -1,8 +1,7 @@
 ---
 stage: 01_scope
-chapter: 05-humanoid-whole-body-inverse-kinematics
+chapter: 01-humanoid-whole-body-inverse-kinematics
 status: complete
-updated: 2026-08-12
 ---
 
 # 5단계 범위 정의
@@ -98,7 +97,7 @@ updated: 2026-08-12
 ## 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고: `docs/humanoid-balance-and-whole-body-ik/_work/01-humanoid-whole-body-inverse-kinematics/07_final.md`
+- 기준 원고: 공개 장 본문 `docs/humanoid-balance-and-whole-body-ik/01-humanoid-whole-body-inverse-kinematics.md`(확정 기록은 `_work/01-humanoid-whole-body-inverse-kinematics/07_final.md`)
 - 내부 작업 산출물: `docs/humanoid-balance-and-whole-body-ik/_work/01-humanoid-whole-body-inverse-kinematics/`
 - 최종 산출물 형식: MkDocs 챕터형 Markdown과 독립 실행형 정적 HTML
 - 공개 장: `docs/humanoid-balance-and-whole-body-ik/01-humanoid-whole-body-inverse-kinematics.md`
@@ -106,7 +105,7 @@ updated: 2026-08-12
 - 책 색인: `docs/humanoid-balance-and-whole-body-ik/index.md`
 - 책 폴더명: `humanoid-balance-and-whole-body-ik`
 - 챕터 파일명 규칙: `NN-<chapter-slug>.md`
-- 챕터 수: 이 작업에서 1장 추가
+- 책의 챕터 수: 2장(`01-humanoid-whole-body-inverse-kinematics.md`, `02-dynamic-balance-lipm-zmp-capture-point.md`)
 - 수식 지원: MathJax 필요
 - 코드 실행/검증: HTML JavaScript 구문·계산·브라우저 동작 검증
 - 인터랙티브 요소: 가중 해와 우선순위 해를 같은 목표에서 비교

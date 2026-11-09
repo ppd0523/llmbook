@@ -1,8 +1,7 @@
 ---
 stage: 04_draft
-chapter: 05-humanoid-whole-body-inverse-kinematics
+chapter: 01-humanoid-whole-body-inverse-kinematics
 status: complete
-updated: 2026-08-12
 ---
 
 # 휴머노이드 보행을 위한 전신 역기구학 — 초고

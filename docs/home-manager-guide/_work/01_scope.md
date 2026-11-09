@@ -1,6 +1,5 @@
 ---
 title: Home Manager 가이드 퇴고 범위
-updated: 2026-08-11
 ---
 
 # 범위 정의

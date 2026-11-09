@@ -1,9 +1,7 @@
 ---
 title: 구성 설계
-version: 0.2
 status: final
 owner: agent
-updated: 2026-08-30
 target_reader: Nix 입문자
 topic: Nix 기초 학습자료 퇴고 구조
 ---

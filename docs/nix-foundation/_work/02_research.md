@@ -1,9 +1,7 @@
 ---
 title: 조사 노트
-version: 0.2
 status: final
 owner: agent
-updated: 2026-08-30
 target_reader: Nix 입문자
 topic: Nix 기초 학습자료 기술 검증
 ---
@@ -27,19 +25,19 @@ topic: Nix 기초 학습자료 기술 검증
 
 ## 2. 핵심 확인 결과
 
-| 항목 | 검증 결과 | 본문 반영 |
+| 항목 | 검증 결과 | 본문 위치 |
 |---|---|---|
-| `nix shell` | 지정한 installable을 `PATH`에서 사용할 수 있는 환경에서 명령을 실행하며, 명령이 없으면 `$SHELL`을 시작한다. | 4장과 7장 예제 유지 |
-| `nix develop` | 기본 output은 `devShells.<system>.default`, 그다음 `packages.<system>.default` 순서로 찾는다. | 4장 설명 유지 |
-| `nix search` | 모든 정규식과 일치하는 package 이름·설명을 검색한다. | 4장 설명 유지 |
-| 로컬 Git Flake | Git에 추가된 파일을 source로 사용하며, tracked 파일의 미커밋 수정은 dirty source로 평가한다. | 새 파일과 tracked 파일의 stage 필요 여부를 4·7·8장에서 분리 |
-| `home-manager build` | 활성화 결과를 build하지만 그 결과만으로 현재 home generation을 전환하지 않는다. | 6장 표현 수정 |
-| `home-manager switch` | build와 활성화를 수행하며 generation을 전환한다. | 6장 표현 수정 |
-| `programs.git` | 현재 option 문서는 사용자 이름을 `programs.git.settings.user.name` 아래에 둔다. | 2장과 6장 예제 갱신 |
-| `programs.bash` | `shellAliases`는 `programs.bash.enable`이 참일 때 생성되는 `.bashrc`에 반영된다. | 6장 예제에 `enable = true` 추가 |
-| `home-manager switch --rollback` | 직전 profile generation으로 되돌리고 해당 activation script를 실행한다. | 6장의 복구 흐름 보강 |
-| `nixos-rebuild test` | 실행 중인 시스템을 전환하되 다음 부팅 기본값으로 만들지 않는다. | 6장과 8장 설명 유지 |
-| `nix flake update nixpkgs` | 지정한 입력만 갱신하고 lockfile을 변경한다. | 4장과 7장 설명 유지 |
+| `nix shell` | 지정한 installable을 `PATH`에서 사용할 수 있는 환경에서 명령을 실행하며, 명령이 없으면 `$SHELL`을 시작한다. | 4장과 7장 예제 |
+| `nix develop` | 기본 output은 `devShells.<system>.default`, 그다음 `packages.<system>.default` 순서로 찾는다. | 4장 |
+| `nix search` | 모든 정규식과 일치하는 package 이름·설명을 검색한다. | 4장 |
+| 로컬 Git Flake | Git에 추가된 파일을 source로 사용하며, tracked 파일의 미커밋 수정은 dirty source로 평가한다. | 4·7·8장에서 새 파일과 tracked 파일의 stage 필요 여부를 구분 |
+| `home-manager build` | 활성화 결과를 build하지만 그 결과만으로 현재 home generation을 전환하지 않는다. | 6장 |
+| `home-manager switch` | build와 활성화를 수행하며 generation을 전환한다. | 6장 |
+| `programs.git` | 현재 option 문서는 사용자 이름을 `programs.git.settings.user.name` 아래에 둔다. | 2장과 6장 예제 |
+| `programs.bash` | `shellAliases`는 `programs.bash.enable`이 참일 때 생성되는 `.bashrc`에 반영된다. | 6장 예제의 `enable = true` |
+| `home-manager switch --rollback` | 직전 profile generation으로 되돌리고 해당 activation script를 실행한다. | 6장의 복구 흐름 |
+| `nixos-rebuild test` | 실행 중인 시스템을 전환하되 다음 부팅 기본값으로 만들지 않는다. | 6장과 8장 |
+| `nix flake update nixpkgs` | 지정한 입력만 갱신하고 lockfile을 변경한다. | 4장과 7장 |
 
 ## 3. 주의점
 
@@ -50,9 +48,9 @@ topic: Nix 기초 학습자료 기술 검증
 
 ## 4. 조사 결론
 
-- 기존 자료의 기본 구조와 대부분의 기술 설명은 공식 문서와 맞는다.
-- Home Manager의 `build`와 generation 표현을 정정한다.
-- Store 결과·source·generation을 구분하는 운영 설명을 보강한다.
-- Git source의 새 파일과 tracked 수정 파일을 구분하고, Home Manager Git option 예제를 현재 구조로 갱신한다.
-- Home Manager Bash 별칭 예제의 활성화 누락을 수정하고, 공개 CLI가 지원하는 직전
+- 책의 기본 구조와 기술 설명은 Nix 2.34·26.05 공식 문서와 맞는다.
+- Home Manager의 `build`는 generation을 전환하지 않고 `switch`가 활성화와 generation 전환을 수행한다고 구분한다.
+- Store 결과·source·generation을 구분하는 운영 설명을 둔다.
+- Git source의 새 파일과 tracked 수정 파일을 구분하고, Home Manager Git option 예제는 26.05 구조를 따른다.
+- Home Manager Bash 별칭 예제는 module 활성화를 함께 정의하고, 공개 CLI가 지원하는 직전
   generation rollback 절차를 설명한다.

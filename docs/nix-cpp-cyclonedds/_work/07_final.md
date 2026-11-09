@@ -1,9 +1,7 @@
 ---
 title: 기준 원고 확정
-version: 1.0
 status: final
 owner: agent
-updated: 2026-09-22
 target_reader: C++와 Linux 명령을 조금 써 봤지만 빌드 시스템과 교차 컴파일을 직접 구성해 본 적 없는 개발자
 topic: Nix·Conan·CMake로 만드는 Cyclone DDS C++ 교차 개발 환경
 ---

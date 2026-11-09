@@ -1,8 +1,7 @@
 ---
 stage: 02_research
-chapter: 06-dynamic-balance-lipm-zmp-capture-point
+chapter: 02-dynamic-balance-lipm-zmp-capture-point
 status: complete
-updated: 2026-08-12
 ---
 
 # 6단계 조사 노트

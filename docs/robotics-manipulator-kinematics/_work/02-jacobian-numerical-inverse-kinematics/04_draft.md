@@ -1,8 +1,7 @@
 ---
 stage: 04_draft
-chapter: 04-jacobian-numerical-inverse-kinematics
+chapter: 02-jacobian-numerical-inverse-kinematics
 status: complete
-updated: 2026-08-12
 ---
 
 # 4단계 초고
@@ -28,7 +27,7 @@ updated: 2026-08-12
 ## 예제 후보
 
 - $l_1=l_2=1$, $\mathbf q=(0°,90°)$, 현재 위치 $(1,1)$, 목표 $(0.9,1.1)$에서 $\Delta\mathbf q=(0.1,0)$ rad를 얻는다.
-- $l_1=l_2=1$, $\mathbf q=(0°,0°)$에서 위쪽 오차 $(0,0.1)$에 DLS를 적용해 유한한 업데이트를 얻는다.
+- $l_1=l_2=1$, $\mathbf q=(0°,0°)$, 목표 $(1.99,0.1)$의 오차 $(-0.01,0.1)$에 DLS를 적용해 유한한 업데이트를 얻는다.
 - 유한차분 $\varepsilon=10^{-4}$ rad로 해석 자코비안 열과의 차이를 검사한다.
 
 ## 실습 초고

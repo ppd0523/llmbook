@@ -1,8 +1,7 @@
 ---
 stage: 02_research
-chapter: 04-jacobian-numerical-inverse-kinematics
+chapter: 02-jacobian-numerical-inverse-kinematics
 status: complete
-updated: 2026-08-12
 ---
 
 # 4단계 조사 기록

@@ -1,6 +1,5 @@
 ---
 title: Home Manager 가이드 기술 조사
-updated: 2026-08-11
 ---
 
 # 기술 근거

@@ -1,9 +1,7 @@
 ---
 title: PyTorch PPO 학습 자료 초고
-version: 0.5
 status: reviewed
 owner: agent
-updated: 2026-08-21
 target_reader: 강화학습과 PyTorch 초심자
 topic: 순수 PyTorch PPO 구현에서 TorchRL까지
 ---
@@ -38,7 +36,7 @@ Python의 함수·반복문을 읽을 수 있지만 강화학습과 PyTorch를 �
 
 Stanford CS234의 introduction→MDP→policy evaluation→policy gradient 순서, Berkeley CS 185/285의 PyTorch·확률 복습→RL basics→policy gradient→actor–critic→advanced policy gradients 순서를 반영한다. MIT 공개 강의의 MDP, policy/value iteration, Q-learning, policy gradient, actor–critic 중 PPO에 직접 필요한 부분을 본문에 포함한다.
 
-Value iteration, SARSA, Q-learning, DQN의 상세 구현은 분량이 큰 별도 학습 경로다. 2장과 9장에서 후속 키워드와 학습 순서를 제공한다.
+Value iteration, SARSA, Q-learning, DQN의 상세 구현은 분량이 큰 별도 학습 경로다. 9장에서 후속 키워드와 학습 순서를 제공하고, 2장은 용어 뜻과 참조만 둔다.
 
 ## 3. 장별 초고 요약
 
@@ -82,8 +80,8 @@ Random baseline, 환경 계약, 작은 수식 테스트, tensor 불변조건, ol
 
 | 단계 | 입력 | 독자가 계산할 것 | 코드/시각화 확인 |
 |---|---|---|---|
-| Return | `[1, 1, 1, 1]`, $\gamma$ | 시간별 discounted return | return lab |
-| Policy | logits `[1, 0]` | softmax 확률·entropy | distribution lab |
+| Return | reward `[1, 0, 2, 3]`, $\gamma=0.5$ | 시간별 discounted return | return lab |
+| Policy | logits `[0, 0]`, `[2, 0]` | softmax 확률·entropy | distribution lab |
 | GAE | reward, value, mask | delta와 역방향 advantage | GAE lab·단위 테스트 |
 | PPO | old/new 확률, $A$ | ratio·clip·min | clipping lab |
 | 구현 | rollout batch | 각 tensor shape | smoke test |
@@ -125,11 +123,11 @@ Random baseline, 환경 계약, 작은 수식 테스트, tensor 불변조건, ol
 
 초고의 실제 장별 본문은 `../index.md`와 `../01-*.md`부터 `../09-*.md`에 나뉘어 있다. 다음 단계에서는 수식·API·코드·링크·초심자 관점의 결함을 별도로 검토한다.
 
-## 8. 2차 상세화 결과
+## 8. 상세화 범위
 
-- “최소 수학”을 외부 선수지식 목록으로만 돌리지 않고 기호 시간선, 확률변수·조건부확률·기댓값·분산, 함수·미분·gradient·chain rule 예제로 확장했다.
-- 신경망을 `Linear → Tanh → MLP`의 수치와 역할에서 시작해 tensor, distribution, autograd, optimizer로 연결했다.
-- Policy gradient를 trajectory probability에서 표본 estimator까지 유도하고 baseline의 zero-expectation 계산과 GAE의 n-step 연결을 추가했다.
-- Importance sampling, surrogate, clip의 조각별 정의, KL과 trust region의 한계를 추가했다.
-- 실험 용어와 통계 해석, 연속 확률에서 확률과 밀도의 차이, TorchRL 객체 수명을 추가했다.
-- 직접 구현에 `--metrics-csv`, `--eval-interval`과 `plot_metrics.py`를 추가해 최종 프로젝트의 요구 산출물과 실행 코드가 일치하게 했다.
+- “최소 수학”은 외부 선수지식 목록으로만 돌리지 않고 기호 시간선, 확률변수·조건부확률·기댓값·분산, 함수·미분·gradient·chain rule 예제로 다룬다.
+- 신경망은 `Linear → Tanh → MLP`의 수치와 역할에서 시작해 tensor, distribution, autograd, optimizer로 연결한다.
+- Policy gradient는 trajectory probability에서 표본 estimator까지 유도하고, baseline의 zero-expectation 계산과 GAE의 n-step 연결을 보인다.
+- Importance sampling, surrogate, clip의 조각별 정의, KL과 trust region의 한계를 다룬다.
+- 실험 용어와 통계 해석, 연속 확률에서 확률과 밀도의 차이, TorchRL 객체 수명을 다룬다.
+- 직접 구현은 `--metrics-csv`, `--eval-interval`과 `plot_metrics.py`를 제공해 최종 프로젝트의 요구 산출물과 실행 코드가 일치한다.

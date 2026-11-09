@@ -1,19 +1,16 @@
 ---
-title: 6장 최종 산출물 구성과 출판 변환 검수
-version: 0.1
+title: 6단계 최종 산출물 구성과 출판 변환 검수
 status: complete
 owner: agent
-updated: 2026-08-12
 target_reader: 고등학교 수준의 행렬과 삼각함수를 알고 1~5단계를 마친 로보틱스 입문자
 topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 ---
 
-# 6장 최종 산출물 구성과 출판 변환 검수
+# 6단계 최종 산출물 구성과 출판 변환 검수
 
 ## 1. 최종 산출물 계획
 
-- 기준 원고 Markdown: `docs/humanoid-balance-and-whole-body-ik/_work/02-dynamic-balance-lipm-zmp-capture-point/07_final.md`
-- 원본 버전: 1.2
+- 기준 원고: 공개 장 본문 `docs/humanoid-balance-and-whole-body-ik/02-dynamic-balance-lipm-zmp-capture-point.md`(확정 기록은 `_work/02-dynamic-balance-lipm-zmp-capture-point/07_final.md`)
 - 최종 산출물 형식: MkDocs 챕터형 Markdown, 독립 실행형 HTML 실험
 - 최종 산출물 경로: `docs/humanoid-balance-and-whole-body-ik/02-dynamic-balance-lipm-zmp-capture-point.md`
 - MkDocs 책 폴더명 `<book-slug>`: `humanoid-balance-and-whole-body-ik`
@@ -21,19 +18,18 @@ topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 - 챕터 파일 배치: `docs/humanoid-balance-and-whole-body-ik/` 바로 아래
 - 보조 산출물: `docs/humanoid-balance-and-whole-body-ik/assets/dynamic-balance-lipm-zmp-capture-point/dynamic-balance-lab.html`
 - 구성 또는 변환 도구: MkDocs Material 9.7.6, Codex 인앱 브라우저
-- 구성 또는 변환 명령: `mkdocs build --strict`
-- 구성 또는 변환 일시: 2026-08-12
+- 구성 또는 변환 명령: `python -m mkdocs build --strict`(MkDocs 1.6.1, Material 9.7.6, uv와 Python 3.14에서 통과)
 
 ## 2. 산출 결과
 
 | 형식 | 파일 | 상태 | 비고 |
 |---|---|---|---|
-| Chapter Markdown | `06-dynamic-balance-lipm-zmp-capture-point.md` | 완료 | 07 최종 원고에서 front matter만 제거한 공개 파일 |
-| Markdown | `_work/.../07_final.md` | 완료 | 출판 전 기준 원고 |
+| Chapter Markdown | `02-dynamic-balance-lipm-zmp-capture-point.md` | 완료 | 공개 챕터 |
+| Markdown | `_work/.../07_final.md` | 완료 | 기준 원고 확정 기록(본문 사본이 아님, adr/0001) |
 | HTML | `assets/.../dynamic-balance-lab.html` | 완료 | 외부 라이브러리 없는 1D LIPM 실험 |
-| PDF | 해당 없음 | 미생성 | 사용자 요청 범위 아님 |
-| ePub | 해당 없음 | 미생성 | 사용자 요청 범위 아님 |
-| PPT/PPTX | 해당 없음 | 미생성 | 사용자 요청 범위 아님 |
+| PDF | 해당 없음 | 미생성 | 만들지 않는 형식 |
+| ePub | 해당 없음 | 미생성 | 만들지 않는 형식 |
+| PPT/PPTX | 해당 없음 | 미생성 | 만들지 않는 형식 |
 
 ## 3. 공통 검수
 
@@ -65,11 +61,11 @@ topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 - [x] 파일명 자연 정렬 순서와 실제 읽는 순서가 일치한다.
 - [x] `mkdocs.yml`에 책과 챕터의 수동 `nav` 목록을 중복 작성하지 않았다.
 - [x] 챕터 파일명과 첫 번째 `#` 제목이 같은 주제를 가리킨다.
-- [x] 5장에서 6장, 6장에서 5장으로 가는 상대 링크가 동작한다.
+- [x] 5단계 장에서 6단계 장, 6단계 장에서 5단계 장으로 가는 상대 링크가 있다.
 - [x] 내부 링크가 대상 `.md` 파일을 가리킨다.
 - [x] `assets/dynamic-balance-lipm-zmp-capture-point/` 경로가 동작한다.
 - [x] `_work/`가 게시 결과와 탐색 메뉴에 포함되지 않는다.
-- [x] 6장이 독립적인 학습 목표, 선행지식 확인, 본문, 예제, 연습문제와 요약을 가진다.
+- [x] 6단계 장이 독립적인 학습 목표, 선행지식 확인, 본문, 예제, 연습문제와 요약을 가진다.
 
 ## 5. 단일 Markdown 검수
 
@@ -87,32 +83,25 @@ topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 - [x] 지지 구간 밖 CoP 요구에서 시간을 진행하지 않고 이유를 표시한다.
 - [x] CP로 발을 옮기면 새 지지 중심과 CoP가 CP로 이동하고 ‘현재 발에서 정지 가능’으로 바뀐다.
 - [x] 1초 적분 뒤 CP는 \(0.120\) m에서 \(0.119\) m로 거의 고정되고 속도는 \(0.350\) m/s에서 \(0.009\) m/s로 감소한다.
+- [x] 적분 간격은 0.0002 s다. 0.002 s에서는 불안정 모형의 절단 오차가 증폭되어 \(p=\xi\)인데도 CP가 1초 뒤 약 1.2 cm 이동한다.
 - [x] 브라우저 콘솔의 경고와 오류가 없다.
 - [x] 외부 JavaScript·CSS 라이브러리나 네트워크 요청에 의존하지 않는다.
 
 ## 7. PDF 검수
 
-- [ ] 사용자 요청 범위가 아니므로 수행하지 않음.
+- 해당 없음. 최종 산출물은 MkDocs 챕터와 HTML 실험만 둔다. PDF·ePub·슬라이드는 만들지 않는다.
 
 ## 8. ePub 검수
 
-- [ ] 사용자 요청 범위가 아니므로 수행하지 않음.
+- 해당 없음. 최종 산출물은 MkDocs 챕터와 HTML 실험만 둔다. PDF·ePub·슬라이드는 만들지 않는다.
 
 ## 9. PPT/PPTX 슬라이드 검수
 
-- [ ] 사용자 요청 범위가 아니므로 수행하지 않음.
+- 해당 없음. 최종 산출물은 MkDocs 챕터와 HTML 실험만 둔다. PDF·ePub·슬라이드는 만들지 않는다.
 
 ## 10. 발견된 문제
 
-| 위치 | 형식 | 문제 | 원인 | 처리 방향 | 상태 |
-|---|---|---|---|---|---|
-| HTML 1초 진행 | HTML | \(p=\xi\)인데 CP가 1초 뒤 약 1.2 cm 이동 | 불안정 모형에서 수치 적분 시간 간격이 커 절단 오차가 증폭됨 | 적분 간격을 0.002 s에서 0.0002 s로 줄이고 재검사 | 반영 |
-| 12절 | Markdown | \(T_c\)를 ‘자연 시간’이라고 자체 명명 | 표준 용어와 불일치 가능 | ‘LIPM 시정수(time constant)’로 통일 | 반영 |
-| 18절 | Markdown | CoP 삼각형 색 설명이 실험과 다름 | 실현 가능성에 따른 색 변화가 본문에 누락 | 노랑·빨강 두 경우를 각각 설명 | 반영 |
-| 1절 | Markdown | 전신 상태 속도 표기가 5단계 업데이트와 혼동됨 | \(\dot{\mathbf u}\)를 속도로 재사용 | \((\mathcal Q,\mathbf v)\)와 \([x,\dot x]^T\)로 분리 | 반영 |
-| 7·9절 | Markdown·HTML | 실제 CoP와 발 밖 요구값이 같은 \(p\)로 표시됨 | 실현값과 역계산 후보의 기호 미분리 | 실제값은 \(p\), 요구값은 \(p_{\mathrm{req}}\)로 분리하고 실험의 불가능 요구를 점선 표시 | 반영 |
-| 3절 | Markdown | 정규화 시간 함수에 시간 미분 점 표기를 사용 | 미분 기준 변수 불명확 | \(s'\), \(s''\)로 고치고 실제 시간 조건과 연결 | 반영 |
-| 전체 | Markdown | 인라인 수식이 `\(...\)` 형식 | Markdown 작성 기준과 불일치 | `$...$`로 일괄 통일 | 반영 |
+열린 문제 없음.
 
 ## 11. 되돌아가기 판단
 
@@ -120,11 +109,11 @@ topic: 휴머노이드 동적 균형의 기초, LIPM, ZMP, CoP, 캡처 포인트
 - 형식 변환 문제: 없음
 - Markdown 기준 원고 수정 필요: 없음
 - 내용 구조 수정 필요: 없음
-- 기술 검증 재수행 필요: 수치 적분 간격 수정 뒤 핵심 시나리오를 재실행해 통과
+- 기술 검증 재수행 필요: 없음
 
 ## 12. 최종 결론
 
-- 배포 가능 최종 산출물: 6장 공개 Markdown
+- 배포 가능 최종 산출물: 6단계 공개 장 Markdown
 - 배포 가능 보조 형식: 동적 균형 HTML 실험
 - 배포 보류 형식: 없음
-- 추가 작업: 없음. `mkdocs build --strict`, 로컬 상대 링크 검사, 최종·공개 원고 본문 비교와 브라우저 반응형·상호작용 검사를 모두 통과했다.
+- 추가 작업: 없음. 현재 저장소에서 `python -m mkdocs build --strict`가 통과한다(MkDocs 1.6.1, Material 9.7.6, uv와 Python 3.14). 브라우저 반응형·상호작용 검사(6절)는 현재 본문 기준으로 다시 확인하지 않았다.

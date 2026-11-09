@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 1.2
 status: final
 owner: agent
-updated: 2026-07-21
 target_reader: 터미널 기반 개발 환경에 익숙하지만 Nix 생태계는 처음인 시니어 개발자
 topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구축
 ---
@@ -100,15 +98,15 @@ topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구�
 ## 7. 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고 경로: `nixos-wsl-dev-environment/_work/07_final.md`
-- 내부 작업 산출물 위치: `nixos-wsl-dev-environment/_work/`
+- 기준 원고 경로: 챕터 본문 `docs/nixos-wsl-dev-environment/NN-<chapter-slug>.md`. 챕터 본문이 곧 기준 원고이자 최종 산출물이며, `_work/07_final.md`는 이를 확정한 기록이다([adr/0001](../../../adr/0001-chapter-body-is-the-canonical-manuscript.md)).
+- 내부 작업 산출물 위치: `docs/nixos-wsl-dev-environment/_work/`
 - 최종 산출물 형식: 챕터형 Markdown 학습자료
-- 최종 산출물 경로: `nixos-wsl-dev-environment/`
+- 최종 산출물 경로: `docs/nixos-wsl-dev-environment/`
 - 챕터 수: 9
-- 챕터 폴더 구조: 개념·설치·구성·개발 셸·복원·운영 순서의 9개 챕터로 구성
+- 챕터 파일 구조: 책 폴더 바로 아래의 `01-mental-model.md`~`09-operations-and-troubleshooting.md`. 개념·설치·구성·개발 셸·복원·운영 순서다.
 - 단일 파일명: 해당 없음
-- 보조 배포 형식: `assets/example-config/`에 완성형 예제 구성 저장소 제공
-- 사용할 빌드 도구: 별도 출판 변환 없음
+- 보조 배포 형식: `assets/example-config/`에 완성형 예제 구성 저장소, `assets/example-dev-shell/`에 Python·Node.js·Rust 프로젝트 개발 셸 예제 제공
+- 사용할 빌드 도구: 저장소 공통 MkDocs Material 사이트(`mkdocs.yml`). 별도 출판 변환은 없다.
 - 수식 지원 필요 여부: 불필요
 - 코드 실행/검증 필요 여부: 필요. 가능한 범위에서 Nix 평가와 명령 구문을 검증하고 실행 불가능한 환경 제약은 내부 검증 기록에 남긴다.
 - 인터랙티브 요소 필요 여부: 불필요

@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 1.4
 status: complete
 owner: agent
-updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -69,7 +67,7 @@ topic: Hermes Agent 운영 가이드
 
 ## 최종 산출물
 
-- 기준 원고: `docs/hermes-agent-guide/_work/07_final.md`
+- 기준 원고: 챕터 본문 `docs/hermes-agent-guide/NN-<chapter-slug>.md` (`_work/07_final.md`는 확정 기록)
 - 최종 형식: MkDocs 챕터형 Markdown
 - 최종 경로: `docs/hermes-agent-guide/`
 - 책 폴더명: `hermes-agent-guide`
@@ -77,7 +75,7 @@ topic: Hermes Agent 운영 가이드
 - 파일명 규칙: `NN-<chapter-slug>.md`
 - 보조 형식: 없음
 - 검증: MkDocs strict build, 내부 링크 검사, 공식 문서와 명령 대조
-- 기준 시점: 1~8장 2026-08-11, 9장 2026-08-30, 용어 재검증 2026-09-02
+- 기준 시점: 1~8장 2026-08-11, 9장 2026-08-30, 운영 용어 정의 2026-09-02
 
 ## 성공 기준
 

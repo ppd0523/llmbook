@@ -1,12 +1,12 @@
 # 04. 초안 기록
 
-## 작성 결과
+## 초안 구성
 
-- 책 소개와 9개 장을 작성했다.
-- 설치에서 최종 moving-target 프로젝트까지 순차적으로 연결했다.
-- 모든 장에 이전·다음 장 링크를 넣었다.
-- 공식 URL은 Isaac Lab v3.0.0-beta2 문서, patch1 태그 소스, Isaac Sim 6.0.1 문서를 우선했다.
-- 외부 예제 프로젝트에 Direct/Manager task, 공통 MDP, physics preset, RSL-RL config, 평가 script, URDF를 작성했다.
+- 책 소개와 9개 장으로 구성한다.
+- 설치에서 최종 moving-target 프로젝트까지 순차적으로 연결한다.
+- 모든 장에 이전·다음 장 링크가 있다.
+- 공식 URL은 Isaac Lab v3.0.0-beta2 문서, patch1 태그 소스, Isaac Sim 6.0.1 문서를 우선한다.
+- 외부 예제 프로젝트에 Direct/Manager task, 공통 MDP, physics preset, RSL-RL config, 평가 script, URDF가 있다.
 
 ## 초안의 핵심 설명 순서
 
@@ -22,4 +22,4 @@
 
 ## 의도적으로 포함하지 않은 결과
 
-문서 작성 PC에는 NVIDIA GPU와 Isaac Sim이 없으므로 생성 USD, 학습 checkpoint, 성능 수치를 만들어 넣지 않았다. 대신 대상 PC에서 해당 산출물을 생성하고 검증하는 명령과 통과 기준을 제공했다.
+문서 작성 PC에는 NVIDIA GPU와 Isaac Sim이 없으므로 생성 USD, 학습 checkpoint, 성능 수치를 넣지 않는다. 대신 대상 PC에서 해당 산출물을 생성하고 검증하는 명령과 통과 기준을 제공한다.

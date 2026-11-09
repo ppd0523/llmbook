@@ -1,8 +1,7 @@
 ---
 stage: 02_research
-chapter: 05-humanoid-whole-body-inverse-kinematics
+chapter: 01-humanoid-whole-body-inverse-kinematics
 status: complete
-updated: 2026-08-12
 ---
 
 # 5단계 조사 기록

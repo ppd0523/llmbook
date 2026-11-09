@@ -1,9 +1,7 @@
 ---
 title: 조사 노트
-version: 1.0
 status: final
 owner: agent
-updated: 2026-09-22
 target_reader: C++와 Linux 명령을 조금 사용해 본 개발자
 topic: Nix·Conan 2·CMake·Cyclone DDS 교차 빌드의 공식 근거
 ---
@@ -56,7 +54,7 @@ topic: Nix·Conan 2·CMake·Cyclone DDS 교차 빌드의 공식 근거
 | N5 | `pkgsCross.aarch64-multiplatform-musl`의 타깃 삼중자는 `aarch64-unknown-linux-musl` | `lib/systems/examples.nix`의 `config = "aarch64-unknown-linux-musl"` | Nixpkgs 26.05 | 소스 대조 |
 | N6 | 교차 컴파일러 실행 파일에는 target prefix가 붙는다 | Nixpkgs 매뉴얼 cross-compilation 장, `stdenv.cc.targetPrefix` | 교차 `stdenv`에 한정 | 문서 대조 |
 | N7 | `flake.lock`이 두 입력의 revision과 content hash를 고정한다 | 예제의 `flake.lock`에 `rev`, `narHash` 기록 | 예제 프로젝트 | 파일 읽기 |
-| N8 | 예제가 쓰는 `pkgs.nixfmt-rfc-style` | `nixos-26.05`의 `aliases.nix`에서 `warnAlias`로 `nixfmt`를 가리킴 (2025-07-14 추가) | 26.05에서는 경고를 내는 별칭 | 소스 대조 |
+| N8 | 예제 formatter는 `pkgs.nixfmt`를 쓴다 | `nixos-26.05`의 `aliases.nix`에서 `nixfmt-rfc-style`은 `warnAlias`로 `nixfmt`를 가리킴 (2025-07-14 추가) | 26.05에서 `nixfmt-rfc-style`은 경고를 내는 별칭 | 소스 대조 |
 
 ### 2.2 Conan 2
 

@@ -1,14 +1,12 @@
 ---
-title: 퇴고 계획 및 반영 내역
-version: 0.9
+title: 퇴고 기록
 status: complete
 owner: agent
-updated: 2026-09-22
 target_reader: 터미널과 언어별 버전 관리에는 익숙하지만 Nix는 처음인 시니어 개발자
 topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixOS 개발 환경
 ---
 
-# 퇴고 계획 및 반영 내역
+# 퇴고 기록
 
 ## 1. 퇴고 목표
 
@@ -20,24 +18,33 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - 코드 문맥 개선: 파일 내용을 보여주는 블록마다 기준 루트, 경로, 전체/일부 여부를 표시한다.
 - 연습문제 개선: 선언 변경, build, switch, 프로젝트 런타임 선택을 직접 확인하게 한다.
 
-## 2. 변경 계획
+## 2. 장별 배치와 이유
 
-| 위치 | 변경 전 문제 | 변경 방향 | 우선순위 |
-|---|---|---|---|
-| 전체 초고 | 한 파일에서 개념과 절차가 길게 이어짐 | 의존 순서에 따라 9개 장으로 분리 | 높음 |
-| 언어 버전 | 도구 버전과 런타임 버전의 고정 단위가 혼동될 수 있음 | 도구/런타임/의존성 잠금 표를 모든 설명의 기준으로 사용 | 높음 |
-| Node 예시 | `.nvmrc`에 메이저만 쓰면 미래의 패치 버전으로 달라질 수 있음 | 작성 시 선택한 정확한 `node --version` 값을 커밋하도록 설명 | 높음 |
-| 설치 절차 | 구성 저장소가 이미 있다고 가정하고 clone부터 시작 | 첫 저장소 생성은 2장, 구조 해설은 3장, 이후 머신 복원은 7장으로 분리 | 높음 |
-| 네이티브 NixOS | 사용자 복원과 시스템 복원의 필수 조건이 다름 | Home Manager는 즉시 재사용, 시스템은 하드웨어 모듈 필요로 구분 | 높음 |
-| WSL interop | Windows PATH 제외의 효과가 불명확 | 재현성과 편의의 선택으로 명시 | 중간 |
-| 예제 코드 | 모든 파일을 본문에 반복하면 흐름이 끊김 | 핵심 코드는 본문, 전체 파일은 companion 링크로 제공 | 중간 |
-| 오류 처리 | Nix 오류와 언어 도구 오류가 섞임 | 시스템/홈/프로젝트 세 계층으로 진단 순서 제시 | 중간 |
-| 편집기 통합 | Mason과 프로젝트 관리자가 같은 LSP를 중복 설치할 수 있음 | Mason을 끄고 활성화된 프로젝트 PATH의 LSP만 사용 | 높음 |
-| LazyVim 소유권 | 언어별 plugin을 사용자 전역으로 켜면 프로젝트마다 다른 요구사항을 표현하기 어려움 | Home Manager는 최소 기반, 프로젝트는 `.lazy.lua`와 `.lazy-lock.json` 소유 | 높음 |
-| LazyVim 격리 | project lock만 분리하고 plugin checkout을 공유하면 리비전이 충돌할 수 있음 | 프로젝트 경로 hash로 plugin root까지 분리 | 높음 |
-| LazyVim 경로 소유권 | 전체 `nvim` 링크와 Home Manager 생성 `init.lua`가 충돌하고 Nix Store의 기본 lock에는 쓸 수 없음 | `init.lua`는 Home Manager가 생성하고 `lua/`, `stylua.toml`, 기본 lock만 개별 out-of-store 링크로 연결 | 높음 |
-| 파일 내용 예제 | 코드만 보면 어느 경로 또는 파일인지 알 수 없음 | 3.1절 이후 구조 블록에는 `경로:`, 파일 내용 블록에는 `파일:`과 발췌 범위를 표기 | 높음 |
-| 5.2장 프로그램 모듈 | 축약 코드와 상세 asset의 범위가 달라 설명을 추적하기 어려움 | 실제 `programs.nix` 전체를 기준으로 코드와 프로그램별 해설을 확장 | 높음 |
+| 내용 | 위치 | 이유 |
+|---|---|---|
+| NixOS/Home Manager/dotfiles/프로젝트의 소유권 표 | 1장 | 가장 먼저 경계를 이해하게 함 |
+| 최신 WSL 설치와 초기 채널 갱신 | 2장 | 공식 NixOS-WSL 설치 조건과 일치 |
+| GitHub 빈 저장소, SSH 인증, 예제 `git init`, 첫 push | 2장과 예제 README | 구성 저장소가 전혀 없는 상태에서도 시작 가능하게 함 |
+| 채널 기반 Git bootstrap과 GitHub API 오류 대응 | 2장·8장·9장·예제 README | Git 없는 이미지의 `git+https` 순환 의존과 `github:` 비인증 API 한도를 분리해 해결 |
+| `flake.lock`을 반드시 커밋 | 3장과 7장 | 복원과 업데이트를 구분 |
+| Windows PATH 제외를 재현성과 편의의 선택으로 설명 | 4장 | Windows PATH 제외의 효과를 분명히 함 |
+| 공통 시스템과 WSL/네이티브 호스트 분리 | 4장 | 호스트 종속성을 사용자 환경에서 제거 |
+| standalone Home Manager와 NVM 쓰기 가능 디렉터리 | 5장 | 선택한 배포 방식과 NVM의 셸 함수 성격 반영 |
+| 도구/런타임/의존성 잠금 표를 모든 설명의 기준으로 사용 | 6장 | 도구 버전과 런타임 버전의 고정 단위 혼동 방지 |
+| 정확한 프로젝트 런타임 버전 고정 | 6장 | 도구 고정만으로 부족한 재현성 보완. `.nvmrc`에 메이저만 쓰면 미래의 패치 버전으로 달라질 수 있음 |
+| Mason 비활성화와 활성화된 프로젝트 PATH의 LSP 사용 | 7장 | Mason과 프로젝트 관리자가 같은 LSP를 중복 설치하지 않게 함 |
+| Python·Node.js·Rust LazyVim 개발 셸 | 7장과 `assets/example-dev-shell` | 설치한 direnv·nix-direnv·언어 관리자를 일상 편집 흐름으로 연결 |
+| 프로젝트별 `.lazy.lua`, `.lazy-lock.json`, plugin cache | 7장과 세 언어 예제 | `.vscode`와 유사한 프로젝트 소유권과 plugin 리비전 격리 |
+| `.envrc`와 `.lazy.lua` 이중 신뢰 절차 | 7장 | 셸 코드와 Lua 코드를 별도 trust DB에서 검토 |
+| `nix develop` 수동 진단 후 `direnv allow` | 7장 | Nix 평가 오류와 자동화 훅 오류를 구분 |
+| WSL과 네이티브 복원 절차 분리 | 8장 | 하드웨어 모듈의 비이식성 명확화 |
+| 잠긴 Home Manager bootstrap 앱 | 3장과 5장 | 최초 실행도 `flake.lock`의 입력을 사용 |
+| 시스템/홈/프로젝트 세 계층 진단 순서 | 9장 | Nix 오류와 언어 도구 오류를 구분 |
+| build-before-switch와 계층별 롤백 | 9장 | 안전한 운영 루틴 제시 |
+| 핵심 코드는 본문, 전체 파일은 companion 링크 | 전 장 | 모든 파일을 본문에 반복하면 흐름이 끊김 |
+| 코드 블록별 파일 경로와 발췌 범위 | 3.1절부터 7장 | 독자가 내용을 저장할 정확한 위치를 바로 식별하게 함 |
+| `programs.nix` 전체 코드와 설정·상태 경계 해설 | 5.2장 | companion 예제를 단일 기준 구현으로 유지하고 설정 효과를 추적 가능하게 함 |
+| Neovim `init.lua`와 dotfiles 경로별 소유권 분리 | 1장·5장·7장·예제 asset | 부모 디렉터리 링크와 Home Manager 생성 파일의 충돌을 피하고 기본 lock만 쓰기 가능하게 유지 |
 
 ## 3. 구조 점검
 
@@ -47,6 +54,10 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - [x] 섹션 순서가 개념 의존성과 맞는다.
 - [x] 같은 bootstrap·업데이트 명령의 불필요한 반복을 줄였다.
 
+- 챕터 파일은 책 폴더 바로 아래의 `NN-<chapter-slug>.md`이며, 읽기 순서 번호 01~09가 `index.md`의 읽는 순서와 각 챕터의 장 번호에 맞는다.
+- 7장이 646행으로 가장 길지만 절 경계가 언어별로 명확해 분할하지 않는다.
+- 1~8장에 `흔한 오류`와 `직접 확인` 중 하나만 있는 것은 실습 장과 개념 장의 성격 차이이므로 통일하지 않는다. 9장은 9.4절 오류 표와 9.8절 운영 체크리스트가 그 역할을 맡는다.
+
 ## 4. 학습성 점검
 
 - [x] 학습 목표와 본문이 대응한다.
@@ -54,95 +65,15 @@ topic: Flake와 독립 실행형 Home Manager를 이용한 이식 가능한 NixO
 - [x] 추상적인 소유권 경계와 실제 디렉터리 구조를 연결했다.
 - [x] 연습문제가 본문 내용만으로 수행 가능하다.
 - [x] 흔한 오해와 실패 사례가 포함된다.
-- [x] 전체 Worked Example과 장별 직접 확인 항목을 함께 배치한다.
+- [x] 2장의 처음부터 첫 push까지 이어지는 실습과 1·3·8장의 `직접 확인` 항목을 함께 배치한다.
 
-## 5. 반영 내역
-
-| 변경 항목 | 반영 위치 | 이유 |
-|---|---|---|
-| NixOS/Home Manager/dotfiles/프로젝트의 소유권 표 | 1장 | 가장 먼저 경계를 이해하게 함 |
-| 최신 WSL 설치와 초기 채널 갱신 | 2장 | 공식 NixOS-WSL 설치 조건과 일치 |
-| GitHub 빈 저장소, SSH 인증, 예제 `git init`, 첫 push | 2장과 예제 README | 구성 저장소가 전혀 없는 최초 사용자도 시작 가능하게 함 |
-| 채널 기반 Git bootstrap과 GitHub API 오류 대응 | 2장·7장·8장·예제 README | Git 없는 이미지의 `git+https` 순환 의존과 `github:` 비인증 API 한도를 분리해 해결 |
-| `flake.lock`을 반드시 커밋 | 3장과 7장 | 복원과 업데이트를 구분 |
-| 공통 시스템과 WSL/네이티브 호스트 분리 | 4장 | 호스트 종속성을 사용자 환경에서 제거 |
-| standalone Home Manager와 NVM 쓰기 가능 디렉터리 | 5장 | 선택한 배포 방식과 NVM의 셸 함수 성격 반영 |
-| 정확한 프로젝트 런타임 버전 고정 | 6장 | 도구 고정만으로 부족한 재현성 보완 |
-| Python·Node.js·Rust LazyVim 개발 셸 | 7장과 `assets/example-dev-shell` | 설치한 direnv·nix-direnv·언어 관리자를 일상 편집 흐름으로 연결 |
-| 프로젝트별 `.lazy.lua`, `.lazy-lock.json`, plugin cache | 7장과 세 언어 예제 | `.vscode`와 유사한 프로젝트 소유권과 plugin 리비전 격리 |
-| `.envrc`와 `.lazy.lua` 이중 신뢰 절차 | 7장 | 셸 코드와 Lua 코드를 별도 trust DB에서 검토 |
-| `nix develop` 수동 진단 후 `direnv allow` | 7장 | Nix 평가 오류와 자동화 훅 오류를 구분 |
-| WSL과 네이티브 복원 절차 분리 | 8장 | 하드웨어 모듈의 비이식성 명확화 |
-| 잠긴 Home Manager bootstrap 앱 | 3장과 5장 | 최초 실행도 `flake.lock`의 입력을 사용 |
-| build-before-switch와 계층별 롤백 | 9장 | 안전한 운영 루틴 제시 |
-| 코드 블록별 파일 경로와 발췌 범위 | 3.1절부터 7장 | 독자가 내용을 저장할 정확한 위치를 바로 식별하게 함 |
-| `programs.nix` 전체 코드와 설정·상태 경계 해설 | 5.2장 | companion 예제를 단일 기준 구현으로 유지하고 설정 효과를 추적 가능하게 함 |
-| Neovim `init.lua`와 dotfiles 경로별 소유권 분리 | 1장·5장·7장·예제 asset | 부모 디렉터리 링크와 Home Manager 생성 파일의 충돌을 제거하고 기본 lock만 쓰기 가능하게 유지 |
-
-## 6. 교정 전 확인
+## 5. 교정 전 확인
 
 - [x] 기술 검증에서 나온 수정 사항을 반영했다.
 - [x] 최종 산출물에 남길 내부 TODO가 없다.
 - [x] 주요 주장에 공식 출처를 연결했다.
 - [x] 표와 코드의 장별 위치를 확정했다.
 
-## 7. 남은 TODO
+## 6. 남은 TODO
 
 없음. 실제 Nix 실행 환경 부재는 최종 문서의 안전 절차인 `build` 선행으로 처리하고, 내부 검증 기록에만 남긴다.
-
-
-## 8. 개정: 챕터 파일 배치와 잔여 결함 정리 (2026-09-22)
-
-### 배경
-
-CONTEXT.md가 챕터와 읽기 순서 번호를 정의한 뒤, 이 책만 규칙에서 벗어나 있었다.
-챕터마다 `NN_slug/chapter.md` 하위 폴더를 쓰고 폴더 이름이 snake_case였으며,
-`07_nix_develop`과 `07_restore_workflow`가 읽기 순서 번호 07을 공유했다.
-본문의 장 번호는 이미 1~9로 맞아 있었으므로 어긋난 것은 파일 배치뿐이다.
-
-### 배치 변경
-
-| 이전 경로 | 새 경로 | 읽기 순서 번호 |
-|---|---|---|
-| `01_mental_model/chapter.md` | `01-mental-model.md` | 01 |
-| `02_install_nixos_wsl/chapter.md` | `02-install-nixos-wsl.md` | 02 |
-| `03_repository_architecture/chapter.md` | `03-repository-architecture.md` | 03 |
-| `04_system_configuration/chapter.md` | `04-system-configuration.md` | 04 |
-| `05_home_manager/chapter.md` | `05-home-manager.md` | 05 |
-| `06_language_toolchains/chapter.md` | `06-language-toolchains.md` | 06 |
-| `07_nix_develop/chapter.md` | `07-nix-develop.md` | 07 |
-| `07_restore_workflow/chapter.md` | `08-restore-workflow.md` | 08 |
-| `08_operations_and_troubleshooting/chapter.md` | `09-operations-and-troubleshooting.md` | 09 |
-
-중복 번호는 `index.md`의 읽는 순서를 근거로 풀었다. 그 목록은 이미
-`nix develop`을 7번째, Git 복원 워크플로를 8번째, 운영과 문제 해결을 9번째로
-두었고 각 챕터의 `#` 제목과 이전·다음 링크도 같은 번호를 쓰고 있었다.
-따라서 읽기 순서를 새로 정한 것이 아니라 파일 이름을 본문에 맞춘 것이다.
-
-챕터가 한 단계 위로 올라왔으므로 링크 기준도 함께 옮겼다. 챕터 안의
-`../assets/`는 `assets/`, `../index.md`는 `index.md`, 다른 책을 가리키던
-`../../home-manager-guide/`는 `../home-manager-guide/`가 되었다. 책 밖에서
-이 책을 참조하던 `docs/home-manager-guide/06-troubleshooting.md`의 링크와
-두 예제 asset README의 `../../<챕터>` 링크도 새 파일명으로 고쳤다.
-
-### 함께 정리한 본문 결함
-
-| 위치 | 문제 | 처리 |
-|---|---|---|
-| 2.8절 | 예제 복사 경로에 `docs/`가 빠져 있어 그대로 실행하면 대상이 없다 | 세 예시 모두 `<guide-root>/docs/nixos-wsl-dev-environment/assets/example-config`로 수정 |
-| 5장 흔한 오류 | `home-manager` 부재 해결로 `nix run ...release-26.05`를 제시해, 잠긴 입력을 쓰려고 만든 3.5절의 `apps.home-manager`와 어긋남 | `nix run .#home-manager -- switch --flake .#nixos`로 통일 |
-| 5.2절 | history 설명 뒤의 “반면”이 대조할 대상 없이 `shellAliases`로 이어짐 | history 내용이 머신별 생성 상태라 복원되지 않는다는 문장을 앞에 넣어 대조를 세움 |
-| 8장 | 9개 챕터 중 유일하게 `추가 읽을거리`가 없음 | 복원 절차에 대응하는 공식 출처 네 건 추가 |
-| 1장 | 학습 목표 앞의 “이 장을 마치면 다음을 할 수 있다.”가 이 장에만 있음 | 나머지 여덟 장과 같이 목록으로 바로 들어가도록 삭제 |
-
-### 남긴 것
-
-`docs/` 아래 다른 책 열 권은 이미 `NN-<chapter-slug>.md`를 쓰고 있어 건드리지
-않았다. 7장이 646행으로 가장 길지만 절 경계가 언어별로 명확해 분할하지 않았다.
-챕터별로 `흔한 오류`와 `직접 확인` 중 하나만 있는 것은 실습 장과 개념 장의
-성격 차이이므로 통일하지 않았다.
-
-공개 URL은 바뀐다. `/nixos-wsl-dev-environment/01_mental_model/chapter/`가
-`/nixos-wsl-dev-environment/01-mental-model/`이 된다. 기존 URL은 살리지 않기로
-정했다. 따라서 리다이렉트를 넣지 않고, `requirements.txt`의 고정 목록에
-`mkdocs-redirects`를 추가하지도 않는다. 이전 경로로 들어오는 링크는 404가 된다.

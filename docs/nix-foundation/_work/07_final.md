@@ -1,16 +1,14 @@
 ---
-title: 출판 전 최종 Markdown 원고 인덱스
-version: 1.1
+title: 기준 원고 확정 기록
 status: final
 owner: agent
-updated: 2026-08-30
 target_reader: Nix 지식이 없는 개발자와 NixOS·Home Manager 입문자
 topic: Nix 첫걸음
 ---
 
-# Nix 첫걸음: 출판 전 기준 원고
+# Nix 첫걸음: 기준 원고 확정 기록
 
-이 책의 최종 Markdown 기준 원고는 MkDocs 챕터형으로 확정했다. 원고는 다음 파일로 구성하며, 각 파일은 독립적인 `#` 제목과 학습 흐름을 가진다.
+이 책의 기준 원고는 이 파일이 아니라 MkDocs 진입점과 챕터 본문이다. 이 파일은 그 구성을 확정한 기록이다. 기준 원고는 다음 파일로 구성하며, 각 파일은 독립적인 `#` 제목과 학습 흐름을 가진다.
 
 1. `../index.md` — 대상, 전제 조건, 학습 경로
 2. `../01-ecosystem-and-mental-model.md` — 생태계와 공통 작업 흐름

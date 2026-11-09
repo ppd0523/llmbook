@@ -1,14 +1,14 @@
 ---
 title: LazyVim 개발 환경 구축 가이드 초고
-version: 0.1
 status: draft
 owner: agent
-updated: 2026-07-22
 target_reader: 터미널, Git, vi 기초를 알고 LazyVim은 처음인 개발자
 topic: Linux와 WSL에서 LazyVim 기반 다중 언어 개발 환경 구축
 ---
 
 # LazyVim 개발 환경 구축 가이드 초고
+
+이 초고는 공통 기반과 JavaScript·TypeScript, Python, Rust 구간을 다룬다. C++ 구간은 초고가 없으며, 7장과 3장·8장의 C++ 항목은 챕터 본문이 기준 원고다. 아래 extras와 Mason package 목록에는 `lang.clangd`와 `clangd`가 없으므로, 현재 구성은 본문 3장과 `assets/example-config/`를 따른다.
 
 ## 1. 문제 제기
 

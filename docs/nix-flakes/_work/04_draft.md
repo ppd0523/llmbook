@@ -1,9 +1,7 @@
 ---
 title: 초고
-version: 1.0
 status: reviewed
 owner: agent
-updated: 2026-07-24
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake의 입출력과 재현 가능한 개발 워크플로
 ---
@@ -115,5 +113,5 @@ tree를 만드는 함수로 읽고, 실행 가능한 작은 예제를 점진적�
 
 - [x] 처음부터 끝까지 읽을 수 있는 형태다.
 - [x] 주요 개념이 빠지지 않았다.
-- [x] 불확실했던 formatter 이름과 update 명령을 조사 단계에서 확정했다.
+- [x] formatter 이름과 update 명령은 조사 노트의 결정(`pkgs.nixfmt`, `nix flake update <input>`)을 따른다.
 - [x] 문장 교정보다 구조 완성을 우선했다.

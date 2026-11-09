@@ -1,9 +1,7 @@
 ---
 title: 조사 노트
-version: 1.4
 status: complete
 owner: agent
-updated: 2026-09-02
 target_reader: Hermes Agent를 Discord 중심으로 처음 운영하는 사용자
 topic: Hermes Agent 운영 가이드
 ---
@@ -41,7 +39,7 @@ topic: Hermes Agent 운영 가이드
 | [tmux Getting Started](https://github.com/tmux/tmux/wiki/Getting-Started) | session·pane, `send-keys`, `capture-pane` 명령 의미 |
 
 1~8장의 버전 의존 정보는 2026-08-11, 9장의 Hermes·Claude Code·tmux 정보는
-2026-08-30, 운영 용어 정의는 2026-09-02에 다시 확인했다. 모델 catalog와 명령은 빠르게 바뀔 수 있으므로 본문은 live
+2026-08-30, 운영 용어 정의는 2026-09-02에 확인했다. 모델 catalog와 명령은 빠르게 바뀔 수 있으므로 본문은 live
 `/model` picker와 공식 model catalog를 최종 기준으로 안내한다.
 
 ## 핵심 용어

@@ -1,9 +1,7 @@
 ---
 title: 조사 노트
-version: 1.4
 status: final
 owner: agent
-updated: 2026-07-22
 target_reader: 터미널 기반 개발 환경에 익숙하지만 Nix 생태계는 처음인 시니어 개발자
 topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구축
 ---
@@ -33,7 +31,7 @@ topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구�
 | 공식 문서 | Ad hoc shell environments | https://nix.dev/tutorials/first-steps/ad-hoc-shell-environments.html | `nix-shell -p git`로 채널 기반 임시 도구 셸 생성 | 높음 | Git 없는 최초 bootstrap에 사용 |
 | 공식 문서 | Nix `access-tokens` | https://releases.nixos.org/nix/nix-2.31.3/manual/command-ref/conf-file.html#conf-access-tokens | `github.com=token` 형식의 GitHub fetcher 인증 | 높음 | 토큰은 Git에 커밋하지 않음 |
 | 공식 문서 | Home Manager introduction | https://nix-community.github.io/home-manager/introduction.html | 사용자 패키지와 홈 파일의 재현 관리 | 높음 | 사용자 계층의 기준 |
-| 공식 저장소 | Home Manager README | https://github.com/nix-community/home-manager | 독립 실행형과 NixOS 모듈 방식의 차이 | 높음 | 사용자 요구에 따라 독립 실행형 채택 |
+| 공식 저장소 | Home Manager README | https://github.com/nix-community/home-manager | 독립 실행형과 NixOS 모듈 방식의 차이 | 높음 | 독립 실행형 채택 |
 | 공식 소스 | Home Manager 26.05 flake | https://raw.githubusercontent.com/nix-community/home-manager/release-26.05/flake.nix | 26.05 입력과 패키지 출력 확인 | 높음 | nixpkgs 26.05와 맞춤 |
 | 공식 소스 | Home Manager CLI 26.05 | https://raw.githubusercontent.com/nix-community/home-manager/release-26.05/home-manager/home-manager | `switch`, `--rollback`, `generations` 동작 | 높음 | 운영 명령 검증 |
 | 공식 문서 | Home Manager state version | https://nix-community.github.io/home-manager/installation/nixos.html | `home.stateVersion` 유지 원칙 | 높음 | 업데이트 버전과 혼동 금지 |
@@ -88,8 +86,8 @@ topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구�
 | LSP 단일 소유권 | Mason을 끄고 basedpyright·Ruff·vtsls는 언어 lock, rust-analyzer는 `rust-toolchain.toml`로 관리한다. | LSP 누락 시 프로젝트 의존성을 복원 | LazyVim extras | 정적 검증 완료 |
 | LazyVim 프로젝트 소유권 | Home Manager는 최소 기반과 `local_spec`만 제공하고 각 저장소가 `.lazy.lua`, `.lazy-lock.json`을 커밋한다. | 프로젝트 파일을 신뢰한 뒤 실행 | lazy.nvim configuration과 source | 정적 검증 완료 |
 | LazyVim plugin 격리 | 프로젝트 절대 경로 hash로 plugin `root`를 분리하고 프로젝트 루트의 `.lazy-lock.json`을 사용한다. | cache 중복 허용 | lazy.nvim `root`, `lockfile` 옵션 | 정적 검증 완료 |
-| Neovim 경로 소유권 | `programs.neovim`이 생성하는 `init.lua`와 비재귀 `xdg.configFile."nvim"` 부모 링크를 함께 선언하면 `outside $HOME` 평가 오류가 난다. `init.lua`는 Home Manager가 생성하고 `lua/`, `stylua.toml`, 기본 lock만 개별 연결한다. | 저장소 위치가 `~/.config/nixos` | Home Manager `modules/files.nix`, Neovim 모듈 | 실제 실패 로그·공식 소스·수정 구성 평가 완료 |
-| LazyVim 기본 lock 쓰기 | 프로젝트 밖 기본 lock만 Git 작업 트리의 파일 단위 out-of-store 링크로 둔다. | `dotfiles/nvim/lazy-lock.json`이 Git에 존재 | Home Manager 파일 링크 동작 | 평가 완료 |
+| Neovim 경로 소유권 | `programs.neovim`이 생성하는 `init.lua`와 비재귀 `xdg.configFile."nvim"` 부모 링크를 함께 선언하면 `outside $HOME` 평가 오류가 난다. `init.lua`는 Home Manager가 생성하고 `lua/`, `stylua.toml`, 기본 lock만 개별 연결한다. | 저장소 위치가 `~/.config/nixos` | Home Manager `modules/files.nix`, Neovim 모듈 | 실제 실패 로그·공식 소스로 확인. 수정 구성의 평가 결과와 재확인 범위는 05_review 4절 |
+| LazyVim 기본 lock 쓰기 | 프로젝트 밖 기본 lock만 Git 작업 트리의 파일 단위 out-of-store 링크로 둔다. | `dotfiles/nvim/lazy-lock.json`이 Git에 존재 | Home Manager 파일 링크 동작 | 평가 결과와 재확인 범위는 05_review 4절 |
 
 ## 4. 예제 후보
 
@@ -107,7 +105,7 @@ topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구�
 - 쟁점: 언어 런타임까지 Nix Store에서 관리할지 언어별 관리자에게 맡길지 선택해야 한다.
 - 서로 다른 설명 방식: 프로젝트 Flake/devShell은 더 강한 Nix 재현성을 제공하고, uv·nvm·rustup 방식은 기존 개발 흐름과 프로젝트 호환성이 높다.
 - 이 자료에서 채택할 설명: Nix는 관리자 자체를 고정하고 각 관리자는 프로젝트 파일로 런타임을 고정하는 2계층 방식을 사용한다.
-- 채택 이유: 사용자가 명시적으로 uv·nvm·rustup 방식을 선택했고 프로젝트별 버전 전환을 우선했기 때문이다.
+- 채택 이유: 언어별 버전 관리는 uv·nvm·rustup으로 하고 프로젝트별 버전 전환을 우선한다.
 - 주의: 이 방식의 언어 런타임과 캐시는 `$HOME` 아래의 가변 상태이며 Nix Store 폐쇄성에 포함되지 않는다. 새 호스트의 첫 실행에는 다운로드가 필요하다.
 - 주의: NixOS에서 외부 배포 ELF를 실행하기 위해 nix-ld를 활성화한다. 필요한 공유 라이브러리는 프로젝트 성격에 따라 추가될 수 있다.
 - 주의: `system.stateVersion`과 `home.stateVersion`은 패키지 업데이트 방법이 아니며 기존 설치에서는 임의로 올리지 않는다.
@@ -129,7 +127,7 @@ topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구�
 
 - 가장 신뢰할 수 있는 기준 출처: NixOS Manual, nix.dev, NixOS-WSL 문서, Home Manager 공식 문서와 소스
 - 초고에 반드시 반영할 내용: 독립 실행형 Home Manager, nix-ld, 상태 버전 유지, nvm의 쓰기 가능한 런타임 디렉터리, native 하드웨어 설정 제외
-- 아직 검증이 필요한 내용: 완성형 예제의 Nix 평가와 빌드는 현재 Windows 작업 환경에 Nix가 없어 별도 실행 검증이 필요하다.
+- 아직 검증이 필요한 내용: Windows 작성 환경에는 Nix가 없다. standalone Home Manager 평가만 실제 NixOS-WSL에서 확인했고, `nix flake check`, `nixos-rebuild build`, Home Manager `switch`, Neovim 실행 검증은 남아 있다(05_review 4·5절).
 - 독자에게 혼란을 줄 수 있는 용어: Flake가 시스템과 사용자를 직접 설정한다는 표현, dotfiles와 Home Manager를 같은 계층으로 보는 표현
 
 ## 8. 품질 점검

@@ -1,8 +1,7 @@
 ---
 stage: 01_scope
-chapter: 03-six-dof-forward-kinematics
+chapter: 01-six-dof-forward-kinematics
 status: complete
-updated: 2026-08-11
 ---
 
 # 3단계 범위 정의
@@ -59,7 +58,7 @@ updated: 2026-08-11
 
 ## 최종 산출물
 
-- 기준 원고: `docs/robotics-manipulator-kinematics/_work/01-six-dof-forward-kinematics/07_final.md`
+- 기준 원고: 공개 장 본문 `docs/robotics-manipulator-kinematics/01-six-dof-forward-kinematics.md`(확정 기록은 `_work/01-six-dof-forward-kinematics/07_final.md`)
 - 공개 장: `docs/robotics-manipulator-kinematics/01-six-dof-forward-kinematics.md`
 - 인터랙티브 실습: `docs/robotics-manipulator-kinematics/assets/six-dof-forward-kinematics/forward-kinematics-lab.html`
 - 책 색인: `docs/robotics-manipulator-kinematics/index.md`

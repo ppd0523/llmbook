@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 0.2
 status: final
 owner: agent
-updated: 2026-08-30
 target_reader: Nix를 처음 배우는 개발자와 NixOS·Home Manager 입문자
 topic: Nix 기초 학습자료 퇴고
 ---
@@ -44,14 +42,14 @@ topic: Nix 기초 학습자료 퇴고
 
 ## 4. 범위
 
-- 반드시 포함할 내용: 기존 8개 장의 개념 흐름, 실행 가능한 명령 예제, 연습과 문제 해결 기준
+- 반드시 포함할 내용: 8개 장의 개념 흐름, 실행 가능한 명령 예제, 연습과 문제 해결 기준
 - 제외할 내용: NixOS 설치, 패키지 제작 심화, overlay, cross compilation, secret 도구의 선택과 운영
 - 최종 산출물: MkDocs 챕터형 Markdown 학습자료
 
 ## 5. 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고 경로: `docs/nix-foundation/_work/07_final.md`
+- 기준 원고 경로: 챕터 본문 `docs/nix-foundation/NN-<chapter-slug>.md`. `_work/07_final.md`는 기준 원고를 확정한 기록이다.
 - 내부 작업 산출물 위치: `docs/nix-foundation/_work/`
 - 최종 산출물 경로: `docs/nix-foundation/index.md`, `docs/nix-foundation/01-ecosystem-and-mental-model.md`부터 `08-troubleshooting-and-next-steps.md`
 - MkDocs 책 폴더명: `nix-foundation`

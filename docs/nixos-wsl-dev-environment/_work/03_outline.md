@@ -1,9 +1,7 @@
 ---
 title: 구성 설계
-version: 1.1
 status: final
 owner: agent
-updated: 2026-07-15
 target_reader: 터미널 기반 개발 환경에 익숙하지만 Nix 생태계는 처음인 시니어 개발자
 topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구축
 ---
@@ -112,7 +110,7 @@ topic: NixOS-WSL과 네이티브 NixOS에서 재현 가능한 개발 환경 구�
 - 보안 위험: `.envrc` 승인과 `.lazy.lua`의 Neovim trust는 별도의 신뢰 절차다.
 - 기술 위험: uv·nvm·rustup이 받은 일반 Linux 바이너리는 nix-ld 또는 추가 라이브러리가 필요할 수 있다.
 - 이식 위험: 네이티브 호스트의 `hardware-configuration.nix`와 기존 `system.stateVersion`은 다른 호스트에서 복사하지 않는다.
-- 검증 위험: 현재 작성 환경에 Nix와 설치된 WSL 배포판이 없어 Nix 평가를 직접 실행할 수 없다.
+- 검증 위험: 작성 환경에 Nix와 설치된 WSL 배포판이 없다. standalone Home Manager 평가만 실제 NixOS-WSL에서 확인했고, 전체 NixOS build와 Neovim 실행 검증은 남아 있다(05_review 4·5절).
 
 ## 10. 품질 점검
 

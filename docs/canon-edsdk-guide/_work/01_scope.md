@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 1.0
 status: complete
 owner: agent
-updated: 2026-08-12
 target_reader: EDSDK를 처음 접하는 기술 담당자
 topic: Canon EDSDK 기능 중심 카메라 제어
 ---
@@ -51,7 +49,7 @@ topic: Canon EDSDK 기능 중심 카메라 제어
 
 ## 최종 산출물
 
-- 기준 원고: `docs/canon-edsdk-guide/_work/07_final.md`
+- 기준 원고: 챕터 본문 `docs/canon-edsdk-guide/NN-<chapter-slug>.md`(adr/0001). `_work/07_final.md`는 기준 원고를 확정한 기록이다.
 - 최종 형식: MkDocs 챕터형 Markdown
 - 최종 경로: `docs/canon-edsdk-guide/`
 - 챕터 수: 6장과 `index.md`

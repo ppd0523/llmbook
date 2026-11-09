@@ -1,9 +1,7 @@
 ---
 title: 자료 조사
-version: 1.0
 status: complete
 owner: agent
-updated: 2026-08-12
 target_reader: EDSDK를 처음 접하는 기술 담당자
 topic: Canon EDSDK 기능 중심 카메라 제어
 ---
@@ -19,6 +17,7 @@ topic: Canon EDSDK 기능 중심 카메라 제어
 | [Canon EDSDK 릴리스 노트](https://asia.canon/en/campaign/developerresources/camera/cap/edsdk-eos-digital-camera-sdk-release-note) | 공식 변경 이력 | 200D II와 850D 계열 지원 추가, EVF PC Small 등 버전 의존 변경 | 확정 |
 | [EDSDK API Programming Reference (2016)](https://downloads.triprism.com/public/%5B%20Steve%20%5D/forTyler/canon%203.4sdk/EDSDK_API%203.4.pdf) | 캐논 구버전 공개 참조서 | 초기화·세션·이벤트·SaveTo·SetCapacity·셔터·EVF·AF·DriveLens·동영상·DownloadComplete 흐름 | 조건부 확정: 최신 SDK 문서/헤더와 실제 기종 시험이 우선 |
 | [pyedsdk 공개 헤더](https://github.com/andrewrk/pyedsdk/blob/master/edsdk/EDSDKTypes.h) | 오픈소스 헤더 사례 | AF/EVF/셔터 명령과 속성의 분리, 상수 명칭 | 보조 근거 |
+| [canon-tweet 공개 헤더(EOS SDK v2.11)](https://github.com/samizzo/canon-tweet/blob/master/EOS%20SDK%20v2.11%20Windows/EDSDK/Header/EDSDKTypes.h) | 오픈소스 헤더 사례 | EVF 이미지 객체·출력 장치·확대·초점 보조·히스토그램·좌표계 속성 정의 | 보조 근거(4장) |
 | [Canon EOS Utility Remote Live View 안내](https://cam.start.canon/tc/S003/manual/html/UG-03_RemoteCamera_0070.html) | 공식 제품 안내 | AF 기능은 카메라별 주의사항 확인, 렌즈 AF 스위치 필요, 확대 보며 MF 가능 | 보조 근거 |
 
 ## 핵심 사실과 조건

@@ -9,27 +9,25 @@
 
 ## 교육 구조
 
-- PPO 상세가 환경 framework 학습을 가리지 않도록 기존 PPO 책으로 연결했다.
-- Direct를 먼저 두고 Manager-based를 같은 MDP의 refactor로 설명했다.
-- reward와 독립적인 생존율·중심 체류율·평균 반경을 성공 지표로 사용했다.
-- 단순 성공 명령뿐 아니라 단계별 중단 기준과 오류 원인 순서를 제공했다.
+- PPO 상세가 환경 framework 학습을 가리지 않도록 기존 PPO 책으로 연결한다.
+- Direct를 먼저 두고 Manager-based를 같은 MDP의 refactor로 설명한다.
+- reward와 독립적인 생존율·중심 체류율·평균 반경을 성공 지표로 사용한다.
+- 단순 성공 명령뿐 아니라 단계별 중단 기준과 오류 원인 순서를 제공한다.
 
 ## 코드 검토
 
-- 공통 상수, 관측, 보상, 종료, reset을 `tasks/common.py`에 모아 두 workflow의 drift를 줄였다.
-- 3.0의 `ProxyArray.torch`, keyword-only `_index` API, XYZW 주의 사항을 반영했다.
-- 공의 schema는 deprecated 2.x alias 대신 3.0의 `RigidBodyBaseCfg`, `CollisionBaseCfg`, `RigidBodyMaterialBaseCfg`를 사용했다.
-- Gym registration과 external callback 경로를 분리했다.
-- Direct config의 asset field에 명시적 type을 추가했다.
-- 사용하지 않는 `SceneEntityCfg` 선언을 제거했다.
-- evaluation seed, episode 수, random baseline을 고정했다.
+- 공통 상수, 관측, 보상, 종료, reset을 `tasks/common.py`에 모아 두 workflow의 drift를 줄인다.
+- 3.0의 `ProxyArray.torch`, keyword-only `_index` API, XYZW 주의 사항을 따른다.
+- 공의 schema는 deprecated 2.x alias 대신 3.0의 `RigidBodyBaseCfg`, `CollisionBaseCfg`, `RigidBodyMaterialBaseCfg`를 사용한다.
+- Gym registration과 external callback 경로를 분리한다.
+- Direct config의 asset field에는 명시적 type이 있다.
+- evaluation seed, episode 수, random baseline을 고정한다.
 
 ## 검증 결과
 
-- Python 파일 18개의 구문 검사가 통과했다.
+- 예제 Python 파일 18개는 주석·docstring·도움말 문구가 한국어이며, 모두 `python -m py_compile` 구문 검사를 통과한다. 테스트, 학습, 시뮬레이션 실행 검증이 아니다.
 - URDF XML이 파싱되며 링크 3개와 관절 2개를 확인했다.
-- MkDocs Material 9.7.6으로 `mkdocs build --strict`가 성공했다.
-- 최종 퇴고 뒤 영문 기술어 표기를 정리하고 같은 엄격 빌드를 다시 통과했다.
+- 현재 저장소에서 MkDocs 1.6.1, Material 9.7.6(uv, Python 3.14)으로 `python -m mkdocs build --strict`가 통과한다.
 - 미완료 작업이나 출처 보강 표시는 최종 문서에서 발견되지 않았다.
 
 ## 남은 실행 위험

@@ -1,9 +1,7 @@
 ---
 title: 조사 노트
-version: 1.0
 status: final
 owner: agent
-updated: 2026-07-24
 target_reader: Nix 기초는 알지만 Flake는 처음인 개발자
 topic: Nix Flake의 공식 동작과 출력 스키마
 ---
@@ -73,7 +71,7 @@ topic: Nix Flake의 공식 동작과 출력 스키마
 
 - 가장 신뢰할 수 있는 기준 출처: Nix 2.34 reference manual과 nix.dev Flakes 개념 문서
 - 초고에 반드시 반영할 내용: experimental 표시, system 축, 명령별 출력 탐색, `nix flake lock`과 `nix flake update`의 차이
-- 아직 검증이 필요한 내용: 로컬 Nix 환경에서 완성형 예제의 평가·빌드·실행
+- 완성형 예제의 검증: 로컬 Nix 환경의 평가·빌드·실행 결과는 `05_review.md`에 기록한다(x86_64-linux 실행, 네 system 평가). 다른 system의 실제 build는 남은 항목이다.
 - 독자에게 혼란을 줄 수 있는 용어: “설치”, “package”, “app”, “lock”, “system”
 
 ## 8. 품질 점검
