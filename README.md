@@ -2,7 +2,7 @@
 
 개발 환경, 로보틱스, 강화학습 등 한국어 기술 학습자료를 책 단위로 관리하는 MkDocs Material 저장소입니다.
 
-- 읽기: [게시 사이트](https://ppd0523.github.io/llmbook/) · [전체 책 목록](docs/index.md)
+- 게시 사이트: <https://ppd0523.github.io/llmbook/> · [전체 책 목록](docs/index.md)
 - 에이전트 작업 시작: [AGENTS.md](AGENTS.md)
 - 저장소 용어: [CONTEXT.md](CONTEXT.md) · 되돌리기 어려운 결정 기록: [adr/](adr/)
 - 집필 절차와 템플릿: [.guide/README.md](.guide/README.md)
@@ -12,7 +12,7 @@
 | 경로 | 역할 |
 |---|---|
 | `docs/index.md` | 전체 책 목록 |
-| `docs/<book-slug>/` | 책 한 권. 목차, 챕터, 책 자산과 예제. `docs/` 바로 아래에는 책 폴더만 둔다 |
+| `docs/<book-slug>/` | 책 한 권. 목차, 챕터, 책 자산과 예제. `docs/` 바로 아래에는 책 폴더, `index.md`, `.pages`만 둔다 |
 | `docs/<book-slug>/_work/` | 내부 집필·검토 기록. 게시에서 제외 |
 | `docs/.pages`, `docs/<book-slug>/.pages` | 탐색 메뉴의 책 순서와 표시 이름 |
 | `.guide/` | 집필 규칙과 단계별 템플릿 |
@@ -23,7 +23,7 @@
 | `.github/workflows/pages.yml` | GitHub Pages 빌드·배포 |
 | `site/` | 생성된 사이트. Git 추적 제외 |
 
-책 목록은 `docs/index.md`에서 관리합니다. 예제 실행 환경은 각 예제의 README와 연결된 챕터를 확인하세요.
+예제 실행 환경은 각 예제의 README와 연결된 챕터를 확인하세요.
 
 ## 로컬 미리보기와 검증
 
@@ -52,7 +52,7 @@ python -m mkdocs build --strict
 git diff --check
 ```
 
-탐색 메뉴는 파일 구조로 생성됩니다. 새 책은 책의 `index.md`와 `docs/index.md`에 반영합니다. `_work/`는 빌드에서 제외되고 `assets/` 아래 Markdown은 탐색 메뉴에서 제외됩니다. 세부 설정은 `mkdocs.yml`에서 확인합니다.
+탐색 메뉴는 파일 구조로 생성됩니다. 새 책을 추가·삭제·개명할 때 갱신할 파일은 [AGENTS.md](AGENTS.md)의 저장소 규칙을 따릅니다. `_work/`는 빌드에서 제외되고 `assets/` 아래 Markdown은 탐색 메뉴에서 제외됩니다. 세부 설정은 `mkdocs.yml`에서 확인합니다.
 
 ## 배포
 
