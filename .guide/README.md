@@ -16,12 +16,12 @@
 
 | 템플릿 | 기록할 내용 |
 |---|---|
-| [01_scope.md](01_scope.md) | 독자, 목표, 범위, 형식, 가정과 성공 기준 |
+| [01_scope.md](01_scope.md) | 독자, 자료 유형, 목표, 범위, 형식, 가정과 성공 기준 |
 | [02_research.md](02_research.md) | 기술 근거, 출처, 버전과 불확실성 |
 | [03_outline.md](03_outline.md) | 개념 의존성, 설명 순서, 예제·문제 배치 |
 | [04_draft.md](04_draft.md) | 전체 초고와 검증할 항목 |
 | [05_review.md](05_review.md) | 기술 검증 결과와 남은 위험 |
-| [06_revision.md](06_revision.md) | 구조·학습성 수정 계획과 반영 내역 |
+| [06_revision.md](06_revision.md) | 독자 검증 결과, 구조·학습성 수정 계획과 반영 내역 |
 | [07_final.md](07_final.md) | 기준 원고 확정 기록 |
 | [08_publish.md](08_publish.md) | 최종 산출물 경로, 변환 명령과 검수 결과 |
 
