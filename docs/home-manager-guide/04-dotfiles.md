@@ -61,8 +61,12 @@ programs.git = {
 ~/.config/example-app/config.toml
 ```
 
-`xdg.configFile`의 attribute 이름은 `xdg.configHome`에 상대적인 target이다.
-`home.file`의 이름은 홈 디렉터리에 상대적인 target이다.
+`xdg.configFile`의 attribute 이름은 `xdg.configHome`(기본값 `~/.config`)에 상대적인
+target이다. `home.file`의 이름은 홈 디렉터리에 상대적인 target이다.
+
+`xdg.enable = true`는 `XDG_CONFIG_HOME` 같은 XDG 디렉터리 환경 변수를 session에 설정한다.
+`xdg.configFile` 자체는 이 옵션 없이도 `~/.config` 아래에 파일을 만든다. 예제 구성은
+`lazyvim.nix`에서 이 옵션을 켜며, 1.5절에서 본 것처럼 zsh 설정 위치에도 영향을 준다.
 
 ```nix
 home.file.".hushlogin".text = "";
@@ -113,7 +117,8 @@ xdg.configFile."example-app" = {
 ```
 
 재귀 링크는 일부 하위 파일을 다른 선언과 조합할 때 유용하지만, 겹치는 target은
-피하는 편이 안전하다. 정확히 같은 target을 두 번 선언하면 오류가 난다. 반면 재귀
+피하는 편이 안전하다. 정확히 같은 target을 두 번 선언하면 평가 단계에서
+`Conflicting managed target files` 오류가 난다. 반면 재귀
 링크가 제공하는 `example-app/config.toml`과 일반 파일 선언이 겹치면, Home Manager는
 기본적으로 재귀 링크 쪽을 유지하고 일반 파일 선언을 무시한다. 의도한 설정이 조용히
 적용되지 않을 수 있으므로, 작은 구성에서는 파일 단위 선언이 가장 명확하다.
@@ -135,7 +140,10 @@ in
 }
 ```
 
-이 링크는 Nix Store의 복사본이 아니라 실제 작업 트리를 가리킨다.
+이 링크는 Nix Store의 복사본이 아니라 실제 작업 트리를 가리킨다. 경로를
+`../../dotfiles/...` 같은 Nix 경로 값이 아니라 `"${config.home.homeDirectory}/..."`
+문자열로 쓰는 이유가 여기에 있다. Nix 경로 값은 평가할 때 store로 복사되므로, 그것을
+넘기면 링크가 다시 store 복사본을 가리키게 된다.
 
 장점:
 
@@ -148,9 +156,8 @@ in
 - 저장소 clone 위치를 바꾸면 링크 경로도 바꿔야 한다.
 - 프로그램이 수정한 내용이 Git 작업 트리에 바로 나타난다.
 
-out-of-store link는 live path의 변경을 즉시 보게 할 뿐, Home Manager가 그 파일을
-쓰기 가능하게 만드는 옵션은 아니다. 대상 프로그램이 링크 자체가 아니라 원본 작업
-트리에 쓸 권한을 이미 가져야 한다. 일반 `source`와 out-of-store link를 같은 target에
+앱이 이 링크를 통해 파일에 쓸 수 있는 것은 링크 끝의 작업 트리 파일이 원래 사용자가 쓸
+수 있는 일반 파일이기 때문이다. Home Manager가 따로 쓰기 권한을 주는 것은 아니다. 일반 `source`와 out-of-store link를 같은 target에
 섞어 선언하지 않는다.
 
 정적이고 generation과 함께 롤백해야 하는 설정은 일반 `source`를 사용한다.
@@ -158,15 +165,30 @@ out-of-store link는 쓰기 가능성이 실제로 필요한 파일에만 제한
 
 ## 4.7 부모 디렉터리 소유권 충돌
 
-다음 두 선언은 충돌할 수 있다.
+다음 두 선언은 같은 디렉터리를 두 곳이 소유하려 한다.
 
 ```nix
-programs.neovim.enable = true;
+programs.neovim = {
+  enable = true;
+  initLua = builtins.readFile ../../dotfiles/nvim/init.lua;
+};
 xdg.configFile."nvim".source = ../../dotfiles/nvim;
 ```
 
-프로그램 모듈이 `~/.config/nvim/init.lua`를 생성하는 동시에 dotfile 선언이
-`~/.config/nvim` 전체를 하나의 링크로 소유하려 하기 때문이다.
+`programs.neovim`은 `~/.config/nvim/init.lua`를 생성하고, 파일 선언은 `~/.config/nvim`
+전체를 store 디렉터리 하나로 연결한다. Home Manager는 관리 파일 트리를 build할 때 부모
+링크 안에 하위 파일을 만들 수 없다. 결과는 부모 링크의 종류와 source 내용에 따라 갈린다.
+
+| 부모 링크 | 결과 |
+|---|---|
+| out-of-store link(4.6절) | build가 `Error installing file '.config/nvim/init.lua' outside $HOME`로 실패한다. 링크가 build 밖의 작업 트리를 가리키기 때문이다 |
+| 일반 `source`, 그 안에 하위 파일이 없음 | 같은 오류로 build가 실패한다 |
+| 일반 `source`, 그 안에 같은 이름의 하위 파일이 있음 | build는 성공하지만 하위 파일 선언은 무시되고 부모 source의 파일이 쓰인다 |
+
+위 선언은 일반 `source`이고 예제 구성의 `dotfiles/nvim`에는 `init.lua`가 있으므로 세 번째
+경우에 해당한다. 같은 디렉터리를 out-of-store link로 연결하면 첫 번째 경우가 된다.
+세 번째 경우가 가장 위험하다. 오류 없이 의도한 설정만 빠지기 때문이다. 4.5절의 재귀
+링크가 겹칠 때와 같은 결과다.
 
 해결 방법은 부모 디렉터리를 통째로 연결하지 않고 하위 경로의 소유권을 나누는 것이다.
 
@@ -177,27 +199,37 @@ xdg.configFile."nvim/stylua.toml".source =
   ../../dotfiles/nvim/stylua.toml;
 ```
 
-어떤 모듈이 어느 최종 파일을 생성하는지 먼저 확인한다.
-기존 매뉴얼의
+어떤 모듈이 어느 최종 파일을 생성하는지 먼저 확인한다. 예제 구성의
 [`lazyvim.nix`](../nixos-wsl-dev-environment/assets/example-config/modules/home/lazyvim.nix)는
-`init.lua`와 하위 dotfiles의 소유권을 나눈 실제 예제다.
+`init.lua`를 `programs.neovim`에 맡기고 하위 경로만 연결한 실제 예제다. 다만 그 파일은
+LazyVim이 `lazy-lock.json`을 직접 고쳐 써야 하므로 위의 일반 `source` 대신 4.6절의
+out-of-store link를 쓴다. 그 상태에서 `nvim` 디렉터리 전체를 링크하면 표의 첫 번째
+경우가 되어 build가 실패한다. 예제 구성 README가 경고하는 오류가 이것이다.
 
 ## 4.8 기존 파일 충돌
 
-Home Manager는 관리되지 않던 기존 파일을 자동으로 덮어쓰지 않는다. activation 중
-다음과 비슷한 오류가 발생한다.
+Home Manager는 관리되지 않던 기존 파일을 자동으로 덮어쓰지 않는다. activation은 파일을
+바꾸기 전에 모든 target을 검사하고, 충돌이 있으면 해결 방법 안내와 함께 다음 오류를
+출력한 뒤 중단한다(Home Manager 26.05 기준).
 
 ```text
-Existing file '/home/nixos/.config/example-app/config.toml' is in the way
+Existing file '/home/nixos/.config/example-app/config.toml' would be clobbered
 ```
+
+기존 파일의 내용이 새로 배치할 파일과 정확히 같으면 충돌로 보지 않고 경고만 출력한 뒤
+그 파일을 건너뛴다.
 
 가장 안전한 해결 순서는 다음과 같다.
 
 1. 기존 파일의 내용을 확인한다.
 2. 유지할 설정을 Home Manager 옵션이나 dotfile 원본으로 옮긴다.
-3. 기존 파일을 홈 디렉터리 밖의 백업 위치로 이동한다.
+3. 기존 파일을 Home Manager가 관리하지 않는 위치로 옮긴다. 예:
+   `mv ~/.config/example-app/config.toml ~/example-app-config.before-hm`
 4. `home-manager switch`를 다시 실행한다.
 5. 새 설정을 확인한 뒤 백업을 정리한다.
+
+3단계에서 복사(`cp`)가 아니라 이동(`mv`)하는 이유는 원래 자리를 비워야 충돌이 풀리기
+때문이다. 백업은 어떤 선언의 target도 아닌 경로에 두면 된다.
 
 standalone Home Manager는 한 번의 전환에서 기존 파일에 확장자를 붙여 이동할 수 있다.
 
@@ -205,9 +237,10 @@ standalone Home Manager는 한 번의 전환에서 기존 파일에 확장자를
 $ home-manager switch -b hm-backup --flake .#nixos
 ```
 
-이미 같은 `.hm-backup` 파일이 있으면 activation은 다시 중단된다. 이 옵션은 관리되지
-않은 일반 파일과 디렉터리를 옮기는 용도다. 충돌 target이 기존 symbolic link라면 원본을
-확인한 뒤 직접 옮기거나, 정말 버려도 되는 target에만 `force`를 사용한다. `-b`를 평상시
+이 경우 기존 파일은 `config.toml.hm-backup`으로 옮겨진다. 이미 같은 이름의 백업이
+있으면 `Existing file '....hm-backup' would be clobbered by backing up '...'` 오류로
+activation이 다시 중단된다. 이 옵션은 관리되지 않은 일반 파일과 디렉터리를 옮기는 용도다. 충돌 target이 기존 symbolic link라면 원본을
+확인한 뒤 직접 옮기거나, 정말 버려도 되는 target에만 `force`(4.9절)를 사용한다. `-b`를 평상시
 모든 `switch`에 자동으로 붙이기보다 초기 마이그레이션에서 검토 후 사용한다.
 
 ## 4.9 force를 기본값으로 쓰지 않는다
@@ -241,13 +274,69 @@ Nix Store는 시스템의 다른 사용자가 경로를 알면 읽을 수 있는
 cache, history, database처럼 프로그램이 계속 변경하는 상태도 정적 store source로
 관리하지 않는다. 복원 가능한 선언과 실행 중 생성되는 데이터를 분리한다.
 
+## 연습문제
+
+1. 다음 세 파일마다 두 가지를 고르고 이유를 쓴다. 세 프로그램 모두 Home Manager 전용
+   모듈이 없다고 가정한다.
+   - 선언 옵션: `xdg.configFile` / `home.file`
+   - source 방식: 일반 `source`(store) / out-of-store link
+
+   대상 파일:
+
+   - ① 레지스트리 주소만 적고 토큰은 쓰지 않는 `~/.npmrc`
+   - ② 정적인 `~/.config/example-app/config.toml`
+   - ③ 앱이 실행 중에 직접 고쳐 쓰고, 그 변경을 Git으로 관리하고 싶은
+     `~/.config/editor-x/settings.json`
+2. `dotfiles/example-app/`에 `config.toml`과 `theme.toml`이 있다. 다음 선언으로
+   `switch`하면 `~/.config/example-app/config.toml`의 내용은 무엇이 되는가?
+
+   ```nix
+   xdg.configFile."example-app" = {
+     source = ../../dotfiles/example-app;
+     recursive = true;
+   };
+   xdg.configFile."example-app/config.toml".text = ''
+     theme = "light"
+   '';
+   ```
+
+3. 2번에서 `recursive = true`를 지우면 결과가 달라지는가? `dotfiles/example-app/`에
+   `config.toml`이 없다면 어떻게 되는가?
+4. 처음 `switch`할 때 activation이
+   `Existing file '/home/nixos/.config/example-app/config.toml' would be clobbered`로
+   중단됐다. 그 파일에는 몇 달 동안 직접 고친 설정이 있다. 데이터를 잃지 않는 처리
+   순서를 쓰고, 이 상황에서 `force = true`를 쓰지 않는 이유를 설명한다.
+
+??? note "정답 확인"
+    1번: ① `home.file.".npmrc"` + 일반 `source`. `~/.config` 밖의 `$HOME` 파일이고
+    정적이다. `npm login`처럼 토큰을 써 넣는 도구를 쓴다면 이 파일은 상태가 되므로
+    선언하지 않는다. ② `xdg.configFile` + 일반 `source`. 정적 설정이므로 generation과
+    함께 롤백되는 store link가 알맞다. ③ `xdg.configFile` + out-of-store link. store
+    파일은 읽기 전용이라 앱이 쓸 수 없다. 그 내용은 generation 롤백으로 되돌아가지 않고
+    Git으로 관리한다. Git으로 관리할 필요가 없다면 선언하지 않고 상태로 남기는 것도 맞는
+    답이다(1.4절).
+
+    2번: `dotfiles/example-app/config.toml`의 내용이다. 재귀 링크가 제공하는 파일과 일반
+    파일 선언이 겹치면 재귀 링크 쪽이 유지되고 `text` 선언은 오류 없이 무시된다.
+
+    3번: 달라지지 않는다. 부모 디렉터리 전체가 store 디렉터리 하나로 연결되고, source에
+    있는 `config.toml`이 쓰이며 `text` 선언은 무시된다. source에 `config.toml`이 없다면
+    build가 `Error installing file '.config/example-app/config.toml' outside $HOME`로
+    실패한다. 어느 경우든 해결은 겹치는 선언을 없애는 것이다.
+
+    4번: 파일 내용을 확인하고, 유지할 설정을 Home Manager 옵션이나 `dotfiles/` 원본으로
+    옮긴다. 기존 파일을 관리하지 않는 위치로 `mv`하거나 `home-manager switch -b hm-backup
+    --flake .#nixos`로 백업하게 한 뒤 다시 `switch`하고, 새 설정을 확인한 다음 백업을
+    정리한다. `force = true`는 기존 파일을 백업 없이 바꾸므로 직접 고친 설정을 잃는다.
+
 ## 요약
 
 - 프로그램 모듈 옵션을 우선하고 부족한 부분만 dotfiles로 배치한다.
 - `xdg.configFile`은 `~/.config`, `home.file`은 `$HOME` 기준 파일을 관리한다.
 - 일반 source는 generation과 함께 롤백되고, out-of-store link는 작업 트리를 직접
   가리킨다.
-- 부모 디렉터리와 하위 파일의 소유자를 겹치게 만들지 않는다.
+- 부모 디렉터리와 하위 파일의 소유자를 겹치게 만들지 않는다. 겹치면 build가 실패하거나
+  한쪽 선언이 조용히 무시된다.
 - 충돌은 `force`로 숨기지 말고 기존 데이터를 검토한 뒤 소유권을 이전한다.
 
 ## 공식 참고 자료

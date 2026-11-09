@@ -21,15 +21,22 @@
 }
 ```
 
-적용 후 실행 파일은 사용자 프로필에 나타난다.
+**사용자 프로필**은 한 사용자의 `PATH`에 들어가는 Nix 패키지 묶음이다. standalone
+Home Manager는 `switch`할 때 `home.packages`를 이 프로필에 넣으며, 실행 파일은 보통
+`~/.nix-profile/bin` 아래에 보인다(Nix 설정에 따라 `~/.local/state/nix/profile/bin`).
 
 ```console
 $ home-manager build --flake .#nixos
 $ home-manager switch --flake .#nixos
-$ rg --version
+$ command -v rg
+/home/nixos/.nix-profile/bin/rg
 $ fd --version
 $ bat --version
 ```
+
+`build`가 성공하면 현재 디렉터리에 build 결과를 가리키는 `result` 링크가 생기고,
+`switch` 전에도 `result/home-path/bin`에서 새로 들어갈 실행 파일을 볼 수 있다. 자세한
+구조는 5.2절에서 다룬다.
 
 `home.packages`는 패키지를 설치하지만 프로그램 설정 파일이나 shell hook까지 자동으로
 작성하지는 않는다.
@@ -89,9 +96,14 @@ nvim
 `programs.git.includes` 또는 저장소별 Git 설정을 사용한다. credential, access token,
 SSH 개인 키는 평문 Nix 파일에 넣지 않는다.
 
+Home Manager는 Git 설정을 `~/.config/git/config`에 만든다. 홈에 예전 `~/.gitconfig`가
+남아 있으면 Git은 두 파일을 모두 읽고 `~/.gitconfig`의 값을 나중에 적용하므로, 충돌 오류
+없이 Home Manager 설정이 가려질 수 있다. 위 확인 명령의 값이 다르게 나오면
+`git config --global --show-origin --get core.editor`로 값이 어느 파일에서 왔는지 본다.
+
 ## 3.4 zsh 설정
 
-NixOS-WSL 매뉴얼 예제의 zsh 설정은 completion, history, alias를 함께 관리한다.
+예제 구성의 zsh 설정은 completion, history, alias를 함께 관리한다.
 
 ```nix
 programs.zsh = {
@@ -114,8 +126,8 @@ programs.zsh = {
 };
 ```
 
-이 선언은 사용자의 zsh 설정을 관리하지만 로그인 shell 선택은 NixOS 책임이다. 기존
-예제는 NixOS 모듈에서 다음을 별도로 선언한다.
+이 선언은 사용자의 zsh 설정을 관리하지만 로그인 shell 선택은 NixOS 책임이다. 예제
+구성은 NixOS 모듈 `modules/nixos/common.nix`에서 다음을 별도로 선언한다.
 
 ```nix
 programs.zsh.enable = true;
@@ -129,8 +141,10 @@ $ getent passwd "$USER" | cut -d: -f7
 /run/current-system/sw/bin/zsh
 ```
 
-Home Manager 설정을 적용했는데 현재 shell이 바뀌지 않았다면 `exec zsh`로 새 세션을
-시작할 수 있다. 지속적인 로그인 shell 변경은 NixOS 설정에서 해결한다.
+**로그인 shell**은 터미널을 새로 열 때 계정 정보에 따라 처음 실행되는 shell이다. 위
+결과가 bash처럼 zsh가 아닌 shell이면 Home Manager의 zsh 설정은 터미널을 열어도 쓰이지
+않는다. 그때는 Home Manager가 아니라 NixOS 설정을 고친다. 로그인 shell은 zsh인데 설정
+변경만 반영되지 않았다면 3.10절을 본다.
 
 ## 3.5 Starship과 shell 통합
 
@@ -176,9 +190,9 @@ $ direnv allow
 
 ## 3.7 하나의 programs 모듈로 합치기
 
-작은 설정은 다음처럼 한 파일에서 시작할 수 있다. 기존 매뉴얼의
-[`programs.nix`](../nixos-wsl-dev-environment/assets/example-config/modules/home/programs.nix)도
-같은 구조를 사용한다.
+작은 설정은 다음처럼 한 파일에서 시작할 수 있다. 예제 구성의
+[`programs.nix`](../nixos-wsl-dev-environment/assets/example-config/modules/home/programs.nix)는
+같은 구조에 zsh history, fzf, autojump 설정을 더한 것이다.
 
 ```nix
 { ... }:
@@ -252,19 +266,26 @@ home.sessionVariables = {
 };
 ```
 
-같은 값을 Nix에서 조립해야 한다면 `let` binding이나 이미 계산된 Nix 값을 사용한다.
-동일한 option 안의 다른 값을 참조할 때는 `config.home.sessionVariables`를 써도 된다.
+다른 변수의 값이 필요하면 shell이 아니라 Nix 평가 단계에서 문자열을 조립한다. 공식
+옵션 설명이 권하는 방법은 모듈 인자 `config`로 이미 선언한 값을 읽는 것이다.
 
 ```nix
-let
-  toolHome = "$HOME/.local/share/tool";
-in
+{ config, ... }:
 {
   home.sessionVariables = {
-    TOOL_HOME = toolHome;
-    TOOL_CACHE = "${toolHome}/cache";
+    TOOL_HOME = "$HOME/.local/share/tool";
+    TOOL_CACHE = "${config.home.sessionVariables.TOOL_HOME}/cache";
   };
 }
+```
+
+Nix의 `${...}`는 평가할 때 치환되므로 Home Manager가 생성하는 shell 스크립트(3.10절)에는
+완성된 문자열이 들어간다. `$HOME`은 Nix 문자열 보간이 아니므로 그대로 남아 shell이
+확장한다.
+
+```sh
+export TOOL_CACHE="$HOME/.local/share/tool/cache"
+export TOOL_HOME="$HOME/.local/share/tool"
 ```
 
 프로젝트마다 달라지는 환경 변수와 비밀 토큰은 전역 `home.sessionVariables`에 두지
@@ -285,10 +306,43 @@ home.sessionPath = [
 추가된다. 시스템 패키지와 같은 이름의 실행 파일을 넣는다면, 어떤 실행 파일이 먼저
 선택되는지 `command -v <명령>`으로 확인한다.
 
-새 session 변수와 PATH는 현재 실행 중인 shell에 자동으로 역주입되지 않는다.
-`switch` 뒤 새 로그인 shell을 시작하거나 WSL 세션을 다시 연다.
+## 3.10 새 설정이 보이는 시점
 
-## 3.10 옵션 찾기
+zsh는 시작할 때 두 종류의 설정 파일을 읽는다. `.zshenv`는 모든 zsh가 먼저 읽고,
+`.zshrc`는 터미널처럼 사람이 입력하는 shell이 이어서 읽는다. 예제 구성에서는 1.5절의
+`stateVersion` 규칙에 따라 두 파일이 `~/.config/zsh` 아래에 생기고, 홈의 `~/.zshenv`는
+`~/.config/zsh/.zshenv`를 불러오는 한 줄만 가진다.
+
+| 파일 | 담는 것 |
+|---|---|
+| `~/.config/zsh/.zshenv` | session 변수와 `PATH`(아래 스크립트를 불러옴) |
+| `~/.config/zsh/.zshrc` | alias, completion, 프롬프트, fzf·direnv 같은 shell hook |
+
+Home Manager는 `home.sessionVariables`와 `home.sessionPath`를 `hm-session-vars.sh`라는
+스크립트로 만들고, `.zshenv`가 이 스크립트를 불러온다. 이 스크립트는 첫 줄에서 한 세션에
+한 번만 실행되도록 막는다.
+
+```sh
+# Only source this once.
+if [ -n "${__HM_SESS_VARS_SOURCED-}" ]; then return; fi
+export __HM_SESS_VARS_SOURCED=1
+```
+
+`__HM_SESS_VARS_SOURCED`는 환경 변수라서 자식 프로세스로 상속된다. 그래서 같은
+터미널에서 `exec zsh`로 shell만 바꾸면 alias나 프롬프트처럼 `.zshrc`가 정하는 설정은
+새로 읽지만, 새로 추가한 session 변수와 `PATH`는 보이지 않는다.
+
+| 바꾼 것 | 확인하는 방법 | 이유 |
+|---|---|---|
+| alias, completion, 프롬프트, shell hook | 같은 터미널에서 `exec zsh` | 새 zsh가 `.zshrc`를 다시 읽는다 |
+| `home.sessionVariables`, `home.sessionPath` | 새 터미널 탭에서 WSL을 연다 | 새 탭은 기존 shell의 환경 변수를 물려받지 않으므로 가드 변수도 없다 |
+| NixOS 변경을 포함한 로그인 환경 전체 | PowerShell에서 `wsl --terminate NixOS` 뒤 다시 연다 | 배포판 안의 모든 프로세스와 user service가 끝나고 처음부터 다시 시작한다 |
+
+새 탭을 열 수 없을 때는 `unset __HM_SESS_VARS_SOURCED && exec zsh`로 스크립트를 다시
+실행하게 할 수 있다. 이 방법은 `PATH` 앞에 같은 디렉터리를 한 번 더 붙이므로 확인용으로만
+쓴다.
+
+## 3.11 옵션 찾기
 
 프로그램을 추가하기 전에 공식 옵션 검색에서 다음 순서로 확인한다.
 
@@ -300,11 +354,58 @@ home.sessionPath = [
 [Home Manager 옵션 검색](https://nix-community.github.io/home-manager/options.html)은
 옵션의 타입, 기본값, 선언 파일과 예제를 제공한다.
 
+## 실습 과제
+
+예제 구성의 `~/.config/nixos`에서 진행한다. 각 과제는 파일 수정 → `home-manager build
+--flake .#nixos` → `home-manager switch --flake .#nixos` → 확인 순서로 한다. 과제를
+마친 뒤 남기고 싶지 않은 변경은 `git restore`로 되돌리고 다시 `switch`한다.
+
+1. `modules/home/default.nix`의 `home.packages`에 `jq`를 추가한다. `switch` 전에
+   `ls result/home-path/bin/jq`로 build 결과에 실행 파일이 들어 있는지 먼저 확인하고,
+   `switch` 뒤 `command -v jq`로 사용자 프로필에서 찾아지는지 확인한다.
+2. `home.sessionVariables`에 `HM_PRACTICE = "hello";`를 추가한다. `switch`한
+   터미널에서 `exec zsh` 뒤 `printenv HM_PRACTICE`를 실행하고, 새 터미널 탭에서 다시
+   실행해 두 결과를 비교한다.
+3. 업무용 저장소에서만 다른 Git 설정을 쓰도록 `programs.git.includes`에
+   `{ path = "~/.config/git/work"; condition = "gitdir:~/work/"; }`를 추가하고,
+   `git config --global --get-regexp '^includeif\.'`로 조건부 include가 생겼는지
+   확인한다. 이 `~`는 shell이 아니라 Git이 직접 홈 디렉터리로 바꾸므로 3.9절의 규칙과
+   충돌하지 않는다. include 대상 파일이 아직 없으면 Git은 그 include를 건너뛴다.
+4. 예제 구성의 `programs.nix`에서 fzf가 zsh에 연결되어 있는지 생성된
+   `~/.config/zsh/.zshrc`로 확인한다. 그다음 zsh 초기화 코드에 `source <(fzf --zsh)`를 손으로 한 번 더 넣으면
+   안 되는 이유를 3.5절의 원칙으로 설명한다.
+
+??? note "기대 결과 확인"
+    1번: `ls result/home-path/bin/jq`가 `result/home-path/bin/jq`를 출력한다. 아직
+    `switch` 전이므로 `command -v jq`는 아무것도 출력하지 않을 수 있다. `switch` 뒤에는
+    `/home/nixos/.nix-profile/bin/jq`처럼 사용자 프로필 아래 경로가 나온다. 사용자 프로필
+    위치는 Nix 설정에 따라 `~/.local/state/nix/profile`일 수도 있다.
+
+    2번: `switch`한 터미널에서는 `exec zsh` 뒤에도 빈 줄이 나오고, 새 탭에서는
+    `hello`가 나온다. 같은 터미널에서는 `__HM_SESS_VARS_SOURCED`가 상속되어
+    `hm-session-vars.sh`가 다시 실행되지 않기 때문이다(3.10절). `PAGER`처럼 NixOS가 이미
+    기본값(`less`)을 정하는 변수로 같은 실험을 하면 기존 터미널에서 옛 값이 보여 차이를
+    구분하기 어렵다.
+
+    3번: 다음 명령이 조건부 include 한 줄을 출력한다.
+
+    ```console
+    $ git config --global --get-regexp '^includeif\.'
+    includeif.gitdir:~/work/.path ~/.config/git/work
+    ```
+
+    4번: `grep fzf ~/.config/zsh/.zshrc`가 `source <(/nix/store/...-fzf-.../bin/fzf --zsh)`
+    같은 줄을 보여 준다. `~/.zshrc`는 없으므로 그 경로로 찾으면 파일이 없다는 오류가
+    난다. `enableZshIntegration = true`가 이미 hook을 만들었으므로 손으로 한 번 더 넣으면
+    같은 초기화가 두 번 실행된다.
+
 ## 요약
 
 - 단순 도구는 `home.packages`, 설정과 통합이 있는 도구는 `programs.*`를 우선한다.
 - Home Manager의 zsh 설정과 NixOS의 로그인 shell 설정은 책임이 다르다.
 - 자동 생성되는 shell hook을 수동 dotfile에 중복 선언하지 않는다.
+- 새 session 변수와 `PATH`는 같은 터미널의 `exec zsh`가 아니라 새 터미널 세션에서
+  확인한다.
 - 전역 환경과 프로젝트 환경, 공개 설정과 비밀을 구분한다.
 
 [← 2장](./02-configuration-structure.md) · [목차](./index.md) · [4장: Home Manager 옵션과 dotfiles →](./04-dotfiles.md)

@@ -27,14 +27,15 @@ NixOS 모듈로 통합하는 방식은 차이를 판단할 수 있을 정도로�
 - 변경을 적용하기 전에 검증하는 `build` → `switch` 작업 흐름
 - Home Manager generation과 Git을 이용한 복구 절차
 
-Neovim 전체 구성, NVM·uv·rustup 사용법과 프로젝트별 개발 셸은 기존
+Neovim 전체 구성, NVM·uv·rustup 사용법과 프로젝트별 개발 셸은
 [NixOS-WSL 개발 환경 매뉴얼](../nixos-wsl-dev-environment/index.md)에서 다룬다.
 SSH 개인 키, API 토큰 같은 비밀정보를 저장하는 방법은 이 가이드의 범위가 아니다.
 
 ## 전제 조건
 
 - NixOS가 설치되어 있다.
-- 기존 매뉴얼의 예제 구성은 `~/.config/nixos`에 있다.
+- NixOS-WSL 매뉴얼의 [예제 구성](../nixos-wsl-dev-environment/assets/example-config/README.md)이
+  `~/.config/nixos`에 있다. 이후 "예제 구성"은 이 저장소를 가리킨다.
 - `flake.lock`이 Git에 커밋되어 있다.
 - 다음 두 명령이 성공한다.
 
@@ -44,7 +45,6 @@ SSH 개인 키, API 토큰 같은 비밀정보를 저장하는 방법은 이 가
   ```
 
 여기서 `wsl`은 NixOS host output이고 `nixos`는 Home Manager 사용자 output이다.
-자신의 Flake에서 이름을 바꿨다면 이후 명령에서도 같은 이름으로 바꾼다.
 
 ## 표준 명령
 
@@ -73,19 +73,25 @@ $ home-manager build --flake .#nixos
 $ home-manager switch --flake .#nixos
 ```
 
-새 `.nix` 파일이나 dotfile은 Git에 추가해야 local Flake 평가 source에 들어간다.
+Git 저장소에 있는 Flake를 평가할 때 Nix는 Git이 추적하는 파일만 읽는다. 그래서 새
+`.nix` 파일이나 dotfile은 `git add`해야 build에 들어간다(2.8절).
 기존 추적 파일만 수정했다면 staging은 build의 필수 조건이 아니지만, commit 전에는
 반드시 변경 범위를 다시 검토한다. `build`가 성공해도 activation에서 기존 파일 충돌이
 발생할 수 있으므로, 실제 전환 뒤에는 바꾼 기능을 확인한다.
 
 ## 읽는 순서
 
-1. [Home Manager의 역할과 경계](./01-mental-model.md)
-2. [Flake와 모듈 구조 읽기](./02-configuration-structure.md)
-3. [패키지와 프로그램 설정](./03-packages-and-programs.md)
-4. [Home Manager 옵션과 dotfiles 함께 사용하기](./04-dotfiles.md)
-5. [빌드, 적용, 업데이트, 롤백](./05-apply-and-rollback.md)
-6. [문제 해결](./06-troubleshooting.md)
+| 장 | 성격 | 마쳤다는 확인 |
+|---|---|---|
+| 1. [Home Manager의 역할과 경계](./01-mental-model.md) | 개념 | 설정을 알맞은 계층에 배정한다 |
+| 2. [Flake와 모듈 구조 읽기](./02-configuration-structure.md) | 개념 | output 이름에서 명령을 만든다 |
+| 3. [패키지와 프로그램 설정](./03-packages-and-programs.md) | 실습 | 새 shell에서 도구와 변수를 확인한다 |
+| 4. [Home Manager 옵션과 dotfiles 함께 사용하기](./04-dotfiles.md) | 개념 | 파일마다 배치 방식을 고르고 충돌 결과를 예측한다 |
+| 5. [빌드, 적용, 업데이트, 롤백](./05-apply-and-rollback.md) | 실습 | generation을 만들고 되돌린다 |
+| 6. [문제 해결](./06-troubleshooting.md) | 참조 | 오류 메시지에서 실패 단계를 찾는다 |
+
+1~5장 끝의 연습문제는 정답을 접어 두었다. 실습 과제는 정답 자리에 기대 출력이나 확인
+명령을 둔다. 6장은 작업 중에 찾아보는 장이지만 짧은 진단 연습을 함께 둔다.
 
 ## 버전 정책
 

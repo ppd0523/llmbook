@@ -8,7 +8,7 @@
 
 ## 5.1 최초 bootstrap
 
-기존 매뉴얼의 Flake는 잠긴 Home Manager CLI를 app으로 노출한다. 아직
+예제 구성의 Flake는 잠긴 Home Manager CLI를 app으로 노출한다. 아직
 `home-manager` 명령이 없을 때 한 번 사용한다.
 
 ```console
@@ -37,9 +37,20 @@ $ home-manager build --flake .#nixos
 현재 사용자 환경을 활성화하지 않는다. 문법 오류, 없는 옵션, package build 실패를
 현재 환경을 바꾸기 전에 찾을 수 있다.
 
-기본적으로 현재 디렉터리에 `result` 링크가 남을 수 있다. 이는 build 결과를 가리키는
-확인용 링크이며 현재 사용자 환경이 아니다. Git 저장소에 추가하지 말고, 다음 build에서
-갱신되는 것을 감안해 작업 트리 상태를 확인한다.
+build가 성공하면 현재 디렉터리에 `result` 링크가 생긴다. 이 링크는 build한 generation을
+가리키는 확인용 링크이며 현재 사용자 환경이 아니다.
+
+```console
+$ ls -l result
+lrwxrwxrwx 1 nixos users 67 ... result -> /nix/store/<hash>-home-manager-generation
+$ ls result/home-path/bin | head
+$ ls -la result/home-files/.config
+```
+
+`home-path/bin`에는 새 프로필에 들어갈 실행 파일이, `home-files`에는 홈 디렉터리에
+연결될 관리 파일이 있다. `switch` 전에 여기서 바꾼 내용을 먼저 확인할 수 있다. `result`는
+다음 build에서 새 결과를 가리키도록 바뀌며 Git에 넣지 않는다. 예제 구성의 `.gitignore`가
+`result`와 `result-*`를 이미 제외한다.
 
 성공한 뒤 전환한다.
 
@@ -94,15 +105,12 @@ $ direnv version
 $ echo "$EDITOR"
 ```
 
-shell 초기화와 session variable은 현재 실행 중인 shell에 자동으로 역주입되지 않을
-수 있다. zsh를 관리한다면 새 shell을 시작한다.
+`switch`는 이미 실행 중인 shell을 바꾸지 않는다. 무엇을 바꿨는지에 따라 확인 방법이
+다르다([3장](./03-packages-and-programs.md)의 3.10절).
 
-```console
-$ exec zsh
-```
-
-WSL 로그인 환경 전체를 확인해야 한다면 현재 terminal만 닫는 것보다 PowerShell에서
-배포판을 종료한 뒤 다시 시작하는 편이 확실하다.
+- alias, 프롬프트, shell hook: 같은 터미널에서 `exec zsh`
+- `home.sessionVariables`, `home.sessionPath`: 새 터미널 탭에서 WSL을 연다
+- 로그인 shell이나 로그인 환경 전체: PowerShell에서 배포판을 종료한 뒤 다시 시작한다
 
 ```powershell
 wsl --terminate NixOS
@@ -131,15 +139,22 @@ standalone Home Manager는 NixOS와 별도 generation 이력을 가진다.
 $ home-manager generations
 ```
 
-목록은 생성 시각, generation id와 Nix Store 경로를 보여 준다. 현재 설정에 문제가
-생겼다면 직전 generation으로 돌아간다.
+```text
+2026-11-02 12:09 : id 6 -> /nix/store/<hash>-home-manager-generation (current)
+2026-10-20 17:56 : id 5 -> /nix/store/<hash>-home-manager-generation
+```
+
+목록은 최신 generation부터 생성 시각, generation id와 Nix Store 경로를 보여 주고, 활성
+generation에 `(current)`를 붙인다. 현재 설정에 문제가 생겼다면 직전 generation으로
+돌아간다.
 
 ```console
 $ home-manager switch --rollback
 ```
 
-이 명령은 직전 Home Manager generation을 선택해 활성화한다. NixOS 시스템은 바뀌지
-않는다. 이 옵션은 Home Manager 25.11에서 추가되었으므로, 더 오래된 lock을 사용하는
+이 명령은 새 generation을 만들지 않고 직전 Home Manager generation을 다시 활성화한다.
+목록의 가장 새 generation은 남아 있고 `(current)` 표시만 옮겨 간다. NixOS 시스템은
+바뀌지 않는다. 이 옵션은 Home Manager 25.11에서 추가되었으므로, 더 오래된 lock을 사용하는
 구성은 해당 release의 rollback 절차를 확인한다.
 
 시스템 변경만 되돌리려면 별도의 NixOS rollback을 사용한다.
@@ -167,6 +182,7 @@ $ git diff
 # 구성 수정
 $ home-manager build --flake .#nixos
 $ home-manager switch --flake .#nixos
+$ git add modules/home/고친-파일.nix
 $ git commit
 ```
 
@@ -183,7 +199,6 @@ $ git commit
 $ cd ~/.config/nixos
 $ nix flake update nixpkgs home-manager
 $ git diff -- flake.lock
-$ nix fmt
 $ sudo nixos-rebuild build --flake .#wsl
 $ home-manager build --flake .#nixos
 $ sudo nixos-rebuild switch --flake .#wsl
@@ -196,6 +211,11 @@ $ git commit -m "Update Nix inputs"
 갱신하지 않으면 같은 source revision을 계속 사용한다. 모든 input을 의도적으로
 갱신할 때만 인자 없이 `nix flake update`를 실행한다. input 이름을 지정하면 review할
 lock diff의 범위를 줄일 수 있다.
+
+NixOS-WSL 매뉴얼 README의 정기 업데이트 절차는 인자 없이 모든 input을 한 번에 갱신한다.
+이 가이드는 Home Manager 변경을 따로 검토하려고 범위를 좁힌다. 이렇게 하면 `nixos-wsl`과
+`nvm-src` input은 갱신되지 않으므로, WSL 통합 기능을 고칠 때나 정기 점검 때
+`nix flake update nixos-wsl`처럼 이름을 지정해 따로 갱신한다.
 
 ## 5.9 release 업그레이드
 
@@ -253,9 +273,38 @@ $ sudo nixos-rebuild switch --flake .#wsl
 | 사용자 변경에 `sudo`가 필요 없음 | 시스템 rebuild 권한 필요 |
 | 비 NixOS Linux에도 같은 구조를 적용하기 쉬움 | NixOS 시스템 구성에 종속 |
 
-현재 프로젝트는 사용자 환경을 WSL과 native NixOS에서 재사용하고 시스템과 독립적으로
-수정하기 위해 standalone 방식을 유지한다. 두 방식을 한 구성에 동시에 적용하지
+예제 구성은 사용자 환경을 WSL과 native NixOS에서 재사용하고 시스템과 독립적으로
+수정하기 위해 standalone 방식을 쓴다. 두 방식을 한 구성에 동시에 적용하지
 않는다.
+
+## 실습 과제
+
+예제 구성의 `~/.config/nixos`에서 진행한다. 과제 2는 일부러 이전 환경으로 돌아가므로
+열린 터미널을 하나 더 둔 상태에서 한다.
+
+1. `home.packages`에 `hello`를 추가하고 build한다. `switch` 전에 `result`가 가리키는
+   generation에 `hello`가 있는지 확인한 뒤 `switch`하고, `home-manager generations`에서
+   새 generation이 `(current)`가 되었는지 확인한다.
+2. 과제 1의 `switch` 직후 `home-manager switch --rollback`을 실행한다. generation 목록과
+   `command -v hello`가 어떻게 달라지는지 확인한다. 그다음 Git 작업 트리에서 `hello`
+   추가가 아직 남아 있는지 보고, 다음 `switch`에서 무슨 일이 생길지 예측한다.
+3. `nix flake update home-manager`를 실행하고 `git diff -- flake.lock`에서 어떤 input의
+   항목이 바뀌었는지 확인한다. 이번에는 업데이트하지 않기로 하고 lock을 되돌린다.
+
+??? note "기대 결과 확인"
+    1번: `ls result/home-path/bin/hello`가 경로를 출력한다. `switch` 뒤
+    `home-manager generations`의 첫 줄이 id가 하나 늘어난 새 generation이고 끝에
+    `(current)`가 붙는다. `hello`를 실행하면 `Hello, world!`가 나온다.
+
+    2번: rollback 뒤 목록의 첫 줄(가장 새 generation)은 그대로 있지만 `(current)`가 그
+    아래 직전 generation으로 옮겨 간다. `command -v hello`는 아무것도 출력하지 않는다.
+    `git diff`에는 `hello` 추가가 그대로 남아 있으므로, 이대로 다시 `switch`하면 `hello`가
+    돌아온다. generation 롤백은 활성 환경만 바꾸고 선언 원본은 바꾸지 않는다. 과제를
+    정리하려면 `git restore modules/home/default.nix` 뒤 build와 `switch`를 한다.
+
+    3번: `git diff -- flake.lock`에서 `home-manager` 노드의 `lastModified`, `narHash`,
+    `rev`만 바뀐다(이미 최신이면 diff가 없다). `git restore flake.lock`로 되돌리고
+    `git status --short flake.lock`이 아무것도 출력하지 않는지 확인한다.
 
 ## 요약
 

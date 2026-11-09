@@ -8,8 +8,9 @@
 
 ## 2.1 기존 저장소 구조
 
-기존 매뉴얼의 [예제 구성 저장소](../nixos-wsl-dev-environment/assets/example-config/README.md)는
-시스템과 사용자 설정을 한 저장소에 두되 output을 분리한다.
+NixOS-WSL 매뉴얼의 [예제 구성](../nixos-wsl-dev-environment/assets/example-config/README.md)은
+시스템과 사용자 설정을 한 저장소에 두되 output을 분리한다. `dotfiles/`에는 Neovim 설정 원본이
+있다.
 
 ```text
 ~/.config/nixos/
@@ -58,8 +59,8 @@ Home Manager `release-26.05`처럼 대응하는 release를 사용한다.
 
 ## 2.3 homeConfigurations output
 
-NixOS-WSL 매뉴얼 예제 [`flake.nix`](../nixos-wsl-dev-environment/assets/example-config/flake.nix)의
-핵심 output은 다음과 같다.
+예제 구성의 [`flake.nix`](../nixos-wsl-dev-environment/assets/example-config/flake.nix)에서
+Home Manager output 부분만 옮기면 다음과 같다.
 
 ```nix
 homeConfigurations.${username} =
@@ -87,6 +88,8 @@ $ home-manager build --flake .#nixos
 - `.`은 현재 디렉터리의 Flake다.
 - `nixos`는 `homeConfigurations` 아래의 attribute다.
 - 현재 디렉터리가 아니라면 `~/.config/nixos#nixos`처럼 경로를 명시한다.
+- `#attribute`를 생략하면 CLI가 로그인 사용자 이름으로 `homeConfigurations`를 찾는다.
+  사용자 이름과 output 이름이 다르면 실패하므로 이 가이드는 항상 `#nixos`를 적는다.
 
 NixOS output인 `nixosConfigurations.wsl`은 별도 명령으로 선택한다.
 
@@ -100,8 +103,10 @@ $ sudo nixos-rebuild build --flake .#wsl
 |---|---|
 | `pkgs` | `home.packages`와 프로그램 모듈이 사용할 package set |
 | `modules` | 합성할 Home Manager 모듈 목록 |
-| `extraSpecialArgs` | Flake 외부에서 모듈 함수로 전달할 추가 값 |
+| `extraSpecialArgs` | 모듈 시스템이 기본으로 주지 않는 값을 `flake.nix`에서 모듈 함수로 넘긴다 |
 
+Home Manager 모듈은 인자 집합을 받는 함수다. 모듈 시스템은 `config`, `lib`, `pkgs` 같은
+인자를 기본으로 넘기고, `extraSpecialArgs`에 넣은 값이 여기에 더해진다.
 `extraSpecialArgs = { inherit inputs username; };` 때문에 모듈은 다음처럼 값을 받을 수
 있다.
 
@@ -117,14 +122,15 @@ $ sudo nixos-rebuild build --flake .#wsl
 }
 ```
 
-Flake input처럼 모듈 그래프 바깥에서 들어오는 값은 `extraSpecialArgs`로 전달한다.
-모든 모듈이 모든 인자를 선언할 필요는 없으며, 실제로 사용하는 값만 함수 인자에
-적는다.
+Flake input처럼 모듈 바깥에서 들어오는 값은 `extraSpecialArgs`로 전달한다. 모든 모듈이
+모든 인자를 선언할 필요는 없다. 실제로 사용하는 값만 적고, 나머지는 `...`가 받아
+무시한다. 반대로 모듈이 선언한 인자를 아무도 넘기지 않으면 평가 단계에서 오류가 난다.
 
 ## 2.5 사용자 진입 모듈
 
 [`modules/home/default.nix`](../nixos-wsl-dev-environment/assets/example-config/modules/home/default.nix)는
-사용자 환경의 진입점이다.
+사용자 환경의 진입점이다. 아래는 구조를 보이려고 줄인 발췌다. 실제 파일에는 uv·rustup과
+빌드 도구 패키지, `home.sessionPath`, Rust 관련 환경 변수가 더 있다.
 
 ```nix
 {
@@ -159,8 +165,9 @@ Flake input처럼 모듈 그래프 바깥에서 들어오는 값은 `extraSpecia
 }
 ```
 
-`programs.home-manager.enable = true`는 최초 bootstrap 후 `home-manager` CLI를
-사용자 프로필에서 계속 관리한다.
+`programs.home-manager.enable = true`는 최초 bootstrap(5.1절, `home-manager` 명령이
+아직 없을 때 Flake에서 CLI를 한 번 실행하는 단계) 후 `home-manager` CLI를 사용자
+프로필에서 계속 관리한다.
 
 ## 2.6 모듈을 나누는 기준
 
@@ -181,7 +188,9 @@ modules/home/
 ```
 
 `default.nix`에 모든 설정을 모아도 동작은 같지만, 공통 진입점과 프로그램 세부 설정을
-분리하면 충돌 원인을 찾기 쉽다.
+분리하면 충돌 원인을 찾기 쉽다. 예제 구성은 아직 `packages.nix`를 따로 두지 않고
+`default.nix`의 `home.packages`에 패키지를 둔다. 이 가이드의 실습도 그 구조를 그대로
+쓴다.
 
 ## 2.7 여러 사용자로 확장
 
@@ -207,7 +216,10 @@ in
 }
 ```
 
-적용할 사용자가 `alice`라면 그 사용자 세션에서 실행한다.
+Home Manager는 사용자 계정을 만들지 않는다. `alice` 계정은 먼저 NixOS 모듈의
+`users.users.alice`로 만들고 `nixos-rebuild switch`해야 한다. 예제 구성의
+`modules/nixos/common.nix`는 `username` 한 명만 만든다. 적용할 사용자가 `alice`라면 그
+사용자 세션에서 실행한다.
 
 ```console
 $ home-manager switch --flake .#alice
@@ -232,6 +244,39 @@ $ home-manager build --flake .#nixos
 Flake에 적용된다. 다른 `path:` source나 Git이 아닌 디렉터리를 평가할 때는 source를
 포함하는 방식이 달라질 수 있으므로, 이 가이드의 예제처럼 Git 저장소를 기준으로
 작업하는 편이 가장 예측 가능하다.
+
+## 연습문제
+
+1. 어떤 Flake에 다음 output이 있다. NixOS 시스템과 Home Manager 사용자 환경을 각각
+   activation 없이 검증하는 명령을 쓴다. 현재 디렉터리는 이 Flake의 루트다.
+
+   ```nix
+   nixosConfigurations.desk = lib.nixosSystem { /* ... */ };
+   homeConfigurations.dev = home-manager.lib.homeManagerConfiguration { /* ... */ };
+   ```
+
+2. 1번 Flake에서 `--flake .` 처럼 attribute 없이 `home-manager build`를 실행했더니
+   output을 찾지 못했다. 로그인 사용자 이름은 `dev`가 아니라 `kim`이다. 왜 실패했는가?
+3. `modules/home/fonts.nix`를 새로 만들고 `default.nix`의 `imports`에 추가했다.
+   `home-manager build`가 이 파일을 찾지 못한다. 가장 먼저 확인할 명령과 해결 명령은
+   무엇인가?
+4. 어떤 모듈의 첫 줄이 `{ inputs, pkgs, ... }:`이다. `flake.nix`의
+   `extraSpecialArgs`에서 `inputs`를 지우면 무엇이 달라지는가?
+
+??? note "정답 확인"
+    1번: `sudo nixos-rebuild build --flake .#desk`와 `home-manager build --flake .#dev`.
+    `#` 뒤의 이름은 각 namespace(`nixosConfigurations`, `homeConfigurations`) 아래의
+    attribute다.
+
+    2번: attribute를 생략하면 CLI가 현재 사용자 이름을 골라 `homeConfigurations.kim`을
+    찾는다. 이 Flake에는 `dev`만 있으므로 `.#dev`를 명시해야 한다.
+
+    3번: `git status --short`에서 파일이 `??`(추적되지 않음)로 보이는지 확인하고
+    `git add modules/home/fonts.nix` 뒤 다시 build한다. Git 저장소인 local Flake는
+    추적되지 않은 새 파일을 평가 source에 넣지 않는다. commit은 build 검증 뒤에 해도 된다.
+
+    4번: 그 모듈 함수가 요구하는 `inputs` 인자를 받을 곳이 없어져 평가 단계에서 실패한다.
+    Flake input처럼 모듈 그래프 바깥의 값은 `extraSpecialArgs`로만 들어온다.
 
 ## 요약
 

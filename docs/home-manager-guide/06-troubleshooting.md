@@ -19,10 +19,14 @@ Nix 문법 분석
 | 단계 | 대표 증상 | 먼저 볼 것 |
 |---|---|---|
 | 문법 | `unexpected`, `syntax error` | 오류가 가리킨 `.nix` 줄과 세미콜론 |
-| 평가 | `option does not exist`, `attribute missing` | 옵션 이름, release, module import |
-| build | package build 실패, fetch 실패 | 실패한 derivation과 input |
-| activation | `Existing file ... is in the way` | 최종 target의 기존 파일과 소유자 |
-| runtime | 명령 없음, 환경 변수 미반영 | 활성 generation, 새 shell, PATH |
+| 평가 | `does not exist`, `does not provide attribute`, `is not tracked by Git` | 옵션 이름, output 이름, Git 추적, module import |
+| build | package build 실패, fetch 실패, `Error installing file ... outside $HOME` | 실패한 derivation과 input, 겹친 파일 선언 |
+| activation | `Existing file ... would be clobbered` | 최종 target의 기존 파일과 소유자 |
+| runtime | 명령 없음, 환경 변수 미반영 | 활성 generation, 새 터미널 세션, PATH |
+
+평가·build 단계의 실패는 `home-manager build`에서 재현되고 현재 환경을 바꾸지 않는다.
+activation 실패도 파일을 바꾸기 전에 중단되므로, 두 경우 모두 롤백이 아니라 원인 수정이
+먼저다.
 
 실패 단계가 다른데도 무조건 `nixos-rebuild`부터 반복하면 원인을 좁히기 어렵다.
 
@@ -32,7 +36,7 @@ Nix 문법 분석
 $ cd ~/.config/nixos
 $ git status --short
 $ git diff
-$ nix flake show
+$ nix eval .#homeConfigurations --apply builtins.attrNames
 $ home-manager build --flake .#nixos
 $ home-manager generations
 ```
@@ -41,7 +45,9 @@ $ home-manager generations
 
 - `git status`: 새 파일이 추적되는지와 예상하지 않은 상태 파일 확인
 - `git diff`: 실제로 무엇을 바꿨는지 확인
-- `nix flake show`: `homeConfigurations.nixos` output 존재 여부 확인
+- `nix eval ... builtins.attrNames`: Flake에 정의된 Home Manager output 이름 목록 확인.
+  예제 구성에서는 `[ "nixos" ]`가 나온다. `nix flake show`는 `homeConfigurations`를
+  `unknown`으로만 표시하고 이름을 보여 주지 않는다(Nix 2.34 기준).
 - `home-manager build`: activation 없이 평가와 build 재현
 - `home-manager generations`: 현재와 이전 사용자 generation 확인
 
@@ -60,9 +66,13 @@ $ home-manager build --flake .#nixos --show-trace
 증상:
 
 ```text
-flake ... does not provide attribute
-'homeConfigurations."현재사용자"'
+error: flake 'git+file:///home/nixos/.config/nixos' does not provide attribute
+'packages.x86_64-linux.homeConfigurations."alice".activationPackage',
+'legacyPackages.x86_64-linux.homeConfigurations."alice".activationPackage' or
+'homeConfigurations."alice".activationPackage'
 ```
+
+실제 출력은 한 줄이다. 따옴표 안의 이름(`alice`)이 CLI가 찾은 output 이름이다.
 
 원인:
 
@@ -73,8 +83,8 @@ flake ... does not provide attribute
 확인:
 
 ```console
-$ nix flake show ~/.config/nixos
-$ grep -n "homeConfigurations" ~/.config/nixos/flake.nix
+$ nix eval ~/.config/nixos#homeConfigurations --apply builtins.attrNames
+[ "nixos" ]
 ```
 
 해결:
@@ -91,10 +101,11 @@ $ home-manager build --flake ~/.config/nixos#nixos
 증상:
 
 ```text
-path '.../modules/home/example.nix' does not exist
+error: Path 'modules/home/example.nix' in the repository "/home/nixos/.config/nixos" is not tracked by Git.
 ```
 
-파일은 실제로 있지만 새로 만든 뒤 Git에 추가하지 않은 경우가 흔하다.
+파일은 실제로 있지만 새로 만든 뒤 Git에 추가하지 않았다는 뜻이다. 위 문구는 Nix 2.34
+기준이며, 더 오래된 Nix는 같은 상황에서 `path '...' does not exist`를 출력한다.
 
 ```console
 $ git status --short
@@ -138,18 +149,21 @@ home-manager.url =
 증상:
 
 ```text
-Existing file '/home/nixos/.config/git/config' is in the way
+Existing file '/home/nixos/.config/git/config' would be clobbered
 ```
 
-Home Manager가 데이터 손실을 막기 위해 activation을 중단한 것이다.
+Home Manager가 데이터 손실을 막기 위해 activation을 중단한 것이다. 오류 위에는
+`-b`와 `force` 같은 해결 방법 안내가 함께 출력된다. 기존 파일의 내용이 새 파일과 같으면
+오류 대신 `... will be skipped since they are the same` 경고만 나온다.
+
+4.8절의 순서대로 처리한다. 내용을 확인하고, 유지할 설정을 `programs.git.settings`로
+옮긴 뒤, 원래 자리를 비우도록 기존 파일을 관리하지 않는 위치로 이동하고 다시 switch한다.
 
 ```console
-$ ls -la ~/.config/git/config
-$ cp -a ~/.config/git/config ~/git-config.before-home-manager
+$ cat ~/.config/git/config
+$ mv ~/.config/git/config ~/git-config.before-hm
+$ home-manager switch --flake .#nixos
 ```
-
-기존 설정을 `programs.git.settings` 또는 저장소의 dotfile로 옮긴 뒤 기존 target을
-백업 위치로 이동하고 다시 switch한다.
 
 한 번만 자동 백업하려면:
 
@@ -160,24 +174,33 @@ $ home-manager switch -b hm-backup --flake .#nixos
 `.hm-backup` target이 이미 있으면 다시 중단된다. `force = true`를 일반 해결책으로
 사용하지 않는다.
 
-## 6.7 부모 링크 안에 파일을 만들 수 없음
+## 6.7 파일 선언이 겹침
 
-증상은 다음과 비슷하다.
+겹치는 방식에 따라 증상과 단계가 다르다.
 
-```text
-Error installing file '.config/example/config.toml' outside $HOME
-```
+| 증상 | 단계 | 원인 |
+|---|---|---|
+| `Conflicting managed target files: .config/example/config.toml` | 평가 | 정확히 같은 target을 두 선언이 만든다 |
+| `Error installing file '.config/example/config.toml' outside $HOME` | build | 부모 디렉터리가 out-of-store link이거나, 부모 source에 없는 하위 파일을 다른 선언이 만든다 |
+| 오류 없이 설정 하나가 반영되지 않음 | build(성공) | 부모 링크나 재귀 링크의 source에 같은 이름의 파일이 있어 하위 파일 선언이 무시된다 |
 
-또는 같은 target이 여러 번 정의되었다는 평가 오류가 발생할 수 있다.
-
-원인은 부모 디렉터리 전체를 링크하면서 다른 모듈이 그 안의 파일을 별도로 생성하기
-때문이다.
+다음 선언은 두 번째나 세 번째 증상을 만든다.
 
 ```nix
-# 충돌 가능
 xdg.configFile."example".source = ../../dotfiles/example;
 xdg.configFile."example/config.toml".text = "...";
 ```
+
+세 번째 증상은 오류가 없어서 찾기 어렵다. build 로그를 함께 출력하면 무시된 선언이
+`.config/example/config.toml conflicts with recursively symlinked file`로 보인다. build
+결과에서 실제로 연결될 파일도 확인할 수 있다.
+
+```console
+$ home-manager build --flake .#nixos -L 2>&1 | grep conflicts
+$ ls -la result/home-files/.config/example
+```
+
+build 결과가 이미 store에 있으면 로그가 다시 출력되지 않는다. 이때는 `ls` 결과로 판단한다.
 
 부모 링크를 제거하고 파일 또는 하위 디렉터리 단위로 소유권을 나눈다.
 
@@ -198,8 +221,8 @@ $ nix run .#home-manager -- build --flake .#nixos
 $ nix run .#home-manager -- switch --flake .#nixos
 ```
 
-NixOS-WSL 매뉴얼 예제의 local app은 잠긴 Home Manager CLI를 실행한다. activation 후 새 shell에서
-다시 확인한다.
+예제 구성의 app은 `flake.lock`에 잠긴 Home Manager CLI를 실행한다. activation 후 새
+shell에서 다시 확인한다.
 
 ```console
 $ exec zsh
@@ -247,17 +270,26 @@ zsh를 `programs.zsh`로 관리한다면 같은 파일을 수동으로 다시 so
 
 ## 6.10 환경 변수가 보이지 않음
 
-`home.sessionVariables`는 activation 이후 시작한 지원 shell이나 session에서
-불러온다. 현재 shell을 새로 시작한다.
+`home.sessionVariables`와 `home.sessionPath`는 `hm-session-vars.sh`가 세션마다 한
+번만 불러온다. 같은 터미널에서 `exec zsh`를 해도 이미 불러왔다는 표시
+`__HM_SESS_VARS_SOURCED`가 상속되어 새 값이 보이지 않는다. 새 터미널 탭에서 확인한다.
 
 ```console
-$ exec zsh
 $ printenv EDITOR
+nvim
 ```
 
-Home Manager가 관리하지 않는 shell을 사용한다면
-`hm-session-vars.sh`를 불러오는 방법을 검토해야 한다. 기존 매뉴얼은 zsh를 Home
-Manager로 관리하므로 별도 수동 source를 중복하지 않는다.
+먼저 build 결과에 변수가 들어 있는지 보면 선언 문제와 세션 문제를 나눌 수 있다.
+
+```console
+$ grep EDITOR result/home-path/etc/profile.d/hm-session-vars.sh
+export EDITOR="nvim"
+```
+
+여기에도 없으면 선언이나 build가 문제이고, 여기에는 있는데 새 탭에서도 안 보이면 그
+shell이 `hm-session-vars.sh`를 불러오지 않는 것이다. 예제 구성은 zsh를 Home Manager로
+관리하므로 `~/.config/zsh/.zshenv`가 이 파일을 불러온다(3.10절). 별도 수동 source를
+중복하지 않는다.
 
 프로젝트에서만 필요한 환경 변수는 direnv가 해당 디렉터리에 진입했을 때만 보이는
 것이 정상이다.
@@ -326,12 +358,43 @@ $ git diff -- flake.lock
 9. 즉시 롤백이 필요한가, 아니면 build 실패라 현재 환경은 그대로인가?
 10. 복구 뒤 Git 원본도 수정했는가?
 
+## 진단 연습
+
+다음 상황마다 두 가지를 답한다. 6.1절 표에서 원인이 생긴 단계를 고르고, 그 단계를
+확인하는 첫 행동(명령 또는 수정)을 쓴다. 증상이 보이는 시점과 원인이 생긴 단계는 다를 수
+있다.
+
+1. `home-manager switch --flake .#nixos`가
+   `Existing file '/home/nixos/.config/starship.toml' would be clobbered`로 끝났다.
+2. `home-manager build --flake .#nixos`가
+   ``The option `programs.starship.enableZshIntegrations' does not exist``로 끝났다.
+3. `home.sessionPath`에 `$HOME/bin`을 추가하고 `switch`가 성공했다. 같은 터미널에서
+   `exec zsh` 뒤 `echo $PATH`를 보니 `$HOME/bin`이 없다.
+4. `xdg.configFile."example/config.toml".text`를 바꾸고 `switch`가 성공했는데 파일 내용이
+   그대로다. 같은 모듈에 `xdg.configFile."example".source = ../../dotfiles/example;`이 있다.
+
+??? note "정답 확인"
+    1번: activation. 관리되지 않던 기존 파일이 있다. 현재 환경은 바뀌지 않았으므로 롤백할
+    필요가 없다. `cat ~/.config/starship.toml`로 내용을 확인하고 6.6절 순서로 옮긴다.
+
+    2번: 평가. 옵션 이름 오타(`enableZshIntegrations`)다. 옵션 검색에서
+    `programs.starship.enableZshIntegration`을 확인하고 고친 뒤 다시 build한다.
+
+    3번: runtime. `__HM_SESS_VARS_SOURCED`가 상속되어 `hm-session-vars.sh`가 다시 실행되지
+    않았다. `grep PATH result/home-path/etc/profile.d/hm-session-vars.sh`로 선언이 들어갔는지
+    본 뒤 새 터미널 탭에서 확인한다.
+
+    4번: build. 증상은 실행할 때 보이지만 원인은 build 결과에 이미 들어 있다. 부모 링크의
+    source에 `config.toml`이 있어 `text` 선언이 무시되었다. `ls -la result/home-files/.config/example`로 실제 연결 대상을 확인하고,
+    부모 링크를 하위 경로 선언으로 나눈다.
+
 ## 요약
 
 - 오류 메시지에서 실패 단계와 소유권 계층을 먼저 찾는다.
 - activation 충돌은 Home Manager의 데이터 보호 동작이다.
 - Flake가 참조하는 새 파일은 Git에 추가해야 한다.
-- shell과 환경 변수는 새 session에서 확인한다.
+- alias는 `exec zsh`로, session 변수와 `PATH`는 새 터미널 세션에서 확인한다.
+- 설정이 반영되지 않으면 `result/home-files`와 `result/home-path`로 build 결과부터 본다.
 - generation 롤백 뒤에는 Git 선언도 함께 바로잡는다.
 
 ## 추가 읽을거리
@@ -339,6 +402,6 @@ $ git diff -- flake.lock
 - [Home Manager 매뉴얼](https://nix-community.github.io/home-manager/)
 - [Home Manager 옵션](https://nix-community.github.io/home-manager/options.html)
 - [dotfile 충돌과 백업](https://nix-community.github.io/home-manager/usage/dotfiles.html)
-- [기존 매뉴얼의 업데이트와 문제 해결](../nixos-wsl-dev-environment/09-operations-and-troubleshooting.md)
+- [NixOS-WSL 매뉴얼의 업데이트와 문제 해결](../nixos-wsl-dev-environment/09-operations-and-troubleshooting.md)
 
 [← 5장](./05-apply-and-rollback.md) · [목차](./index.md)
