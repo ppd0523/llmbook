@@ -1,7 +1,5 @@
 ---
 title: LazyVim으로 다중 언어 개발 환경 구축하기
-version: 1.2
-updated: 2026-08-19
 ---
 
 # LazyVim으로 다중 언어 개발 환경 구축하기

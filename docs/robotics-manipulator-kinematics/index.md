@@ -1,7 +1,5 @@
 ---
 title: 매니퓰레이터 순기구학과 수치 역기구학
-version: 1.0
-updated: 2026-08-12
 ---
 
 # 매니퓰레이터 순기구학과 수치 역기구학
@@ -10,7 +8,7 @@ updated: 2026-08-12
 
 ## 선행지식
 
-[로보틱스 기구학 기초](../robotics-kinematics-foundations/index.md)의 1–2단계를 마쳤다고 가정한다. 평면 FK·IK 검산, 3D 회전행렬, $4	imes4$ 동차변환의 합성이 여기에 해당한다.
+[로보틱스 기구학 기초](../robotics-kinematics-foundations/index.md)의 1–2단계를 마쳤다고 가정한다. 평면 FK·IK 검산, 3D 회전행렬, $4\times4$ 동차변환의 합성이 여기에 해당한다.
 
 ## 이 책을 마치면
 

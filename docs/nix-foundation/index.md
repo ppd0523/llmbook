@@ -1,7 +1,5 @@
 ---
 title: "Nix 첫걸음: NixOS·개발 셸·Home Manager를 위한 기초"
-version: 1.6
-updated: 2026-08-30
 baseline: Nix 2.34.9, NixOS/Nixpkgs 26.05, Home Manager 26.05
 ---
 

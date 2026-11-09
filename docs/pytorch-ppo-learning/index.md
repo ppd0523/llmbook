@@ -1,7 +1,5 @@
 ---
 title: 처음부터 구현하며 배우는 PyTorch PPO
-version: 1.0
-updated: 2026-09-22
 baseline: PyTorch 2.13.0, Gymnasium 1.3.0, TorchRL 0.13.3
 ---
 
@@ -46,7 +44,7 @@ Stanford 과정은 policy gradient 전에 tabular planning과 Q-learning도 깊�
 
 ## 이 책의 설명 계약
 
-전문용어는 처음 나올 때 다음 네 질문에 답하도록 퇴고했다.
+전문용어는 처음 나올 때 다음 네 질문에 답한다.
 
 1. 왜 이 개념이 필요한가?
 2. 초심자 말로 무엇인가?

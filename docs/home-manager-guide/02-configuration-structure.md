@@ -58,7 +58,7 @@ Home Manager `release-26.05`처럼 대응하는 release를 사용한다.
 
 ## 2.3 homeConfigurations output
 
-기존 예제 [`flake.nix`](../nixos-wsl-dev-environment/assets/example-config/flake.nix)의
+NixOS-WSL 매뉴얼 예제 [`flake.nix`](../nixos-wsl-dev-environment/assets/example-config/flake.nix)의
 핵심 output은 다음과 같다.
 
 ```nix

@@ -1,7 +1,5 @@
 ---
 title: Canon EDSDK 카메라 제어 매뉴얼
-version: 1.1
-updated: 2026-08-12
 ---
 
 # Canon EDSDK 카메라 제어 매뉴얼

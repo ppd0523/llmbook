@@ -1,7 +1,5 @@
 ---
 title: NixOS에서 standalone Home Manager 운영하기
-version: 1.0
-updated: 2026-08-11
 baseline: NixOS 26.05, Home Manager 26.05
 ---
 
@@ -11,7 +9,7 @@ baseline: NixOS 26.05, Home Manager 26.05
 NixOS와 Home Manager 설치를 마친 사용자가 사용자 환경을 직접 수정하고 안전하게
 운영하도록 돕는 후속 자료다.
 
-본문은 기존 예제와 같은 Flake 기반 standalone 방식을 사용한다. NixOS 설정은
+본문은 NixOS-WSL 매뉴얼 예제와 같은 Flake 기반 standalone 방식을 사용한다. NixOS 설정은
 `nixos-rebuild`, 사용자 설정은 `home-manager`가 각각 담당한다. Home Manager를
 NixOS 모듈로 통합하는 방식은 차이를 판단할 수 있을 정도로만 비교한다.
 

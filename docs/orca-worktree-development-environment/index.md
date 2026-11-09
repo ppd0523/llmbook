@@ -1,6 +1,5 @@
 ---
 title: Orca 워크트리 개발환경: uv와 nvm으로 의존성 관리
-updated: 2026-09-27
 ---
 
 # Orca 워크트리 개발환경: uv와 nvm으로 의존성 관리

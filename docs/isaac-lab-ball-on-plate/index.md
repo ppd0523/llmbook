@@ -1,7 +1,5 @@
 ---
 title: 원반 위 공으로 배우는 Isaac Lab 강화학습
-version: 1.0
-updated: 2026-09-02
 baseline: Isaac Sim 6.0.1, Isaac Lab v3.0.0-beta2.patch1, PyTorch 2.11.0
 ---
 

@@ -1,7 +1,5 @@
 ---
 title: NixOS-WSL 개발 환경을 Git으로 복원하기
-version: 2.0
-updated: 2026-09-22
 ---
 
 # NixOS-WSL 개발 환경을 Git으로 복원하기

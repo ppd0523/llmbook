@@ -91,7 +91,7 @@ SSH 개인 키는 평문 Nix 파일에 넣지 않는다.
 
 ## 3.4 zsh 설정
 
-기존 예제의 zsh 설정은 completion, history, alias를 함께 관리한다.
+NixOS-WSL 매뉴얼 예제의 zsh 설정은 completion, history, alias를 함께 관리한다.
 
 ```nix
 programs.zsh = {

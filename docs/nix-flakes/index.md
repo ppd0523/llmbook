@@ -1,7 +1,5 @@
 ---
 title: "Nix Flake 입문: 개발 셸에서 패키지·앱·검사까지"
-version: 1.1
-updated: 2026-08-11
 baseline: Nix 2.34, Nixpkgs 26.05
 ---
 

@@ -1,7 +1,5 @@
 ---
 title: "Nix·Conan·CMake로 Cyclone DDS C++ 교차 개발 환경 만들기"
-version: 1.0
-updated: 2026-07-29
 baseline: Nixpkgs 26.05, Conan 2.28, Cyclone DDS 0.10.2, spdlog 1.17.0
 ---
 

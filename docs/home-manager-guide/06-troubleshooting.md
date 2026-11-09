@@ -198,7 +198,7 @@ $ nix run .#home-manager -- build --flake .#nixos
 $ nix run .#home-manager -- switch --flake .#nixos
 ```
 
-기존 예제의 local app은 잠긴 Home Manager CLI를 실행한다. activation 후 새 shell에서
+NixOS-WSL 매뉴얼 예제의 local app은 잠긴 Home Manager CLI를 실행한다. activation 후 새 shell에서
 다시 확인한다.
 
 ```console
