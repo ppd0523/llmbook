@@ -1,4 +1,4 @@
-name: Deploy MkDocs to GitHub Pages
+name: MkDocs 사이트를 GitHub Pages에 배포
 
 on:
   push:
@@ -19,28 +19,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: 저장소 체크아웃
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: Python 설치
         uses: actions/setup-python@v6
         with:
           python-version: "3.14"
           cache: pip
 
-      - name: Install dependencies
+      - name: 의존성 설치
         run: python -m pip install -r requirements.txt
 
-      - name: Configure GitHub Pages
+      - name: GitHub Pages 설정
         id: pages
         uses: actions/configure-pages@v5
 
-      - name: Build MkDocs site
+      - name: MkDocs 사이트 빌드
         env:
           SITE_URL: ${{ steps.pages.outputs.base_url }}/
         run: mkdocs build --strict
 
-      - name: Upload Pages artifact
+      - name: Pages 아티팩트 업로드
         uses: actions/upload-pages-artifact@v4
         with:
           path: site
@@ -52,6 +52,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: GitHub Pages에 배포
         id: deployment
         uses: actions/deploy-pages@v4

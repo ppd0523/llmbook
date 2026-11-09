@@ -1,6 +1,7 @@
 site_name: llmBook
 site_description: 개발 문서를 책 단위로 정리한 지식 저장소
-site_url: https://ppd0523.github.io/llmbook/
+# CI는 GitHub Pages가 알려 준 주소를 SITE_URL로 넘긴다. 로컬 빌드는 기본값을 쓴다.
+site_url: !ENV [SITE_URL, "https://ppd0523.github.io/llmbook/"]
 repo_name: ppd0523/llmbook
 repo_url: https://github.com/ppd0523/llmbook
 edit_uri: edit/main/docs/
