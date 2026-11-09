@@ -1,4 +1,4 @@
-"""Manager-based configuration of the same Ball-on-Plate MDP."""
+"""같은 Ball-on-Plate MDP의 Manager-based 설정."""
 
 import isaaclab.sim as sim_utils
 from isaaclab.assets import AssetBaseCfg

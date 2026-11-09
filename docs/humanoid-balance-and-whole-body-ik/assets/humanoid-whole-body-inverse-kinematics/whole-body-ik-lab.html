@@ -302,7 +302,7 @@
 </head>
 <body>
   <header>
-    <p class="eyebrow">Humanoid whole-body IK lab</p>
+    <p class="eyebrow">휴머노이드 전신 IK 실습</p>
     <h1>같은 목표, 다른 규칙: 가중 해와 접촉 우선 해 비교</h1>
     <p>평면 부유 골반과 두 다리를 같은 시작 자세에서 움직입니다. 두 그림 중 하나를 누르면 오른발 목표가 바뀝니다. 왼쪽은 모든 오차를 타협하고, 오른쪽은 지지발을 먼저 보존합니다.</p>
   </header>
@@ -671,7 +671,7 @@
         if (isConverged(errorsFor(robot.q))) { robot.status = "수렴"; return; }
         try {
           const raw = kind === "weighted" ? weightedUpdate(before) : hierarchyUpdate(before);
-          if (!raw.every(Number.isFinite)) throw new Error("non-finite update");
+          if (!raw.every(Number.isFinite)) throw new Error("유한하지 않은 업데이트");
           const delta = limitStep(raw);
           const result = applyLimits(addVec(robot.q, delta));
           const contactResult = kind === "priority" ? restoreContact(result.q) : { q: result.q, hits: 0 };

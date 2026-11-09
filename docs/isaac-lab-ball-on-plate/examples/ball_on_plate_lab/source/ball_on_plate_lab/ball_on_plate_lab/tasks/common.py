@@ -1,7 +1,7 @@
-"""Shared task constants and tensor functions.
+"""태스크 공통 상수와 텐서 함수.
 
-Both authoring workflows import this module so that their MDP definitions cannot
-silently drift apart.
+두 작성 워크플로가 모두 이 모듈을 import하므로 MDP 정의가 모르는 사이에
+서로 달라지지 않는다.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ PLATE_USD_PATH = Path(os.environ.get("BALL_ON_PLATE_USD", DEFAULT_USD_PATH)).exp
 
 
 def make_plate_cfg(prim_path: str) -> ArticulationCfg:
-    """Create the backend-neutral articulation configuration."""
+    """백엔드에 독립적인 articulation 설정을 만든다."""
 
     return ArticulationCfg(
         prim_path=prim_path,
@@ -61,7 +61,7 @@ def make_plate_cfg(prim_path: str) -> ArticulationCfg:
 
 
 def make_ball_cfg(prim_path: str) -> RigidObjectCfg:
-    """Create the ball as a procedural sphere supported by both backends."""
+    """두 백엔드가 모두 지원하는 절차적 구(sphere)로 공을 만든다."""
 
     return RigidObjectCfg(
         prim_path=prim_path,
@@ -85,13 +85,13 @@ def make_ball_cfg(prim_path: str) -> RigidObjectCfg:
 
 
 def ball_xy(ball, env_origins: torch.Tensor) -> torch.Tensor:
-    """Ball position in each environment's local horizontal frame."""
+    """각 환경의 로컬 수평 좌표계에서 본 공 위치."""
 
     return ball.data.root_pos_w.torch[:, :2] - env_origins[:, :2]
 
 
 def target_xy(episode_length_buf: torch.Tensor, step_dt: float, moving: bool) -> torch.Tensor:
-    """Center target or a smooth circle used by the capstone task."""
+    """중앙 목표점 또는 최종 프로젝트 태스크가 쓰는 매끄러운 원 궤적."""
 
     target = torch.zeros((episode_length_buf.shape[0], 2), device=episode_length_buf.device)
     if moving:
@@ -112,7 +112,7 @@ def task_observation(
     step_dt: float,
     moving: bool,
 ) -> torch.Tensor:
-    """Return the shared 12-dimensional policy observation."""
+    """두 워크플로가 공유하는 12차원 정책 관측을 반환한다."""
 
     local_ball_xy = ball_xy(ball, env_origins)
     target = target_xy(episode_length_buf, step_dt, moving)
@@ -140,7 +140,7 @@ def reward_terms(
     step_dt: float,
     moving: bool,
 ) -> dict[str, torch.Tensor]:
-    """Compute named rewards shared by both workflows."""
+    """두 워크플로가 공유하는 이름 붙은 보상 항을 계산한다."""
 
     local_ball_xy = ball_xy(ball, env_origins)
     target = target_xy(episode_length_buf, step_dt, moving)
@@ -158,7 +158,7 @@ def reward_terms(
 
 
 def weighted_reward(terms: dict[str, torch.Tensor], terminated: torch.Tensor) -> torch.Tensor:
-    """Apply the common reward weights."""
+    """공통 보상 가중치를 적용한다."""
 
     return (
         0.2 * terms["alive"]
@@ -171,7 +171,7 @@ def weighted_reward(terms: dict[str, torch.Tensor], terminated: torch.Tensor) ->
 
 
 def ball_failed(ball, env_origins: torch.Tensor) -> torch.Tensor:
-    """Detect a ball whose center left the usable disk or fell below it."""
+    """공 중심이 사용 가능한 원판 영역을 벗어났거나 그 아래로 떨어졌는지 감지한다."""
 
     radius = torch.linalg.vector_norm(ball_xy(ball, env_origins), dim=1)
     local_z = ball.data.root_pos_w.torch[:, 2] - env_origins[:, 2]
@@ -179,7 +179,7 @@ def ball_failed(ball, env_origins: torch.Tensor) -> torch.Tensor:
 
 
 def reset_plate_and_ball(env, env_ids: torch.Tensor) -> None:
-    """Reset state with an area-uniform ball position and random velocity."""
+    """면적 기준으로 균일한 공 위치와 무작위 속도로 상태를 리셋한다."""
 
     plate = env.scene["plate"]
     ball = env.scene["ball"]
@@ -209,6 +209,6 @@ def reset_plate_and_ball(env, env_ids: torch.Tensor) -> None:
 
 
 def manager_reset(env: ManagerBasedRLEnv, env_ids: torch.Tensor) -> None:
-    """Event-manager adapter for the shared reset function."""
+    """공통 리셋 함수를 event manager에 연결하는 어댑터."""
 
     reset_plate_and_ball(env, env_ids)

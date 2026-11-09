@@ -53,7 +53,7 @@
       enableZshIntegration = true;
     };
 
-    # Load each project's Nix development shell when entering its directory.
+    # 프로젝트 디렉터리에 들어가면 그 프로젝트의 Nix 개발 셸을 불러온다.
     direnv = {
       enable = true;
       enableZshIntegration = true;

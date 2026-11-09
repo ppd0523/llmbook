@@ -1,4 +1,4 @@
-"""List the task IDs registered by this external project."""
+"""이 외부 프로젝트가 등록하는 태스크 ID를 나열한다."""
 
 import gymnasium as gym
 

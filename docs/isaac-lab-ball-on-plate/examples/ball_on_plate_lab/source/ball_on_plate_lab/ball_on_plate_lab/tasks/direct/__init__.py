@@ -1,4 +1,4 @@
-"""Direct-workflow tasks."""
+"""Direct 워크플로 태스크."""
 
 from . import ball_on_plate
 

@@ -1,5 +1,5 @@
 {
-  description = "C++17, Conan 2, Cyclone DDS, and aarch64-musl development shell";
+  description = "C++17, Conan 2, Cyclone DDS, aarch64-musl 개발 셸";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";

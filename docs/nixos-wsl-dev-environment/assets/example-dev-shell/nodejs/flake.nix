@@ -1,5 +1,5 @@
 {
-  description = "Node.js development shell for NVM and LazyVim";
+  description = "NVM과 LazyVim용 Node.js 개발 셸";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -17,7 +17,7 @@
 
         shellHook = ''
           export PATH="$PWD/node_modules/.bin:$PATH"
-          echo "Node.js shell: nvm install, npm install, then nvim ."
+          echo "Node.js 셸: nvm install, npm install 후 nvim ."
         '';
       };
     };

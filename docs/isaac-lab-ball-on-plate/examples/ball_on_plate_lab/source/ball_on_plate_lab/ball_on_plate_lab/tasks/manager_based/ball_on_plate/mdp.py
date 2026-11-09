@@ -1,4 +1,4 @@
-"""Custom Manager-based MDP terms backed by the shared task definition."""
+"""공통 태스크 정의를 바탕으로 한 Manager-based 사용자 정의 MDP 항."""
 
 from __future__ import annotations
 

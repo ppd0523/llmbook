@@ -1,4 +1,4 @@
-"""Ball-on-Plate Isaac Lab extension."""
+"""Ball-on-Plate Isaac Lab 확장."""
 
 from . import tasks
 

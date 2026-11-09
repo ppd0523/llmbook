@@ -17,7 +17,7 @@ namespace {
 int parse_positive(const char *value, const char *name) {
   const int parsed = std::stoi(value);
   if (parsed <= 0) {
-    throw std::invalid_argument(std::string{name} + " must be positive");
+    throw std::invalid_argument(std::string{name} + " 값은 양수여야 한다");
   }
   return parsed;
 }
@@ -25,7 +25,7 @@ int parse_positive(const char *value, const char *name) {
 std::uint32_t parse_domain(const char *value) {
   const unsigned long parsed = std::stoul(value);
   if (parsed > 232) {
-    throw std::out_of_range("domain_id must be in the range 0..232");
+    throw std::out_of_range("domain_id는 0..232 범위여야 한다");
   }
   return static_cast<std::uint32_t>(parsed);
 }
@@ -76,9 +76,9 @@ int main(int argc, char **argv) {
     dds_delete_qos(qos);
     require_entity(writer, "dds_create_writer");
 
-    spdlog::info("publisher ready: domain={}, count={}, interval={} ms",
+    spdlog::info("publisher 준비 완료: domain={}, count={}, interval={} ms",
                  domain_id, count, interval_ms);
-    spdlog::info("start the subscriber first when using volatile durability");
+    spdlog::info("volatile durability에서는 subscriber를 먼저 시작해야 한다");
 
     for (int index = 1; index <= count; ++index) {
       tutorial_Telemetry sample{};
@@ -87,14 +87,14 @@ int main(int argc, char **argv) {
       std::snprintf(sample.source, sizeof(sample.source), "%s", source.c_str());
 
       require_status(dds_write(writer, &sample), "dds_write");
-      spdlog::info("sent sample_id={} source={}", sample.sample_id, source);
+      spdlog::info("전송: sample_id={} source={}", sample.sample_id, source);
       std::this_thread::sleep_for(std::chrono::milliseconds(interval_ms));
     }
 
     require_status(dds_delete(participant), "dds_delete");
     return EXIT_SUCCESS;
   } catch (const std::exception &error) {
-    spdlog::error("publisher failed: {}", error.what());
+    spdlog::error("publisher 실패: {}", error.what());
     return EXIT_FAILURE;
   }
 }

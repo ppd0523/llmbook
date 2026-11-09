@@ -1,11 +1,11 @@
-# Do not use this file as hardware configuration.
+# 이 파일을 하드웨어 설정으로 사용하지 않는다.
 #
-# On the target native NixOS host, copy the generated file instead:
+# 대상 native NixOS 호스트에서 생성된 파일을 대신 복사한다.
 #
 #   cp /etc/nixos/hardware-configuration.nix \
 #     ./hosts/native/hardware-configuration.nix
 #   git add hosts/native/hardware-configuration.nix
 #
-# The flake exposes nixosConfigurations.native only after that tracked file
-# exists. Hardware configuration is host-specific and cannot be shared with
-# NixOS-WSL.
+# flake는 추적되는 그 파일이 생긴 뒤에만 nixosConfigurations.native를
+# 노출한다. 하드웨어 설정은 호스트마다 다르므로 NixOS-WSL과 공유할 수
+# 없다.

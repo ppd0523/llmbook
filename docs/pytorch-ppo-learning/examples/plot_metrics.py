@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 PANELS = (
-    ("return20", "최근 20 episode return"),
+    ("return20", "최근 20 episode 학습 return"),
     ("eval_mean", "분리 평가 return"),
     ("entropy", "정책 entropy"),
     ("approx_kl", "Approximate KL"),
@@ -122,7 +122,7 @@ def render_svg(runs: list[tuple[Path, list[dict[str, float]]]]) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="PPO metrics CSV를 SVG로 그립니다.")
+    parser = argparse.ArgumentParser(description="PPO 지표 CSV를 SVG로 그린다.")
     parser.add_argument("csv_files", nargs="+", type=Path)
     parser.add_argument("--output", type=Path, default=Path("ppo_metrics.svg"))
     args = parser.parse_args()

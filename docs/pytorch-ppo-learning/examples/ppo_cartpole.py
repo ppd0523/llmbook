@@ -477,7 +477,7 @@ def load_for_evaluation(config: Config) -> tuple[ActorCritic, torch.device]:
 
 
 def parse_args() -> tuple[Config, bool]:
-    parser = argparse.ArgumentParser(description="순수 PyTorch PPO로 CartPole 학습")
+    parser = argparse.ArgumentParser(description="순수 PyTorch PPO로 CartPole을 학습한다.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--total-steps", type=int, default=100_000)
     parser.add_argument("--device", default="auto")
@@ -488,7 +488,7 @@ def parse_args() -> tuple[Config, bool]:
         "--eval-interval",
         type=int,
         default=0,
-        help="0이면 마지막에만 평가하고, 양수면 해당 update 간격으로 평가합니다.",
+        help="0이면 마지막에만 평가하고, 양수면 해당 update 간격으로 평가한다.",
     )
     parser.add_argument("--learning-rate", type=float, default=3e-4)
     parser.add_argument("--gae-lambda", type=float, default=0.95)

@@ -1,1 +1,1 @@
--- Add personal autocommands here. LazyVim's defaults are kept unchanged.
+-- 개인 autocommand를 여기에 추가한다. LazyVim 기본값은 바꾸지 않는다.

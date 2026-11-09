@@ -1,4 +1,4 @@
-"""Gymnasium registrations for Manager-based Ball-on-Plate."""
+"""Manager-based Ball-on-Plate의 Gymnasium 등록."""
 
 import gymnasium as gym
 

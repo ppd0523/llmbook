@@ -7,8 +7,8 @@ let
   nvmRoot = ".local/share/nvm";
 in
 {
-  # Manage only nvm's program files as immutable links. The parent directory
-  # stays writable, so nvm can install Node versions below $NVM_DIR/versions.
+  # nvm의 프로그램 파일만 불변 링크로 관리한다. 상위 디렉터리는 쓰기 가능한
+  # 상태로 남으므로 nvm이 $NVM_DIR/versions 아래에 Node 버전을 설치할 수 있다.
   home.file."${nvmRoot}/nvm.sh".source = inputs.nvm-src.outPath + "/nvm.sh";
   home.file."${nvmRoot}/nvm-exec" = {
     source = inputs.nvm-src.outPath + "/nvm-exec";

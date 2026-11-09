@@ -14,7 +14,7 @@
     inherit username;
     homeDirectory = "/home/${username}";
 
-    # Like system.stateVersion, preserve this value after the first activation.
+    # system.stateVersion처럼 첫 활성화 이후에는 이 값을 유지한다.
     stateVersion = "26.05";
 
     packages = with pkgs; [
@@ -23,7 +23,7 @@
       uv
       rustup
 
-      # Common build/download support for project-managed runtimes.
+      # 프로젝트가 관리하는 런타임의 빌드·다운로드에 공통으로 쓰는 도구.
       curl
       unzip
       gcc
@@ -44,7 +44,7 @@
     };
   };
 
-  # Keep the standalone Home Manager CLI in the managed profile after the
-  # one-time bootstrap command.
+  # 한 번 실행하는 부트스트랩 명령 이후에도 standalone Home Manager CLI를
+  # 관리 대상 프로필에 유지한다.
   programs.home-manager.enable = true;
 }

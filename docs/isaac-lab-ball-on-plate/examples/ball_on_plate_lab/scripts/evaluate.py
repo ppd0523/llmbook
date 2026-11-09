@@ -1,7 +1,7 @@
-"""Evaluate 100 fixed-seed episodes or a random-action baseline.
+"""고정 시드 에피소드 100개 또는 무작위 행동 기준선을 평가한다.
 
-This follows the Isaac Lab 3.0 RSL-RL play path but stops after a finite,
-metric-oriented evaluation instead of opening an endless viewer loop.
+Isaac Lab 3.0 RSL-RL play 경로를 따르되, 끝없는 viewer 루프를 여는 대신
+지표 중심의 유한한 평가를 마친 뒤 종료한다.
 """
 
 from __future__ import annotations
@@ -21,10 +21,10 @@ from isaaclab_rl.rsl_rl import RslRlBaseRunnerCfg, RslRlVecEnvWrapper, handle_de
 from isaaclab_tasks.utils import add_launcher_args, launch_simulation, setup_preset_cli
 from isaaclab_tasks.utils.hydra import hydra_task_config
 
-import ball_on_plate_lab.tasks  # noqa: F401  Registers the external tasks.
+import ball_on_plate_lab.tasks  # noqa: F401  외부 태스크를 등록한다.
 
 
-parser = argparse.ArgumentParser(description="Evaluate Ball-on-Plate with fixed seeds.")
+parser = argparse.ArgumentParser(description="고정 시드로 Ball-on-Plate를 평가한다.")
 parser.add_argument("--task", default="BallOnPlate-Direct-v0")
 parser.add_argument("--checkpoint", type=Path)
 parser.add_argument("--episodes", type=int, default=100)
@@ -35,7 +35,7 @@ args_cli, remaining_args = setup_preset_cli(parser)
 sys.argv = [sys.argv[0]] + remaining_args
 
 if not args_cli.random_policy and args_cli.checkpoint is None:
-    parser.error("--checkpoint is required unless --random_policy is used")
+    parser.error("--random_policy를 쓰지 않으면 --checkpoint가 필요하다")
 
 
 @hydra_task_config(args_cli.task, "rsl_rl_cfg_entry_point")
@@ -67,8 +67,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg, agent_cfg: RslRlBaseRun
 
         with torch.inference_mode():
             while not torch.all(completed):
-                # Observation fields 0:2 are ball-target and 2:4 are target,
-                # each normalized by the plate radius. Their sum is ball radius.
+                # 관측 필드 0:2는 공-목표, 2:4는 목표이며 각각 원판 반경으로
+                # 정규화되어 있다. 둘을 더하면 정규화된 공 위치가 된다.
                 normalized_ball_xy = obs[:, 0:2] + obs[:, 2:4]
                 normalized_radius = torch.linalg.vector_norm(normalized_ball_xy, dim=1)
                 active = ~completed

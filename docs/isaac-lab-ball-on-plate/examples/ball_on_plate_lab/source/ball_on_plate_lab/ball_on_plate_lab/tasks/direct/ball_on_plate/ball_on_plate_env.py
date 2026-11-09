@@ -1,4 +1,4 @@
-"""Direct implementation of Ball-on-Plate."""
+"""Ball-on-Plate의 Direct 구현."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
 
 class BallOnPlateEnv(DirectRLEnv):
-    """Keep a rolling ball near a target by tilting a circular plate."""
+    """원형 원판을 기울여 굴러가는 공을 목표점 근처에 유지한다."""
 
     cfg: BallOnPlateEnvCfg
 

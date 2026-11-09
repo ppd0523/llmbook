@@ -1,4 +1,4 @@
-"""Configuration for the Direct Ball-on-Plate environment."""
+"""Direct Ball-on-Plate 환경 설정."""
 
 from isaaclab.assets import ArticulationCfg, RigidObjectCfg
 from isaaclab.envs import DirectRLEnvCfg
@@ -13,7 +13,7 @@ from ...physics import BallOnPlatePhysicsCfg
 
 @configclass
 class BallOnPlateEnvCfg(DirectRLEnvCfg):
-    # Environment: 30 Hz policy rate, 10 s episodes.
+    # 환경: 정책 주기 30 Hz, 에피소드 길이 10 s.
     decimation = 4
     episode_length_s = 10.0
     action_space = 2

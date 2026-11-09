@@ -1,5 +1,5 @@
 {
-  description = "Portable NixOS-WSL and standalone Home Manager configuration";
+  description = "이식 가능한 NixOS-WSL과 standalone Home Manager 설정";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -14,7 +14,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nvm is a sourced shell function, so pin its source independently.
+    # nvm은 source로 읽어 들이는 셸 함수이므로 소스를 별도로 고정한다.
     nvm-src = {
       url = "github:nvm-sh/nvm/v0.40.4";
       flake = false;
@@ -48,8 +48,8 @@
           ./hosts/wsl
         ];
       }
-      # A native host is exposed only after its generated hardware module is
-      # copied here and added to Git.
+      # native 호스트는 생성된 하드웨어 모듈을 여기에 복사하고 Git에 추가한
+      # 뒤에만 노출된다.
       // lib.optionalAttrs (builtins.pathExists nativeHardware) {
         native = mkNixos [ ./hosts/native ];
       };
@@ -60,8 +60,8 @@
         modules = [ ./modules/home ];
       };
 
-      # Bootstrap the standalone CLI from the same locked Home Manager input
-      # used to evaluate homeConfigurations.
+      # standalone CLI를 homeConfigurations 평가에 쓰는 것과 같은 잠긴
+      # Home Manager 입력에서 부트스트랩한다.
       apps.${system}.home-manager = {
         type = "app";
         program = "${home-manager.packages.${system}.default}/bin/home-manager";

@@ -2,7 +2,7 @@
 result
 result-*
 
-# Runtime and project state belongs outside this configuration repository.
+# 런타임 상태와 프로젝트 상태는 이 설정 저장소 바깥에 둔다.
 .venv/
 node_modules/
 target/

@@ -37,7 +37,7 @@ spec으로 자동 import된다.
 파일: `~/.config/nvim/init.lua`
 
 ```lua
--- Bootstrap lazy.nvim, LazyVim, and your plugins.
+-- lazy.nvim, LazyVim, 플러그인을 부트스트랩한다.
 require("config.lazy")
 ```
 

@@ -6,8 +6,8 @@ order = 0
 version = "0.1.0"
 category = "Reinforcement Learning"
 title = "Ball on Plate Lab"
-description = "Direct and Manager-based Ball-on-Plate tasks for Isaac Lab 3.0"
-authors = ["llmBook tutorial"]
+description = "Isaac Lab 3.0용 Direct·Manager-based Ball-on-Plate 태스크"
+authors = ["llmBook 학습자료"]
 repository = ""
 keywords = ["isaaclab", "reinforcement-learning", "tutorial"]
 

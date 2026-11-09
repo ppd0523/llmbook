@@ -1,4 +1,4 @@
-"""Selectable physics presets for the Ball-on-Plate tasks."""
+"""Ball-on-Plate 태스크에서 선택할 수 있는 물리 프리셋."""
 
 from isaaclab_newton.physics import MJWarpSolverCfg, NewtonCfg
 from isaaclab_physx.physics import PhysxCfg
@@ -8,7 +8,7 @@ from isaaclab_tasks.utils import PresetCfg
 
 @configclass
 class BallOnPlatePhysicsCfg(PresetCfg):
-    """Expose the two backends used in the tutorial."""
+    """학습자료에서 쓰는 두 백엔드를 노출한다."""
 
     default: PhysxCfg = PhysxCfg()
     physx: PhysxCfg = PhysxCfg()

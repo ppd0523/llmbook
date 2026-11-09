@@ -1,4 +1,4 @@
-"""Gymnasium registrations for Direct Ball-on-Plate."""
+"""Direct Ball-on-Plate의 Gymnasium 등록."""
 
 import gymnasium as gym
 

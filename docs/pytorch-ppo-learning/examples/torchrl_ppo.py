@@ -168,7 +168,7 @@ def train(config: Config) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="TorchRL primitive PPO 예제")
+    parser = argparse.ArgumentParser(description="TorchRL primitive로 조립한 PPO 예제")
     parser.add_argument("--smoke-test", action="store_true")
     args = parser.parse_args()
     config = Config()

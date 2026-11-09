@@ -16,7 +16,7 @@ namespace {
 int parse_positive(const char *value, const char *name) {
   const int parsed = std::stoi(value);
   if (parsed <= 0) {
-    throw std::invalid_argument(std::string{name} + " must be positive");
+    throw std::invalid_argument(std::string{name} + " 값은 양수여야 한다");
   }
   return parsed;
 }
@@ -24,7 +24,7 @@ int parse_positive(const char *value, const char *name) {
 std::uint32_t parse_domain(const char *value) {
   const unsigned long parsed = std::stoul(value);
   if (parsed > 232) {
-    throw std::out_of_range("domain_id must be in the range 0..232");
+    throw std::out_of_range("domain_id는 0..232 범위여야 한다");
   }
   return static_cast<std::uint32_t>(parsed);
 }
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     dds_delete_qos(qos);
     require_entity(reader, "dds_create_reader");
 
-    spdlog::info("subscriber ready: domain={}, expected={}, timeout={} s",
+    spdlog::info("subscriber 준비 완료: domain={}, expected={}, timeout={} s",
                  domain_id, expected, timeout_seconds);
 
     int received = 0;
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
       if (information[0].valid_data) {
         const auto *sample =
             static_cast<const tutorial_Telemetry *>(samples[0]);
-        spdlog::info("received sample_id={} timestamp_ms={} source={}",
+        spdlog::info("수신: sample_id={} timestamp_ms={} source={}",
                      sample->sample_id, sample->timestamp_ms, sample->source);
         ++received;
       }
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
     spdlog::info("received all {} samples", received);
     return EXIT_SUCCESS;
   } catch (const std::exception &error) {
-    spdlog::error("subscriber failed: {}", error.what());
+    spdlog::error("subscriber 실패: {}", error.what());
     return EXIT_FAILURE;
   }
 }

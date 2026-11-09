@@ -1,5 +1,5 @@
 {
-  description = "Python development shell for uv and LazyVim";
+  description = "uv와 LazyVim용 Python 개발 셸";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -17,7 +17,7 @@
 
         shellHook = ''
           export PATH="$PWD/.venv/bin:$PATH"
-          echo "Python shell: uv sync, then nvim ."
+          echo "Python 셸: uv sync 후 nvim ."
         '';
       };
     };

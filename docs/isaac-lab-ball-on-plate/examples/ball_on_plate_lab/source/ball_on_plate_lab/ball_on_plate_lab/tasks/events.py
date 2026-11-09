@@ -1,4 +1,4 @@
-"""Backend-neutral startup domain randomization."""
+"""백엔드에 독립적인 시작 시 도메인 무작위화."""
 
 from isaaclab.envs import mdp
 from isaaclab.managers import EventTermCfg as EventTerm
@@ -8,7 +8,7 @@ from isaaclab.utils.configclass import configclass
 
 @configclass
 class MaterialRandomizationCfg:
-    """Randomize contact parameters once for every parallel environment."""
+    """모든 병렬 환경의 접촉 파라미터를 한 번 무작위화한다."""
 
     ball_material = EventTerm(
         func=mdp.randomize_rigid_body_material,

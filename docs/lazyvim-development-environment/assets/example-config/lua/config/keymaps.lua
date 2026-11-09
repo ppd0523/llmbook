@@ -1,1 +1,1 @@
--- Add personal keymaps here. LazyVim's default keymaps are kept unchanged.
+-- 개인 keymap을 여기에 추가한다. LazyVim 기본 keymap은 바꾸지 않는다.

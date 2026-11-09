@@ -296,7 +296,7 @@
 </head>
 <body>
   <header>
-    <p class="eyebrow">Forward kinematics lab</p>
+    <p class="eyebrow">순기구학 실습</p>
     <h1>6R 변환 체인을 관절별로 따라가기</h1>
     <p>여섯 관절을 움직이고 누적 변환 단계를 바꾸며 손목 중심, TCP, 좌표축과 행렬의 위치 열이 일치하는지 확인하세요.</p>
   </header>
@@ -382,12 +382,12 @@
       "use strict";
 
       const jointSpec = [
-        ["q1", "q₁ · base yaw", -180, 180, 90],
-        ["q2", "q₂ · shoulder pitch", -120, 120, 0],
-        ["q3", "q₃ · elbow pitch", -150, 150, 90],
-        ["q4", "q₄ · wrist roll", -180, 180, 0],
-        ["q5", "q₅ · wrist pitch", -120, 120, 0],
-        ["q6", "q₆ · tool roll", -180, 180, 0]
+        ["q1", "q₁ · 베이스 yaw", -180, 180, 90],
+        ["q2", "q₂ · 어깨 pitch", -120, 120, 0],
+        ["q3", "q₃ · 팔꿈치 pitch", -150, 150, 90],
+        ["q4", "q₄ · 손목 roll", -180, 180, 0],
+        ["q5", "q₅ · 손목 pitch", -120, 120, 0],
+        ["q6", "q₆ · 도구 roll", -180, 180, 0]
       ];
 
       const lengthSpec = [

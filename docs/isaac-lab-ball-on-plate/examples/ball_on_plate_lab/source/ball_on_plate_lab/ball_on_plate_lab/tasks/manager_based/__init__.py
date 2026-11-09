@@ -1,4 +1,4 @@
-"""Manager-based tasks."""
+"""Manager-based 태스크."""
 
 from . import ball_on_plate
 

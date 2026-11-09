@@ -1,5 +1,5 @@
 {
-  description = "Rust development shell for rustup and LazyVim";
+  description = "rustup과 LazyVim용 Rust 개발 셸";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
 
@@ -18,7 +18,7 @@
         RUST_BACKTRACE = "1";
 
         shellHook = ''
-          echo "Rust shell: rustup installs the pinned toolchain; then nvim ."
+          echo "Rust 셸: rustup이 고정된 toolchain을 설치한 뒤 nvim ."
         '';
       };
     };

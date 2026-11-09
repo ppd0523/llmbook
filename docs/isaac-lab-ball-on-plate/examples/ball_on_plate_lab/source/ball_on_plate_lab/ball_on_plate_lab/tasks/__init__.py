@@ -1,4 +1,4 @@
-"""Register every Ball-on-Plate task."""
+"""모든 Ball-on-Plate 태스크를 등록한다."""
 
 import sys
 
@@ -6,10 +6,10 @@ from . import direct, manager_based
 
 
 def register() -> list[str]:
-    """External-project callback used by Isaac Lab's RSL-RL launcher.
+    """Isaac Lab RSL-RL 런처가 쓰는 외부 프로젝트 콜백.
 
-    Importing this module performs Gymnasium registration. Returning the original
-    arguments lets the launcher's Hydra preset parser keep unconsumed overrides.
+    이 모듈을 import하면 Gymnasium 등록이 수행된다. 원래 인자를 그대로 반환하므로
+    런처의 Hydra 프리셋 파서가 처리하지 않은 override를 유지한다.
     """
 
     return sys.argv[1:]

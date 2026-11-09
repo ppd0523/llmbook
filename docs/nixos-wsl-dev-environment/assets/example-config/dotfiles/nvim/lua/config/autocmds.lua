@@ -1,1 +1,1 @@
--- Add project-specific autocommands here.
+-- 프로젝트별 autocommand를 여기에 추가한다.

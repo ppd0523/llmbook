@@ -1,4 +1,4 @@
-"""Small PPO model for the 12-input, 2-action task."""
+"""입력 12개, 행동 2개 태스크용 작은 PPO 모델."""
 
 from isaaclab.utils.configclass import configclass
 from isaaclab_rl.rsl_rl import RslRlMLPModelCfg, RslRlOnPolicyRunnerCfg, RslRlPpoAlgorithmCfg
