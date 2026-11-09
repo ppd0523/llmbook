@@ -348,7 +348,7 @@
 </head>
 <body>
   <header>
-    <p class="eyebrow">Robotics IK · Stage 02 Lab</p>
+    <p class="eyebrow">로보틱스 기구학 · 2단계 실습</p>
     <h1>3D 회전·강체변환 실습</h1>
     <p>각도와 이동을 바꾸며 좌표축, 회전행렬 R, 동차변환 T, 변환된 점이 한꺼번에 어떻게 달라지는지 관찰하세요. 모든 계산은 열벡터와 오른손 규칙을 사용합니다.</p>
   </header>
@@ -415,8 +415,8 @@
 
       <div class="readout">
         <p class="formula" id="sequence">적용 순서: Rx(roll) → Ry(pitch) → Rz(yaw)</p>
-        <p class="formula" id="pointEquation">r_A = R r_B + p</p>
-        <p class="formula" id="directionEquation">d_A = R d_B · 이동 p의 영향 없음</p>
+        <p class="formula" id="pointEquation">ᴬr = R ᴮr + p</p>
+        <p class="formula" id="directionEquation">ᴬd = R ᴮd · 이동 p의 영향 없음</p>
         <div class="matrix-row">
           <article class="matrix-card">
             <h3>회전행렬 R</h3>
@@ -431,7 +431,7 @@
             <div class="checks">
               <span>det(R) = <strong id="detValue">1.000000</strong></span>
               <span>R<sup>T</sup>R − I 최대 오차 = <strong id="orthoValue">0.00e+0</strong></span>
-              <span>열 1·열 2 = <strong id="dotValue">0.000000</strong></span>
+              <span>서로 다른 두 열의 내적 (1·2, 1·3, 2·3) = <strong id="dotValue">0, 0, 0</strong></span>
               <span>열의 길이 = <strong id="lengthValue">1, 1, 1</strong></span>
             </div>
           </article>
@@ -544,9 +544,9 @@
           ? "적용 순서: Rx(roll) → Ry(pitch) → Rz(yaw) · 오른쪽부터"
           : "적용 순서: Rz(yaw) → Ry(pitch) → Rx(roll) · 오른쪽부터";
         document.getElementById("pointEquation").textContent =
-          `r_A = R r_B + p = [${data.pointA.map((v) => tidy(v)).join(", ")}]ᵀ`;
+          `ᴬr = R ᴮr + p = [${data.pointA.map((v) => tidy(v)).join(", ")}]ᵀ`;
         document.getElementById("directionEquation").textContent =
-          `d_A = R d_B = [${data.directionA.map((v) => tidy(v)).join(", ")}]ᵀ · 이동 p의 영향 없음`;
+          `ᴬd = R ᴮd = [${data.directionA.map((v) => tidy(v)).join(", ")}]ᵀ · 이동 p의 영향 없음`;
         renderMatrix("rotationMatrix", data.r);
         renderMatrix("transformMatrix", data.t);
 
@@ -560,7 +560,7 @@
         const columns = transpose(data.r);
         document.getElementById("detValue").textContent = tidy(determinant3(data.r), 6);
         document.getElementById("orthoValue").textContent = maxError.toExponential(2);
-        document.getElementById("dotValue").textContent = tidy(dot(columns[0], columns[1]), 6);
+        document.getElementById("dotValue").textContent = [[0, 1], [0, 2], [1, 2]].map(([i, j]) => tidy(dot(columns[i], columns[j]), 6)).join(", ");
         document.getElementById("lengthValue").textContent = columns.map((column) => tidy(norm(column), 6)).join(", ");
       }
 
@@ -647,7 +647,7 @@
         ctx.arc(pointX, pointY, 7, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
-        label(data.pointA, "rA", "#ffc857", 10, -10);
+        label(data.pointA, "ᴬr", "#ffc857", 10, -10);
 
         const [frameX, frameY] = project(data.p);
         ctx.fillStyle = "#edf5ff";

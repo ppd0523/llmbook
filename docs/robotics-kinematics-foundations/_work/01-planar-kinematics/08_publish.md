@@ -1,9 +1,7 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 1.3
 status: final
 owner: agent
-updated: 2026-08-11
 target_reader: 고등학교 수준의 행렬·삼각함수를 아는 로보틱스 입문자
 topic: 2관절 평면 매니퓰레이터의 역기구학
 ---
@@ -12,7 +10,7 @@ topic: 2관절 평면 매니퓰레이터의 역기구학
 
 ## 1. 최종 산출물 계획
 
-- 기준 원고: `docs/robotics-kinematics-foundations/_work/01-planar-kinematics/07_final.md`
+- 기준 원고: 챕터 본문 `docs/robotics-kinematics-foundations/01-planar-kinematics.md`(`07_final.md` 참조)
 - 최종 형식: MkDocs 챕터형 Markdown 학습자료
 - 최종 경로: `docs/robotics-kinematics-foundations/index.md`, `docs/robotics-kinematics-foundations/01-planar-kinematics.md`
 - 보조 산출물: `assets/planar-kinematics/fk-playground.html`, `assets/planar-kinematics/ik-practice.html`
@@ -27,16 +25,16 @@ topic: 2관절 평면 매니퓰레이터의 역기구학
 | Chapter Markdown | `index.md`, `01-planar-kinematics.md` | 완료 | MkDocs 자동 탐색 구조 |
 | HTML | `fk-playground.html` | 완료 | 관절각·링크 길이 기반 FK 시각화 |
 | HTML | `ik-practice.html` | 완료 | 목표점·두 IK 해·특이점·FK 검산 비교 |
-| PDF | 없음 | 미생성 | 요구 범위 밖 |
-| ePub | 없음 | 미생성 | 요구 범위 밖 |
-| PPT/PPTX | 없음 | 미생성 | 요구 범위 밖 |
+| PDF | 없음 | 미생성 | 최종 산출물은 MkDocs 책만 둔다 |
+| ePub | 없음 | 미생성 | 최종 산출물은 MkDocs 책만 둔다 |
+| PPT/PPTX | 없음 | 미생성 | 최종 산출물은 MkDocs 책만 둔다 |
 
 ## 3. 검수 결과
 
 - [x] 책 폴더가 `docs/robotics-kinematics-foundations/`에 있고 kebab-case다.
 - [x] 책 진입점과 `01-planar-kinematics.md` 챕터가 존재한다.
 - [x] 내부 작업 산출물은 `_work/`에 분리되어 있고 `mkdocs.yml`의 `exclude_docs`에서 제외된다.
-- [x] `docs/index.md`에 책 진입점 링크를 추가했다.
+- [x] `docs/index.md`에 책 진입점 링크가 있다.
 - [x] 최종 Markdown과 기준 원고에 `TODO`, `검증 필요`, `출처 필요` 표시가 없다.
 - [x] 모든 최종 Markdown 문서의 최상위 `#` 제목은 하나다.
 - [x] 장에서 참조하는 두 HTML 자산 파일이 존재한다.
@@ -46,22 +44,20 @@ topic: 2관절 평면 매니퓰레이터의 역기구학
 - [x] $(3,2)$의 IK 해를 FK에 다시 대입하는 계산을 확인했다.
 - [x] 직접 해보기의 FK·IK 수치 정답을 식에 다시 대입해 확인했다.
 - [x] 도달 불가·특이점 예제의 경계 조건을 확인했다.
-- [x] 같은 길이의 두 링크가 원점에서 완전히 접히는 무한해 예외를 명시했다.
-- [x] $l_1=l_2$이면 작업공간의 안쪽 구멍이 사라져 원판이 됨을 명시했다.
-- [x] 양의·음의 제곱근 분기라는 이름으로 일반 위치와 $s_2=0$ 경계를 함께 설명했다.
+- [x] 같은 길이의 두 링크가 원점에서 완전히 접히는 무한해 예외를 본문에 명시한다.
+- [x] $l_1=l_2$이면 작업공간의 안쪽 구멍이 사라져 원판이 됨을 본문에 명시한다.
+- [x] 분기 명칭은 팔꿈치 위·아래가 아니라 양의·음의 제곱근 분기이며, 이 이름으로 일반 위치와 $s_2=0$ 경계를 함께 설명한다.
 - [x] IK 실습에서 두 분기의 FK 검산 오차가 0이고 빈 입력은 오류로 처리된다.
-- [x] 두 HTML을 어두운 화면에서 확인하고 캔버스의 격자·축·글자 대비를 보정했다.
-- [x] 브라우저 오류 기록에 오류나 경고가 없다.
-- [x] MIT·Caltech 공개 강의의 기구학 순서를 반영해 관절공간·작업공간·자세와 다음 장의 연결을 보강했다.
-- [x] IK 실습에 작업공간의 안쪽·바깥쪽 경계를 표시했다.
-- [x] 잘못된 팔꿈치 위·아래 분기 명칭을 양의·음의 제곱근 분기로 교체했다.
-- [x] 도·라디안, 행렬 표기, 동차좌표, $\theta_1=\alpha-\beta$ 유도를 보강했다.
-- [x] 기준 원고 `07_final.md`의 본문과 출판 챕터가 완전히 일치한다.
+- [ ] 두 HTML의 화면(어두운 화면 대비, 브라우저 콘솔 오류)은 현재 파일 기준으로 다시 확인하지 않았다.
+- [x] 관절공간·작업공간·자세의 구분과 다음 장의 연결이 MIT·Caltech 공개 강의의 기구학 순서를 따른다.
+- [x] IK 실습이 작업공간의 안쪽·바깥쪽 경계를 표시한다.
+- [x] IK 실습은 표시하는 관절각을 $(-180°,180°]$로 맞추고, 분기 이름을 본문과 같은 양의·음의 제곱근 분기로 쓴다. 프리셋은 본문 예제 $(3,2)$, 문제 8의 $(0,4)$, 5절 표의 세 목표다.
+- [x] 본문이 도·라디안, 행렬 표기, 동차좌표, $\theta_1=\alpha-\beta$ 유도를 설명한다.
 - [x] 내부 Markdown 링크, HTML JavaScript 문법, 두 IK 분기, 동차변환 연습문제 답을 검증했다.
 
 ## 4. 빌드 확인
 
-2026-08-11에 `requirements.txt`의 `mkdocs-material==9.7.6`을 임시 디렉터리에 설치하고 다음과 동등한 엄격 빌드를 실행했다.
+`requirements.txt`의 `mkdocs-material==9.7.6`을 임시 디렉터리에 설치하고 다음과 동등한 엄격 빌드를 실행했다.
 
 ```powershell
 mkdocs build --strict --site-dir <temporary-site-directory>

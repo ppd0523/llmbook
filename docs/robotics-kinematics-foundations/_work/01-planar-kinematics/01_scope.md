@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 0.2
 status: reviewed
 owner: agent
-updated: 2026-08-10
 target_reader: 고등학교 수준의 행렬·삼각함수를 아는 로보틱스 입문자
 topic: 2관절 평면 매니퓰레이터로 배우는 역기구학의 첫걸음
 ---
@@ -16,14 +14,14 @@ topic: 2관절 평면 매니퓰레이터로 배우는 역기구학의 첫걸음
 - 중심 질문: 원하는 평면 목표점에 손을 놓기 위해 두 관절각을 어떻게 계산하는가?
 - 해결하는 문제: 6자유도 매니퓰레이터와 휴머노이드 전신 IK에 앞서, 관절각·좌표계·FK·IK의 입출력을 구분하고 직접 계산할 수 있게 한다.
 - 기술 영역: 강체 기구학, 평면 회전, 좌표 변환, 해석적 IK
-- 자료 유형: 개념형 (2026-11-09 기준 개정에서 지정)
+- 자료 유형: 개념형. 독자는 공부하는 중이고, 완료의 증거가 계산과 판단이다.
 
 ## 2. 독자 상태 진단
 
 ### 2.1 숙련도와 선행지식
 
 - 기준 독자 수준: 일부 지식이 있는 초심자
-- 반드시 아는 개념: $2\times2$ 행렬 곱셈, 삼각함수, 피타고라스 정리. 코사인 법칙은 본문 4.2절에서 설명한다(2026-11-09 본문 기준으로 정정).
+- 반드시 아는 개념: $2\times2$ 행렬 곱셈, 삼각함수, 피타고라스 정리. 코사인 법칙은 본문 4.2절에서 설명한다.
 - 알고 있으면 좋은 개념: `atan2`의 사분면 처리, 라디안
 - 모른다고 가정할 개념: 회전행렬, 좌표계, 동차변환, 매니퓰레이터, 특이점, Jacobian
 - 선행지식으로 가정할 용어: 벡터, 행렬, 좌표, 각도, 사인, 코사인
@@ -55,7 +53,7 @@ topic: 2관절 평면 매니퓰레이터로 배우는 역기구학의 첫걸음
 
 ## 4. 범위
 
-- 반드시 포함: 도·라디안 변환, 2D 회전행렬, 좌표계의 필요성, 관절공간·작업공간·자세의 구분, 동차좌표와 2D 동차변환, 2R 평면 팔 FK, 해석적 IK의 기하학적 유도, 도달 가능 조건, 복수 해, 특이점, Worked Example, 연습문제, 인터랙티브 HTML 실습
+- 반드시 포함: 도·라디안 변환, 2D 회전행렬, 좌표계의 필요성, 관절공간·작업공간·자세의 구분, 동차좌표와 2D 동차변환, 2R 평면 팔 FK, 해석적 IK의 기하학적 유도, 도달 가능 조건, 복수 해, 특이점, 풀이 예제, 연습문제, 인터랙티브 HTML 실습
 - 선택 포함: 3D·6자유도·휴머노이드로 가는 학습 경로
 - 제외: PID·PD와 기타 제어기, 모터·센서, 동역학, 충돌 회피, 궤적 생성, Jacobian 유도와 수치 IK의 상세 구현
 - 다음 장: 3D 회전행렬과 동차변환, 6자유도 pose, Jacobian 기반 수치 IK, 지지발·골반·스윙발 제약을 갖는 전신 IK
@@ -63,13 +61,13 @@ topic: 2관절 평면 매니퓰레이터로 배우는 역기구학의 첫걸음
 ## 5. 최종 산출물 형식
 
 - 기준 원고 형식: Markdown
-- 기준 원고 경로: `docs/robotics-kinematics-foundations/_work/01-planar-kinematics/07_final.md`
+- 기준 원고 경로: `docs/robotics-kinematics-foundations/01-planar-kinematics.md`(챕터 본문. `_work/01-planar-kinematics/07_final.md`는 확정 기록이다)
 - 내부 작업 산출물: `docs/robotics-kinematics-foundations/_work/01-planar-kinematics/`
 - 최종 산출물: MkDocs 챕터형 Markdown 학습자료와 정적 HTML 실습 2개
 - 최종 경로: `docs/robotics-kinematics-foundations/index.md`, `docs/robotics-kinematics-foundations/01-planar-kinematics.md`, `docs/robotics-kinematics-foundations/assets/planar-kinematics/`
 - 책 폴더명: `robotics-kinematics-foundations`
 - 챕터 파일명 규칙: `NN-<chapter-slug>.md`
-- 현재 챕터 수: 1. 이후 묶음은 별도 챕터로 추가한다.
+- 현재 챕터 수: 2(`01-planar-kinematics.md`, `02-spatial-transformations.md`). 이후 묶음은 별도 챕터로 추가한다.
 - 빌드 도구: MkDocs Material
 - 수식 지원: 필요
 - 인터랙티브 요소: 필요. FK와 IK를 시각적으로 검산하는 HTML 실습을 제공한다.

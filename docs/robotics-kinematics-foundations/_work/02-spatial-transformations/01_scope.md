@@ -6,7 +6,7 @@ status: complete
 
 # 2단계 범위 정의
 
-자료 유형: 개념형 (2026-11-09 기준 개정에서 지정)
+자료 유형: 개념형. 독자는 공부하는 중이고, 완료의 증거가 계산과 설명이다.
 
 ## 핵심 질문
 
@@ -55,7 +55,7 @@ status: complete
 
 ## 완료 기준
 
-- 장 본문과 기준 원고가 일치한다.
+- 기준 원고는 장 본문 `docs/robotics-kinematics-foundations/02-spatial-transformations.md`이고, `_work/02-spatial-transformations/07_final.md`는 그 확정 기록이다.
 - 모든 기호가 처음 쓰이기 전에 정의된다.
 - 점·방향, 능동·수동, 회전 순서의 혼동을 예제로 방지한다.
 - HTML 실습에서 회전행렬, 변환행렬, 변환된 점이 같은 수치로 갱신된다.

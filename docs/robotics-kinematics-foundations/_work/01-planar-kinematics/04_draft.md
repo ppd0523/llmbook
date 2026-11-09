@@ -1,9 +1,7 @@
 ---
 title: 초고
-version: 0.2
 status: reviewed
 owner: agent
-updated: 2026-08-10
 target_reader: 고등학교 수준의 행렬·삼각함수를 아는 로보틱스 입문자
 topic: 2관절 평면 매니퓰레이터의 역기구학
 ---
@@ -53,7 +51,7 @@ $$
 
 도달 조건은 $|l_1-l_2|\le r\le l_1+l_2$다. 경계에서는 특이점이 생길 수 있다.
 
-## 5. Worked Example
+## 5. 풀이 예제
 
 목표 $(3,2)$, 링크 길이 $(3,2)$에서 $c_2=0$이므로 $\theta_2=\pm90°$다. 목표선 각 $\alpha$와 링크 오프셋 $\beta$로 $\theta_1=\alpha-\beta$를 구하면 $(\theta_1,\theta_2)=(0°,90°)$와 $(67.38°,-90°)$가 나온다. FK로 두 해 모두 $(3,2)$임을 확인한다.
 
