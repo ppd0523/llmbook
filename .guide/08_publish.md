@@ -1,23 +1,20 @@
 ---
 title: 최종 산출물 구성과 출판 변환 검수
-version: 0.1
 status: draft
 owner: agent
-updated:
 target_reader:
 topic:
 ---
 
 # 최종 산출물 구성과 출판 변환 검수
 
-이 문서는 Markdown 기준 원고를 사용자가 선택한 최종 산출물 형식으로 구성하거나 PDF, HTML, ePub, PPT/PPTX 등 다른 형식으로 변환할 때 사용하는 검수 기록이다.
+이 문서는 Markdown 기준 원고를 `01_scope.md`에서 정한 최종 산출물 형식으로 구성하거나 PDF, HTML, ePub, PPT/PPTX 등 다른 형식으로 변환할 때 사용하는 검수 기록이다.
 
 내용 품질 검수는 `07_final.md`까지 완료되어야 한다. 이 단계에서는 최종 파일 구조, 챕터 분리, 렌더링, 링크, 조판, 파일 경로 문제를 중심으로 확인한다.
 
 ## 1. 최종 산출물 계획
 
 - 기준 원고 Markdown:
-- 원본 버전:
 - 최종 산출물 형식:
 - 최종 산출물 경로:
 - MkDocs 책 폴더명 `<book-slug>`:

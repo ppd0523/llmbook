@@ -1,9 +1,7 @@
 ---
 title: 작성 범위 정의
-version: 0.3
 status: draft
 owner: agent
-updated:
 target_reader:
 topic:
 ---
@@ -29,7 +27,7 @@ topic:
 1. 독자가 이 챕터를 펴는 때는 공부하는 중인가, 일하는 중인가? 일하는 중이면 참조형이다.
 2. 공부하는 중이라면, 챕터를 마쳤다는 증거는 무엇인가? 설명·계산·판단이면 개념형이고, 독자 환경에서 확인되는 출력이나 상태이면 실습형이다.
 
-한 챕터에 개념 절과 실습 절이 함께 있어도 된다. "개념을 익혀 실습으로 완성하는" 챕터나 책은 정상적인 구성이다. 중심이 되는 쪽으로 유형을 정하고, 절 단위 규칙은 `03_outline.md`를 따른다. 이렇게 정한 이유는 [adr/0007](../adr/0007-material-type-is-chapter-focus-section-role-is-single.md)에 있다.
+자료 유형은 챕터의 중심만 정한다. 한 챕터 안에 개념 절과 실습 절이 함께 있을 수 있으며, 유형을 섞지 않는 단위는 절이다. 중심이 되는 쪽으로 유형을 정하고, 절 단위 규칙은 `03_outline.md`를 따른다. 이렇게 정한 이유는 [adr/0007](../adr/0007-material-type-is-chapter-focus-section-role-is-single.md)에 있다.
 
 ## 2. 독자 상태 진단
 
@@ -142,7 +140,7 @@ topic:
 - 단일 Markdown 학습자료
 - 단일 PDF 학습자료
 - 단일 PPT/PPTX 슬라이드
-- 기타 사용자 지정 출판 형식
+- 기타 출판 형식
 
 ## 8. 성공 기준
 

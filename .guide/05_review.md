@@ -1,9 +1,7 @@
 ---
 title: 기술 검증
-version: 0.2
 status: draft
 owner: agent
-updated:
 target_reader:
 topic:
 ---

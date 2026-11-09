@@ -1,9 +1,7 @@
 ---
 title: 조사 노트
-version: 0.2
 status: draft
 owner: agent
-updated:
 target_reader:
 topic:
 ---
